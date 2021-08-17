@@ -9,13 +9,13 @@
 - [Documentation of the ApplicationPattern](https://github.com/openBackhaul/ApplicationPattern/tree/tsi)
 
 ### Open API specification (Swagger)
-- []()
+- [ExecutionAndTraceLog_0.0.1_tsi.210817.1045](ExecutionAndTraceLog_0.0.1_tsi.210817.1045.yaml)
 
 ### Test Cases (Postman Export) and Data File
 - []()
 
 ### Load File (JSON)
-- []()
+- [ExecutionAndTraceLog_0.0.1_tsi.210817.1045+data.1](ExecutionAndTraceLog_0.0.1_tsi.210817.1045+data.1.json)
 
 ### Publication
 - No official publication planned
