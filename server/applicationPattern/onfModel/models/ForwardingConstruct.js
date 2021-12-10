@@ -12,8 +12,8 @@ const onfAttributeFormatter = require('../utility/OnfAttributeFormatter.js');
 const forwardingDomain = require('./ForwardingDomain.js');
 const logicalTerminationPoint = require('./LogicalTerminationPoint');
 const httpClientInterface = require('./layerProtocols/HttpClientInterface');
-const fcPortLogicalTerminationPointPath = "/core-model-1-4:control-construct/forwarding-domain=ro-0-0-1-op-fd-0000/forwarding-construct={fcUuid}/fc-port={fcPortLocalId}/logical-termination-point";
-const fcPortPath = "/core-model-1-4:control-construct/forwarding-domain=ro-0-0-1-op-fd-0000/forwarding-construct={fcUuid}/fc-port";
+const fcPortLogicalTerminationPointPath = "/core-model-1-4:control-construct/forwarding-domain=eatl-0-0-1-op-fd-0000/forwarding-construct={fcUuid}/fc-port={fcPortLocalId}/logical-termination-point";
+const fcPortPath = "/core-model-1-4:control-construct/forwarding-domain=eatl-0-0-1-op-fd-0000/forwarding-construct={fcUuid}/fc-port";
 
 class ForwardingConstruct {
 
