@@ -5,9 +5,6 @@
 ### Branch
 - 1.0.0-tsi.d.t : Defintion to be used within the Transport SDN Introduction at Telefonica Germany
 
-### Documentation
-- [Documentation of the ApplicationPattern](https://github.com/openBackhaul/ApplicationPattern/tree/tsi)
-
 ### Services
 - [ExecutionAndTraceLog_0.0.2_tsi.211207.1855+services.1](./ExecutionAndTraceLog_0.0.2_tsi.211207.1855+services.1.xlsx)
 
