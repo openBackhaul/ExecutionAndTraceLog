@@ -2396,36 +2396,6 @@
 								]
 							},
 							{
-								"uuid": "eatl-0-0-1-op-fc-0104",
-								"name": [
-									{
-										"value-name": "ForwardingKind",
-										"name": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-									},
-									{
-										"value-name": "ForwardingName",
-										"name": "PromptForBequeathingDataCausesALTbeingRequestedToUpdateTopologyInfoAboutNewApplication"
-									}
-								],
-								"fc-port": [
-									{
-										"local-id": "000",
-										"port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-										"logical-termination-point": "eatl-0-0-1-op-s-0009"
-									},
-									{
-										"local-id": "100",
-										"port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-										"logical-termination-point": "eatl-0-0-1-op-s-1000"
-									},
-									{
-										"local-id": "200",
-										"port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-										"logical-termination-point": "eatl-0-0-1-op-c-0070"
-									}
-								]
-							},
-							{
 								"uuid": "eatl-0-0-1-op-fc-0105",
 								"name": [
 									{
