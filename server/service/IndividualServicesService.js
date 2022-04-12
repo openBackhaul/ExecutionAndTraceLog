@@ -31,6 +31,8 @@ const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfMode
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 
+const serviceRecordProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ServiceRecordProfile');
+const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
 /**
  * Initiates process of embedding a new release
  *
@@ -295,8 +297,28 @@ exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, tra
  * no response value expected for this operation
  **/
 exports.recordServiceRequest = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    resolve();
+  return new Promise(async function (resolve, reject) {
+    try {
+
+      /****************************************************************************************
+       * Setting up required local variables from the request body
+       ****************************************************************************************/
+      let serviceRecord = body;
+      
+      /****************************************************************************************
+       * configure application profile with the new application if it is not already exist
+       ****************************************************************************************/
+      let serviceProfile = await serviceRecordProfile.createProfileAsync(
+        serviceRecord
+      );
+      if(serviceProfile){
+        await ProfileCollection.addProfileAsync(serviceProfile);
+      }
+
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
