@@ -58,34 +58,67 @@ module.exports.listApplications = async function listApplications (req, res, nex
   } catch (error) {}
 };
 
-module.exports.listRecords = function listRecords (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  IndividualServices.listRecords(user, originator, xCorrelator, traceIndicator, customerJourney)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.listRecords = async function listRecords (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    let startTime = process.hrtime();
+    let responseCode = responseCodeEnum.code.OK;
+    let responseBodyToDocument = {};
+    await IndividualServices.listRecords(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+      .then(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      })
+      .catch(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      });
+    executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+  } catch (error) {}
 };
 
-module.exports.listRecordsOfFlow = function listRecordsOfFlow (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  IndividualServices.listRecordsOfFlow(body, user, originator, xCorrelator, traceIndicator, customerJourney)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.listRecordsOfFlow = async function listRecordsOfFlow (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    let startTime = process.hrtime();
+    let responseCode = responseCodeEnum.code.OK;
+    let responseBodyToDocument = {};
+    await IndividualServices.listRecordsOfFlow(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+      .then(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      })
+      .catch(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      });
+    executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+  } catch (error) {}
 };
 
-module.exports.listRecordsOfUnsuccessful = function listRecordsOfUnsuccessful (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  IndividualServices.listRecordsOfUnsuccessful(user, originator, xCorrelator, traceIndicator, customerJourney)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.listRecordsOfUnsuccessful = async function listRecordsOfUnsuccessful (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    let startTime = process.hrtime();
+    let responseCode = responseCodeEnum.code.OK;
+    let responseBodyToDocument = {};
+    await IndividualServices.listRecordsOfUnsuccessful(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+      .then(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      })
+      .catch(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      });
+    executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+  } catch (error) {}
 };
 
 module.exports.recordServiceRequest = async function recordServiceRequest (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {

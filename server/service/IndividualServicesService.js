@@ -33,6 +33,7 @@ const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfMod
 
 const serviceRecordProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ServiceRecordProfile');
 const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
+const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 /**
  * Initiates process of embedding a new release
  *
@@ -135,7 +136,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
- exports.listApplications = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
+exports.listApplications = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     let response = {};
     try {
@@ -171,33 +172,37 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
  * returns List
  **/
 exports.listRecords = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [{
-      "x-correlator": "550e8400-e29b-11d4-a716-446655440000",
-      "trace-indicator": "1.1",
-      "user": "User Name",
-      "originator": "Resolver",
-      "application-name": "CurrentController",
-      "operation-name": "/v1/provide-current-controller",
-      "response-code": 200,
-      "timestamp": "2010-11-20T14:00:00+01:00",
-      "stringified-body": "{}",
-      "stringified-response": "{\"current-controller\": \"10.118.125.157:8443\"}"
-    }, {
-      "x-correlator": "883e8400-e29b-11d4-a716-446655440333",
-      "trace-indicator": "1",
-      "user": "User Name",
-      "originator": "x:akta",
-      "application-name": "RegistryOffice",
-      "operation-name": "/v1/update-approval-status",
-      "response-code": 401,
-      "timestamp": "",
-      "stringified-body": "",
-      "stringified-response": ""
-    }];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+  return new Promise(async function (resolve, reject) {
+    let response = {};
+    try {
+      /****************************************************************************************
+       * Preparing response body
+       ****************************************************************************************/
+      let serviceRecordProfileList = [];
+      let profileList = await ProfileCollection.getProfileListAsync();
+      if (profileList != undefined) {
+        for (let i = 0; i < profileList.length; i++) {
+          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
+          if (profileInstanceName != undefined) {
+            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
+              let serviceRecordProfile = profileList[i];
+              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
+              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
+              serviceRecordProfileList.push(serviceRecordCapability);
+            }
+          }
+        }
+      }
+
+      /****************************************************************************************
+       * Setting 'application/json' response body
+       ****************************************************************************************/
+      response['application/json'] = serviceRecordProfileList;
+    } catch (error) {
+      console.log(error);
+    }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
     } else {
       resolve();
     }
@@ -217,33 +222,44 @@ exports.listRecords = function (user, originator, xCorrelator, traceIndicator, c
  * returns List
  **/
 exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [{
-      "x-correlator": "550e8400-e29b-11d4-a716-446655440000",
-      "trace-indicator": "1.1",
-      "user": "User Name",
-      "originator": "Resolver",
-      "application-name": "CurrentController",
-      "operation-name": "/v1/provide-current-controller",
-      "response-code": 200,
-      "timestamp": "2010-11-20T14:00:00+01:00",
-      "stringified-body": "{}",
-      "stringified-response": "{\"current-controller\": \"10.118.125.157:8443\"}"
-    }, {
-      "x-correlator": "550e8400-e29b-11d4-a716-446655440000",
-      "trace-indicator": "1",
-      "user": "User Name",
-      "originator": "x:akta",
-      "application-name": "Resolver",
-      "operation-name": "/v1/resolve-get-request",
-      "response-code": 200,
-      "timestamp": "2010-11-20T14:00:00+01:04",
-      "stringified-body": "{\"uri\"=\"https://[CurrentController/v1/provide-current-controller]/rests/data/network-topology:network-topology/topology=topology-netconf/node=305251234/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=[Connector2LtpUuid/v1/provide-ltp-uuid(305251234,305551234)]/layer-protocol=[Connector2LtpUuid/v1/provide-lp-lid(305251234,305551234)]/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on\"}",
-      "stringified-response": "{\"uri\"=\"https://10.118.125.157:8443/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250011/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on\"}"
-    }];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+  return new Promise(async function (resolve, reject) {
+    let response = {};
+    try {
+      /****************************************************************************************
+       * Setting up required local variables from the request body
+       ****************************************************************************************/
+      let flowId = body["x-correlator"];
+
+      /****************************************************************************************
+       * Preparing response body
+       ****************************************************************************************/
+      let serviceRecordProfileList = [];
+      let profileList = await ProfileCollection.getProfileListAsync();
+      if (profileList != undefined) {
+        for (let i = 0; i < profileList.length; i++) {
+          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
+          if (profileInstanceName != undefined) {
+            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
+              let serviceRecordProfile = profileList[i];
+              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
+              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
+              let xCorrelatorOfTheRecord = serviceRecordCapability["x-correlator"];
+              if (flowId == xCorrelatorOfTheRecord) {
+                serviceRecordProfileList.push(serviceRecordCapability);
+              }
+            }
+          }
+        }
+      }
+      /****************************************************************************************
+       * Setting 'application/json' response body
+       ****************************************************************************************/
+      response['application/json'] = serviceRecordProfileList;
+    } catch (error) {
+      console.log(error);
+    }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
     } else {
       resolve();
     }
@@ -262,22 +278,40 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
  * returns List
  **/
 exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [{
-      "x-correlator": "883e8400-e29b-11d4-a716-446655440333",
-      "trace-indicator": "1",
-      "user": "User Name",
-      "originator": "x:akta",
-      "application-name": "RegistryOffice",
-      "operation-name": "/v1/update-approval-status",
-      "response-code": 401,
-      "timestamp": "",
-      "stringified-body": "",
-      "stringified-response": ""
-    }];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+  return new Promise(async function (resolve, reject) {
+    let response = {};
+    try {
+      
+      /****************************************************************************************
+       * Preparing response body
+       ****************************************************************************************/
+      let serviceRecordProfileList = [];
+      let profileList = await ProfileCollection.getProfileListAsync();
+      if (profileList != undefined) {
+        for (let i = 0; i < profileList.length; i++) {
+          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
+          if (profileInstanceName != undefined) {
+            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
+              let serviceRecordProfile = profileList[i];
+              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
+              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
+              let responseCode = (serviceRecordCapability["response-code"]).toString();
+              if (!responseCode.startsWith("2")) {
+                serviceRecordProfileList.push(serviceRecordCapability);
+              }
+            }
+          }
+        }
+      }
+      /****************************************************************************************
+       * Setting 'application/json' response body
+       ****************************************************************************************/
+      response['application/json'] = serviceRecordProfileList;
+    } catch (error) {
+      console.log(error);
+    }
+    if (Object.keys(response).length > 0) {
+      resolve(response[Object.keys(response)[0]]);
     } else {
       resolve();
     }
@@ -304,14 +338,14 @@ exports.recordServiceRequest = function (body, user, originator, xCorrelator, tr
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let serviceRecord = body;
-      
+
       /****************************************************************************************
        * configure application profile with the new application if it is not already exist
        ****************************************************************************************/
       let serviceProfile = await serviceRecordProfile.createProfileAsync(
         serviceRecord
       );
-      if(serviceProfile){
+      if (serviceProfile) {
         await ProfileCollection.addProfileAsync(serviceProfile);
       }
 
@@ -334,7 +368,7 @@ exports.recordServiceRequest = function (body, user, originator, xCorrelator, tr
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
- exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
+exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
 
@@ -487,7 +521,7 @@ exports.startApplicationInGenericRepresentation = function (user, originator, xC
  * <b>step 1 :</b> get all http client Interface and get the application name, release number and server-ltp<br>
  * <b>step 2 :</b> get the ipaddress and port name of each associated tcp-client <br>
  **/
- function getAllApplicationList() {
+function getAllApplicationList() {
   return new Promise(async function (resolve, reject) {
     let clientApplicationList = [];
     try {
