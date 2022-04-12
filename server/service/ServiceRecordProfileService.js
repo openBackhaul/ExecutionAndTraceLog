@@ -21,6 +21,7 @@ exports.getServiceRecordProfileCapability = function(uuid) {
     "trace-indicator" : "trace-indicator",
     "user" : "user",
     "x-correlator" : "x-correlator",
+    "application-release-number" : "application-release-number",
     "timestamp" : "timestamp"
   }
 };
