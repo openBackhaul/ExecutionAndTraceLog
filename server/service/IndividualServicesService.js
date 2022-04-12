@@ -60,11 +60,6 @@ exports.listApplications = function(user,originator,xCorrelator,traceIndicator,c
   "application-release-number" : "0.0.1",
   "application-address" : "10.118.125.157",
   "application-port" : 1001
-}, {
-  "application-name" : "CurrentController",
-  "application-release-number" : "0.0.6",
-  "application-address" : "10.118.125.186",
-  "application-port" : 2000
 } ];
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
