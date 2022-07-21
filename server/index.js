@@ -1,3 +1,4 @@
+//@ts-check
 'use strict';
 
 var path = require('path');
@@ -8,6 +9,7 @@ var serverPort = 3002;
 
 const authorizingService = require('onf-core-model-ap-bs/basicServices/AuthorizingService');
 const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
+const elasticRepository = require('./database/ElasticRepository');
 
 async function validateOperationKey(request, scopes, securitySchema) {
     const operationUuid = await operationServerInterface.getOperationServerUuidAsync(request.url);
@@ -45,5 +47,7 @@ http.createServer(app).listen(serverPort, function () {
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
 });
 
-//setting the path to the database 
+//setting the path to the database
 global.databasePath = './database/load.json'
+
+elasticRepository.prepareServiceRecordIndex();

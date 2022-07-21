@@ -1,48 +1,32 @@
+//@ts-check
 'use strict';
 
 const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
-const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
-
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
-const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
-
 const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
 const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
-
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
 const responseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
-
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
-const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
-
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
-const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
-const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
-
-const serviceRecordProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ServiceRecordProfile');
-const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
+const elasticRepository = require('../database/ElasticRepository');
+
 /**
  * Initiates process of embedding a new release
  *
- * body V1_bequeathyourdataanddie_body 
+ * body V1_bequeathyourdataanddie_body
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -61,7 +45,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let applicationPort = body["new-application-port"];
 
       /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
+       * Prepare logicalTerminatinPointConfigurationInput object to
        * configure logical-termination-point
        ****************************************************************************************/
       let isdataTransferRequired = true;
@@ -71,7 +55,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         let isUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
         let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
         let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
-        if((applicationAddress == currentApplicationRemoteAddress) && 
+        if((applicationAddress == currentApplicationRemoteAddress) &&
         (applicationPort == currentApplicationRemotePort)){
           isdataTransferRequired = false;
         }
@@ -103,10 +87,10 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
             traceIndicator,
             customerJourney
           );
-        }        
-      } 
+        }
+      }
       softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));  
+        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       resolve();
     } catch (error) {
       reject(error);
@@ -118,9 +102,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 /**
  * Removes application from list of targets of subscriptions for service requests
  *
- * body V1_disregardapplication_body 
+ * body V1_disregardapplication_body
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -137,7 +121,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       let applicationReleaseNumber = body["application-release-number"];
 
       /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
+       * Prepare logicalTerminatinPointConfigurationInput object to
        * configure logical-termination-point
        ****************************************************************************************/
 
@@ -193,7 +177,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
  * Provides list of applications that are requested to send service request notifications
  *
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -228,7 +212,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * Provides list of recorded service requests
  *
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -238,29 +222,7 @@ exports.listRecords = function (user, originator, xCorrelator, traceIndicator, c
   return new Promise(async function (resolve, reject) {
     let response = {};
     try {
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              serviceRecordProfileList.push(serviceRecordCapability);
-            }
-          }
-        }
-      }
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      response['application/json'] = await elasticRepository.readAllServiceRecords();
     } catch (error) {
       console.log(error);
     }
@@ -276,9 +238,9 @@ exports.listRecords = function (user, originator, xCorrelator, traceIndicator, c
 /**
  * Provides list of service request records belonging to the same flow
  *
- * body V1_listrecordsofflow_body 
+ * body V1_listrecordsofflow_body
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -288,36 +250,7 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
   return new Promise(async function (resolve, reject) {
     let response = {};
     try {
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let flowId = body["x-correlator"];
-
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let xCorrelatorOfTheRecord = serviceRecordCapability["x-correlator"];
-              if (flowId == xCorrelatorOfTheRecord) {
-                serviceRecordProfileList.push(serviceRecordCapability);
-              }
-            }
-          }
-        }
-      }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      response['application/json'] = await elasticRepository.readServiceRecordsOfFlow(body["x-correlator"]);
     } catch (error) {
       console.log(error);
     }
@@ -334,7 +267,7 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
  * Provides list of unsuccessful service requests
  *
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -344,32 +277,7 @@ exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, tra
   return new Promise(async function (resolve, reject) {
     let response = {};
     try {
-      
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let responseCode = (serviceRecordCapability["response-code"]).toString();
-              if (!responseCode.startsWith("2")) {
-                serviceRecordProfileList.push(serviceRecordCapability);
-              }
-            }
-          }
-        }
-      }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      response['application/json'] = await elasticRepository.readUnsuccessfullServiceRecords();
     } catch (error) {
       console.log(error);
     }
@@ -385,9 +293,9 @@ exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, tra
 /**
  * Records a service request
  *
- * body ServiceRequestRecord 
+ * body ServiceRequestRecord
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -396,24 +304,10 @@ exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, tra
 exports.recordServiceRequest = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
-
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let serviceRecord = body;
-
-      /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let serviceProfile = await serviceRecordProfile.createProfileAsync(
-        serviceRecord
-      );
-      if (serviceProfile) {
-        await ProfileCollection.addProfileAsync(serviceProfile);
-      }
-
+      await elasticRepository.recordServiceRequest(body);
       resolve();
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });
@@ -423,9 +317,9 @@ exports.recordServiceRequest = function (body, user, originator, xCorrelator, tr
 /**
  * Adds to the list of applications
  *
- * body V1_regardapplication_body 
+ * body V1_regardapplication_body
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -445,7 +339,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let inquireOamRequestOperation = "/v1/redirect-service-request-information";
 
       /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
+       * Prepare logicalTerminatinPointConfigurationInput object to
        * configure logical-termination-point
        ****************************************************************************************/
 
@@ -514,7 +408,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
  * Starts application in generic representation
  *
  * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
  * traceIndicator String Sequence of request numbers along the flow
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
@@ -589,8 +483,8 @@ function getAllApplicationList() {
     let clientApplicationList = [];
     try {
 
-      /** 
-       * This class instantiate objects that holds the application name , release number, 
+      /**
+       * This class instantiate objects that holds the application name , release number,
        * IpAddress and port information of the registered client applications
        */
       let clientApplicationInformation = class ClientApplicationInformation {
@@ -600,7 +494,7 @@ function getAllApplicationList() {
         applicationPort;
 
         /**
-         * @constructor 
+         * @constructor
          * @param {String} applicationName name of the client application.
          * @param {String} applicationReleaseNumber release number of the application.
          * @param {String} applicationAddress ip address of the application.
