@@ -22,10 +22,9 @@ function _resolveEsConfig() {
   }
 }
 
-exports.prepareServiceRecordIndex = async function prepareServiceRecordIndex() {
+async function _prepareServiceRecordIndex() {
   const exists = await client.indices.existsAlias({ name: index_alias });
   if (exists.statusCode !== 404) {
-    console.log(`Index alias "${index_alias}" already exists. Skipping elasticsearch setup.`);
     return;
   }
 
@@ -103,8 +102,10 @@ exports.prepareServiceRecordIndex = async function prepareServiceRecordIndex() {
 }
 
 exports.readServiceRecordsOfFlow = async function readServiceRecordsOfFlow(xCorrelator) {
+  _prepareServiceRecordIndex();
   const result = await client.search({
     index: index_alias,
+    size: 1000,
     body: {
       query: {
         term: {
@@ -118,6 +119,7 @@ exports.readServiceRecordsOfFlow = async function readServiceRecordsOfFlow(xCorr
 
 
 exports.recordServiceRequest = async function recordServiceRequest(record) {
+  _prepareServiceRecordIndex();
   return await client.index({
     index: index_alias,
     body: record
@@ -125,8 +127,10 @@ exports.recordServiceRequest = async function recordServiceRequest(record) {
 }
 
 exports.readAllServiceRecords = async function readAllServiceRecords() {
+  _prepareServiceRecordIndex();
   const result = await client.search({
     index: index_alias,
+    size: 1000,
     body: {
       query: {
         match_all: {}
@@ -137,8 +141,10 @@ exports.readAllServiceRecords = async function readAllServiceRecords() {
 }
 
 exports.readUnsuccessfullServiceRecords = async function readUnsuccessfullServiceRecords() {
+  _prepareServiceRecordIndex();
   const result = await client.search({
     index: index_alias,
+    size: 1000,
     body: {
       query: {
         bool: {

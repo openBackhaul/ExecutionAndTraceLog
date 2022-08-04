@@ -5,7 +5,6 @@ var path = require('path');
 var http = require('http');
 var oas3Tools = require('oas3-tools');
 var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommons');
-var elasticRepository = require('./database/ElasticRepository');
 var serverPort = 3002;
 
 // uncomment if you do not want to validate security e.g. operation-key, basic auth, etc
@@ -31,5 +30,3 @@ http.createServer(app).listen(serverPort, function () {
 
 //setting the path to the database
 global.databasePath = './database/load.json'
-
-elasticRepository.prepareServiceRecordIndex();
