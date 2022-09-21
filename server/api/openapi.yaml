@@ -16183,7 +16183,7 @@ paths:
         style: simple
         explode: false
         schema:
-          pattern: "^eatl-0-0-1-op-s-\\d{4}$"
+          pattern: "^eatl-0-0-1-service-record-p-\\d{6}$"
           type: string
           example: eatl-0-0-1-service-record-p-000000
       responses:
