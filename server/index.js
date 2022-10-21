@@ -7,6 +7,8 @@ var oas3Tools = require('oas3-tools');
 var serverPort = 3002;
 var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommons');
 
+// uncomment if you do not want to validate security e.g. operation-key, basic auth, etc
+// appCommons.openApiValidatorOptions.validateSecurity = false;
 
 // swaggerRouter configuration
 var options = {
