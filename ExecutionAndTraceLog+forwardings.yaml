@@ -87,8 +87,6 @@ forwardings:
         uuid: eatl-1-0-0-op-s-is-002
       - service-name: /v1/list-applications
         uuid: eatl-1-0-0-op-s-is-003
-      - service-name: /v1/record-service-request
-        uuid: eatl-1-0-0-op-s-is-004
       - service-name: /v1/list-records
         uuid: eatl-1-0-0-op-s-is-005
       - service-name: /v1/list-records-of-flow
@@ -206,7 +204,7 @@ forwardings:
         uuid: eatl-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: RegistryOffice:://v1/end-subscription
-        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-002
+        uuid: eatl-1-0-0-op-c-is-ro-1-0-0-002
 
   - forwarding-name: PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
     uuid: eatl-1-0-0-op-fc-bm-105
