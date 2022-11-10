@@ -110,6 +110,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
+      # [all oam requests]
     consequent-requests:
       - client-name: OamLog://v1/record-oam-request
         uuid: eatl-1-0-0-op-c-bs-ol-1-0-0-000
@@ -127,6 +128,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
+      # [all oam requests]
     consequent-requests:
       - client-name: AdministratorAdministration://v1/approve-oam-request
         uuid: eatl-1-0-0-op-c-bs-aa-1-0-0-000
@@ -159,7 +161,7 @@ forwardings:
         uuid: eatl-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: NewRelease:://v1/record-service-request
-        uuid: eatl-1-0-0-op-c-im-nr-1-0-0-001
+        uuid: eatl-1-0-0-op-c-bs-nr-1-0-0-001
 
   - forwarding-name: PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease
     uuid: eatl-1-0-0-op-fc-im-112
@@ -204,7 +206,7 @@ forwardings:
         uuid: eatl-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: RegistryOffice:://v1/end-subscription
-        uuid: eatl-1-0-0-op-c-is-ro-1-0-0-002
+        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-002
 
   - forwarding-name: PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
     uuid: eatl-1-0-0-op-fc-bm-105
@@ -501,18 +503,18 @@ forwardings:
           uuid: eatl-1-0-0-op-s-is-001
     consequent-requests:
       - client-name: RegistryOffice:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-ro-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-000
       - client-name: TypeApprovalRegister:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-tar-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-tar-1-0-0-000
       - client-name: ExecutionAndTraceLog:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-eatl-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-eatl-1-0-0-000
       - client-name: OamLog:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-ol-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-ol-1-0-0-000
       - client-name: AdministratorAdministration:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-aa-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-aa-1-0-0-000
       - client-name: ApplicationLayerTopology:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-alt-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-alt-1-0-0-000
       - client-name: OperationKeyManagement:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-okm-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-okm-1-0-0-000
       - client-name: CurrentController:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-bs-cc-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-cc-1-0-0-000
