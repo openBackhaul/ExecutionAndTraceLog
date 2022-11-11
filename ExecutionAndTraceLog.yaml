@@ -2364,7 +2364,7 @@ paths:
                   type: string
                   description: >
                     'Operation for recording the OaM requests
-                    update [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-0050/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                    update [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-bs-ol-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                 oam-log-address:
                   type: string
                   pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
@@ -4318,7 +4318,7 @@ paths:
                             logical-termination-point: 'eatl-1-0-0-op-s-0003'
                           - local-id: '200'
                             port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                            logical-termination-point: 'eatl-1-0-0-op-c-0050'
+                            logical-termination-point: 'eatl-1-0-0-op-c-bs-ol-1-0-0-000'
               responses:
                 '204':
                   description: 'FC port will be updated'
@@ -4938,7 +4938,7 @@ paths:
                             logical-termination-point: 'eatl-1-0-0-op-s-0003'
                           - local-id: '200'
                             port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                            logical-termination-point: 'eatl-1-0-0-op-c-0050'
+                            logical-termination-point: 'eatl-1-0-0-op-c-bs-ol-1-0-0-000'
               responses:
                 '204':
                   description: 'FC port will be updated'
@@ -6553,7 +6553,7 @@ paths:
                                     logical-termination-point: 'eatl-1-0-0-op-s-0003'
                                   - local-id: '200'
                                     port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                                    logical-termination-point: 'eatl-1-0-0-op-c-0050'
+                                    logical-termination-point: 'eatl-1-0-0-op-c-bs-ol-1-0-0-000'
                               - uuid: 'eatl-1-0-0-op-fc-0004'
                                 name:
                                   - value-name: 'ForwardingKind'
@@ -6566,7 +6566,7 @@ paths:
                                     logical-termination-point: 'eatl-1-0-0-op-s-0005'
                                   - local-id: '200'
                                     port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                                    logical-termination-point: 'eatl-1-0-0-op-c-0060'
+                                    logical-termination-point: 'eatl-1-0-0-op-c-bs-aa-1-0-0-000'
         '400':
           $ref: '#/components/responses/responseForErroredOamRequests'
         '401':
