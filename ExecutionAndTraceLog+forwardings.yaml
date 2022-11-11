@@ -503,7 +503,7 @@ forwardings:
           uuid: eatl-1-0-0-op-s-is-001
     consequent-requests:
       - client-name: RegistryOffice:://v1/redirect-service-request-information
-        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-004
       - client-name: TypeApprovalRegister:://v1/redirect-service-request-information
         uuid: eatl-1-0-0-op-c-im-tar-1-0-0-000
       - client-name: ExecutionAndTraceLog:://v1/redirect-service-request-information

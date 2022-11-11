@@ -125,17 +125,17 @@ clients:
           - service-name: /v1/relay-operation-update
             uuid: eatl-1-0-0-op-c-0023
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - service-name: /v1/notify-approvals
             uuid: eatl-1-0-0-op-c-im-ro-1-0-0-000
+          - service-name: /v1/notify-withdrawn-approvals
+            uuid: eatl-1-0-0-op-c-im-ro-1-0-0-001
           - service-name: /v1/end-subscription
             uuid: eatl-1-0-0-op-c-im-ro-1-0-0-002
+          - service-name: /v1/redirect-service-request-information
+            uuid: eatl-1-0-0-op-c-im-ro-1-0-0-004
       service:
         basic:
         individual:
-          - service-name: /v1/notify-approvals
-            uuid: eatl-1-0-0-op-c-3020
-          - service-name: /v1/notify-withdrawn-approvals
-            uuid: eatl-1-0-0-op-c-3021
 
   - http-client:
       application-name: TypeApprovalRegister
