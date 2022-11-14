@@ -176,7 +176,7 @@ forwardings:
         uuid: eatl-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: RegistryOffice:://v1/notify-approvals
-        uuid: eatl-1-0-0-op-c-is-ro-1-0-0-000
+        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-000
 
   - forwarding-name: PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease
     uuid: eatl-1-0-0-op-fc-im-113
@@ -191,7 +191,7 @@ forwardings:
         uuid: eatl-1-0-0-op-s-im-000
     consequent-requests:
       - client-name: RegistryOffice:://v1/notify-withdrawn-approvals
-        uuid: eatl-1-0-0-op-c-is-ro-1-0-0-001
+        uuid: eatl-1-0-0-op-c-im-ro-1-0-0-001
 
   - forwarding-name: PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease
     uuid: eatl-1-0-0-op-fc-im-114

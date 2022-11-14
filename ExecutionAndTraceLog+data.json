@@ -895,8 +895,8 @@
                 "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
                 "operation-client-interface-1-0:operation-client-interface-pac": {
                   "operation-client-interface-configuration": {
-                    "operation-name": "n.a.",
-                    "operation-key": "Operation key not yet provided."
+                    "operation-name": "/v1/register-application",
+                    "operation-key": "n.a."
                   },
                   "operation-client-interface-status": {
                     "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",

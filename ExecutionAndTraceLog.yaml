@@ -2667,7 +2667,7 @@ paths:
                   type: string
                   description: >
                     'Operation for approving the OaM requests
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-0060/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-bs-aa-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                 oam-approval-address:
                   type: string
                   pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
