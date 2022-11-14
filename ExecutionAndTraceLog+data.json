@@ -830,11 +830,6 @@
             "uuid": "eatl-1-0-0-http-c-0010",
             "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
             "client-ltp": [
-              "eatl-1-0-0-op-c-0010",
-              "eatl-1-0-0-op-c-0011",
-              "eatl-1-0-0-op-c-0012",
-              "eatl-1-0-0-op-c-0013",
-              "eatl-1-0-0-op-c-0014",
               "eatl-1-0-0-op-c-1010",
               "eatl-1-0-0-op-c-bs-nr-1-0-0-001"
             ],
