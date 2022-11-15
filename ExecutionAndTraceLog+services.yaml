@@ -101,8 +101,6 @@ clients:
             uuid: eatl-1-0-0-op-c-1010
       service:
         basic:
-          - service-name: /v1/record-service-request
-            uuid: eatl-1-0-0-op-c-bs-nr-1-0-0-001
         individual:
 
   - http-client:
