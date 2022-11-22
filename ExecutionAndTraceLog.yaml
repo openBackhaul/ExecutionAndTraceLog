@@ -162,7 +162,7 @@ paths:
                           type: string
                           description: >
                             'Name of application that shall be requested for service request notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                         application-release-number:
                           type: string
                           description: >
@@ -173,7 +173,7 @@ paths:
                           description: >
                             'IP of application that shall be requested for service request notifications
                             from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                        application-port:      
+                        application-port:
                           type: integer
                           description: >
                             'TCP port of application that shall be requested for service request notifications
@@ -188,7 +188,7 @@ paths:
                   description: 'Application will be requested for service request notifications'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -823,7 +823,7 @@ paths:
                   minLength: 3
                   description: >
                     'Name of application that shall be requested for service request notifications
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 release-number:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
@@ -1046,7 +1046,7 @@ paths:
                   type: string
                   description: >
                     'Name of application that shall no longer be requested for service request notifications
-                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 release-number:
                   type: string
                   pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
@@ -1135,7 +1135,7 @@ paths:
                     application-name:
                       type: string
                       description: >
-                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                     release-number:
                       type: string
                       description: >
