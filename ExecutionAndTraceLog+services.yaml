@@ -39,7 +39,7 @@ servers:
         - service-name: /v1/inform-about-release-history
           uuid: eatl-1-0-0-op-s-bs-003
         - service-name: /v1/inform-about-release-history-in-generic-representation
-          uuid: eatl-1-0-0-op-s-bs-004          
+          uuid: eatl-1-0-0-op-s-bs-004
         - service-name: /docs
           uuid: eatl-2-0-0-op-s-bs-005
       individual:

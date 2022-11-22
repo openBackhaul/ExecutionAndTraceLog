@@ -484,8 +484,8 @@ forwardings:
         - server-name: /v1/disregard-application
           uuid: eatl-1-0-0-op-s-is-002
     initiating-requests:
-        - server-name: /v1/regard-application
-          uuid: eatl-1-0-0-op-s-is-001
+      - server-name: /v1/regard-application
+        uuid: eatl-1-0-0-op-s-is-001
     consequent-requests:
       - client-name: RegistryOffice:://v1/redirect-service-request-information
         uuid: eatl-1-0-0-op-c-im-ro-1-0-0-004
