@@ -2114,7 +2114,7 @@
         ],
         "forwarding-domain": [
           {
-            "uuid": "eatl-1-0-0-op-fd-0000",
+            "uuid": "eatl-1-0-0-op-fd-000",
             "forwarding-construct": [
               {
                 "uuid": "eatl-2-0-0-op-fc-bm-000",
