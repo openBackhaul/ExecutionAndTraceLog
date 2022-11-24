@@ -1,11 +1,7 @@
 ﻿openapi: 3.0.0
 info:
   title: ExecutionAndTraceLog
-  version: 1.0.0
-
-servers:
-  - url: 'https://10.118.125.157:1002'
-    description: 'Initial deployment'
+  version: 2.0.0
 
 paths:
 ########################################
@@ -34,6 +30,7 @@ paths:
               required:
                 - new-application-name
                 - new-application-release
+                - new-application-protocol
                 - new-application-address
                 - new-application-port
               properties:
@@ -41,37 +38,65 @@ paths:
                   type: string
                   description: >
                     'Name of application that shall be target of the handover process
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-im-nr-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                 new-application-release:
                   type: string
-                  pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+                  pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
                   description: >
                     'Release of application that shall be target of the handover process
-                    find or update [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-im-nr-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                new-application-address:
+                    find or update [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                new-application-protocol:
                   type: string
-                  pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                  enum:
+                    - 'HTTP'
+                    - 'HTTPS'
                   description: >
-                    'IP address of application that shall be target of the handover process
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                    'Protocol to be used for addressing the application that shall be target of the handover process
+                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                new-application-address:
+                  type: object
+                  minProperties: 1
+                  maxProperties: 1
+                  additionalProperties: false
+                  properties:
+                    ip-address:
+                      type: object
+                      minProperties: 1
+                      additionalProperties: false
+                      properties:
+                        ipv-4-address:
+                          type: string
+                          pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                          description: >
+                            'IPv4 address of application that shall be target of the handover process
+                            update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                    domain-name:
+                      type: string
+                      pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+                      description: >
+                        'Domain name of application that shall be target of the handover process
+                        update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
                 new-application-port:
                   type: integer
                   minimum: 0
                   maximum: 65535
                   description: >
                     'Port of application that shall be target of the handover process
-                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
               example:
                 new-application-name: 'NewApplicationName'
-                new-application-release: '1.0.0'
-                new-application-address: '10.118.125.157'
-                new-application-port: 7000
+                new-application-release: '2.0.0'
+                new-application-protocol: 'HTTP'
+                new-application-address:
+                  ip-address:
+                    ipv-4-address: '1.1.3.8'
+                new-application-port: 3008
       responses:
         '204':
           description: 'Process of embedding a new release initiated'
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -98,7 +123,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-im-000/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-im-000/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -113,14 +138,14 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         PromptForBequeathingDataCausesTransferOfListOfApplications:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-nr-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-nr-2-0-0-000/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -137,25 +162,25 @@ paths:
                           type: string
                           description: >
                             'Name of application that shall be requested for service request notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
                         application-release-number:
                           type: string
                           description: >
                             'Release of application that shall be requested for service request notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                         application-address:
                           type: string
                           description: >
                             'IP of application that shall be requested for service request notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                        application-port:      
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                        application-port:
                           type: integer
                           description: >
                             'TCP port of application that shall be requested for service request notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         application-name: 'RegistryOffice'
-                        application-release-number: '1.0.0'
+                        application-release-number: '2.0.0'
                         application-address: '10.118.125.157'
                         application-port: 1000
               responses:
@@ -163,7 +188,7 @@ paths:
                   description: 'Application will be requested for service request notifications'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -202,14 +227,14 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-ro-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-ro-2-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -227,30 +252,30 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         subscriber-release-number:
                           type: string
                           description: >
                             'Future release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-im-nr-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                         subscriber-operation:
                           type: string
                           description: >
                             'Names of the operation that shall be addressed by notifications about new approvals
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                         subscriber-address:
                           type: string
                           description: >
                             'Future IP address
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                        subscriber-port:      
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                        subscriber-port:
                           type: integer
                           description: >
                             'Future port
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         subscriber-application: 'ExecutionAndTraceLog'
-                        subscriber-release-number: '1.0.0'
+                        subscriber-release-number: '2.0.0'
                         subscriber-operation: '/v1/regard-application'
                         subscriber-address: '10.118.125.157'
                         subscriber-port: 7002
@@ -259,7 +284,7 @@ paths:
                   description: 'Subscribed for notifications about new approvals'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -298,14 +323,14 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-ro-1-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-ro-2-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -323,30 +348,30 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         subscriber-release-number:
                           type: string
                           description: >
                             'Future release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-im-nr-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                         subscriber-operation:
                           type: string
                           description: >
                             'Names of the operation that shall be addressed by notifications about withdrawn approvals
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                         subscriber-address:
                           type: string
                           description: >
                             'Future IP address
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                        subscriber-port:      
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                        subscriber-port:
                           type: integer
                           description: >
                             'Future port
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         subscriber-application: 'ExecutionAndTraceLog'
-                        subscriber-release-number: '1.0.0'
+                        subscriber-release-number: '2.0.0'
                         subscriber-operation: '/v1/disregard-application'
                         subscriber-address: '10.118.125.157'
                         subscriber-port: 7002
@@ -355,7 +380,7 @@ paths:
                   description: 'Subscribed for notifications about withdrawn approvals'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -394,14 +419,14 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-ro-1-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-ro-2-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -417,29 +442,29 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         subscriber-release-number:
                           type: string
                           description: >
                             'Old release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-bm-or-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-bm-or-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
                         subscription:
                           type: string
                           description: >
                             'Name of operation that had been addressed for starting getting notifications
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-ro-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
-                            and 
-                            from  [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-im-ro-1-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-ro-2-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+                            and
+                            from  [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-im-ro-2-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                       example:
                         subscriber-application: 'ExecutionAndTraceLog'
-                        subscriber-release-number: '1.0.0'
+                        subscriber-release-number: '2.0.0'
                         subscription: '/v1/notify-approvals'
               responses:
                 '204':
                   description: 'Stopped sending notifications of a specific subscription'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -478,14 +503,14 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-bm-ro-1-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-bm-ro-2-0-0-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -496,6 +521,7 @@ paths:
                         - application-name
                         - old-application-release-number
                         - new-application-release-number
+                        - new-application-protocol
                         - new-application-address
                         - new-application-port
                       properties:
@@ -503,39 +529,63 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         old-application-release-number:
                           type: string
                           description: >
-                            'Old release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-bm-or-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                            'Old release number = current release number of the application requested to bequeath its data and die
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                         new-application-release-number:
                           type: string
                           description: >
                             'Future release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-im-nr-1-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                        new-application-address:
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-im-nr-2-0-0-000/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                        new-application-protocol:
                           type: string
                           description: >
-                            'Future IP address
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                            'Future protocol to be used
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                        new-application-address:
+                          type: object
+                          minProperties: 1
+                          maxProperties: 1
+                          additionalProperties: false
+                          properties:
+                            ip-address:
+                              type: object
+                              minProperties: 1
+                              additionalProperties: false
+                              properties:
+                                ipv-4-address:
+                                  type: string
+                                  description: >
+                                    'Future IPv4 address
+                                    from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                            domain-name:
+                              type: string
+                              description: >
+                                'Future domain name
+                                from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
                         new-application-port:
                           type: integer
                           description: >
                             'Future port
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-im-nr-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-im-nr-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                       example:
                         application-name: 'RegistryOffice'
                         old-application-release-number: '1.0.0'
-                        new-application-release-number: '1.0.0'
-                        new-application-address: '10.118.125.157'
-                        new-application-port: 7000
+                        new-application-release-number: '2.0.0'
+                        new-application-protocol: 'HTTP'
+                        new-application-address:
+                          ip-address:
+                            ipv-4-address: '1.1.3.8'
+                        new-application-port: 3008
               responses:
                 '204':
                   description: 'Will broadcast server replacement'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -574,14 +624,14 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-bm-ro-1-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-bm-ro-2-0-0-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -596,12 +646,12 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         application-release-number:
                           type: string
                           description: >
                             'Own release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                       example:
                         application-name: 'BadApplication'
                         application-release-number: '1.0.0'
@@ -610,7 +660,7 @@ paths:
                   description: 'Application deregistered'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -649,14 +699,17 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptingNewReleaseForUpdatingServerCausesRequestForBroadcastingInfoAboutBackwardCompatibleUpdateOfOperation:
-          https://[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-bm-ro-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-c-bm-ro-1-0-0-003/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-bm-ro-2-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-c-bm-ro-2-0-0-003/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: >
+              'This callback belongs to the sequence of actions that have to be done during the bequeath-your-data-and-die process, despite the forwarding gets neither managed nor directly initiated by the /v1/bequeath-your-data-and-die request.
+              After consuming applications have been redirected to the new release, the new release is triggered (this callback) to request the RegistryOffice for broadcasting information about backward compatible replacements of services.'
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -673,33 +726,33 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         application-release-number:
                           type: string
                           description: >
                             'Own release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                         old-operation-name:
                           type: string
                           description: >
                             'Name of the deprecated operation
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-*/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-*/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
                         new-operation-name:
                           type: string
                           description: >
                             'Name of the replacing operation
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-*/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-*/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
                       example:
-                        application-name: 'AdministratorAdministration'
-                        application-release-number: '1.0.0'
-                        old-operation-name: '/v1/regard-application'
-                        new-operation-name: '/v2/regard-application'
+                        application-name: 'RegistryOffice'
+                        application-release-number: '2.0.0'
+                        old-operation-name: '/v1/register-application'
+                        new-operation-name: '/v2/register-application'
               responses:
                 '204':
                   description: 'Will broadcast operation update'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -760,46 +813,75 @@ paths:
               type: object
               required:
                 - application-name
-                - application-release-number
-                - application-address
-                - application-port
+                - release-number
+                - protocol
+                - address
+                - port
               properties:
                 application-name:
                   type: string
                   minLength: 3
                   description: >
                     'Name of application that shall be requested for service request notifications
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
-                application-release-number:
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+                release-number:
                   type: string
-                  pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+                  pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
                   description: >
                     'Release of application that shall be requested for service request notifications
-                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                application-address:
+                    find or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                protocol:
                   type: string
-                  pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                  enum:
+                    - 'HTTP'
+                    - 'HTTPS'
                   description: >
-                    'IP of application that shall be requested for service request notifications
-                    create or update [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                application-port:      
+                    'Protocol to be used for requesting service request notifications
+                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                address:
+                  type: object
+                  minProperties: 1
+                  maxProperties: 1
+                  additionalProperties: false
+                  properties:
+                    ip-address:
+                      type: object
+                      minProperties: 1
+                      additionalProperties: false
+                      properties:
+                        ipv-4-address:
+                          type: string
+                          pattern: '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                          description: >
+                            'IP of application that shall be requested for service request notifications
+                            update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                    domain-name:
+                      type: string
+                      pattern: '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
+                      description: >
+                        'Domain name of application that shall be requested for service request notifications
+                        update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
+                port:
                   type: integer
                   minimum: 0
                   maximum: 65535
                   description: >
                     'TCP port of application that shall be requested for service request notifications
-                    create or update [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                    update or create [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
               example:
                 application-name: 'RegistryOffice'
-                application-release-number: '1.0.0'
-                application-address: '10.118.125.157'
-                application-port: 1000
+                release-number: '2.0.0'
+                protocol: 'HTTP'
+                address:
+                  ip-address:
+                    ipv-4-address: '1.1.3.8'
+                port: 3008
       responses:
         '204':
           description: 'Application will be requested for service request notifications'
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -826,7 +908,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -841,14 +923,14 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         ApprovedApplicationCausesRequestForServiceRequestInformation:
-          https://{$request.body#application-address}:{$request.body#application-port}/v1/redirect-service-request-information:
-            parameters:
-              - $ref: '#/components/parameters/user'
-              - $ref: '#/components/parameters/originator'
-              - $ref: '#/components/parameters/x-correlator'
-              - $ref: '#/components/parameters/trace-indicator'
-              - $ref: '#/components/parameters/customer-journey'
+          url: #[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]/v1/redirect-service-request-information
             post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
               requestBody:
                 required: true
                 content:
@@ -866,30 +948,30 @@ paths:
                           type: string
                           description: >
                             'Own application name
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name]'
                         service-log-application-release-number:
                           type: string
                           description: >
                             'Own release number
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-bm-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number]'
                         service-log-operation:
                           type: string
                           description: >
                             'Own service for logging service requests
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name]'
                         service-log-address:
                           type: string
                           description: >
                             'Own IP address
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-s-bm-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/ipv-4-address]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-s-bm-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/ipv-4-address]'
                         service-log-port:
                           type: integer
                           description: >
                             'Own TCP port
-                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-s-bm-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/local-port]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-s-bm-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/local-port]'
                       example:
                         service-log-application: 'ExecutionAndTraceLog'
-                        service-log-application-release-number: '1.0.0'
+                        service-log-application-release-number: '2.0.0'
                         service-log-operation: '/v1/record-service-request'
                         service-log-address: '10.118.125.157'
                         service-log-port: 1002
@@ -898,7 +980,7 @@ paths:
                   description: 'Subscribed to service request records'
                   headers:
                     x-correlator:
-                      schema: 
+                      schema:
                         type: string
                         example: '550e8400-e29b-11d4-a716-446655440000'
                       description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -958,28 +1040,28 @@ paths:
               type: object
               required:
                 - application-name
-                - application-release-number
+                - release-number
               properties:
                 application-name:
                   type: string
                   description: >
                     'Name of application that shall no longer be requested for service request notifications
-                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
-                application-release-number:
+                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+                release-number:
                   type: string
-                  pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+                  pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
                   description: >
                     'Release of application that shall no longer be requested for service request notifications
-                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                    find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
               example:
                 application-name: 'CurrentController'
-                application-release-number: '0.0.6'
+                release-number: '0.0.6'
       responses:
         '204':
           description: 'Application will no longer be requested for notifications'
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1006,7 +1088,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1044,35 +1126,60 @@ paths:
                 items:
                   type: object
                   required:
-                  - application-name
-                  - application-release-number
-                  - application-address
-                  - application-port
+                    - application-name
+                    - release-number
+                    - protocol
+                    - address
+                    - port
                   properties:
                     application-name:
                       type: string
-                      description: 'from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
-                    application-release-number:
+                      description: >
+                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+                    release-number:
                       type: string
-                      description: 'from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
-                    application-address:
+                      description: >
+                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-c-*/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/release-number]'
+                    protocol:
                       type: string
-                      description: 'from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
-                    application-port:      
+                      description: >
+                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]'
+                    address:
+                      type: object
+                      properties:
+                        ip-address:
+                          type: object
+                          properties:
+                            ipv-4-address:
+                              type: string
+                              description: >
+                                'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]'
+                        domain-name:
+                          type: string
+                          description: >
+                            'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]'
+                    port:
                       type: integer
-                      description: 'from [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
-                example:
-                  - application-name: 'RegistryOffice'
-                    application-release-number: '1.0.0'
-                    application-address: '10.118.125.157'
-                    application-port: 1000
-                  - application-name: 'TypeApprovalRegister'
-                    application-release-number: '1.0.0'
-                    application-address: '10.118.125.157'
-                    application-port: 1001
+                      description: >
+                        'from [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-tcp-c-*/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+                  example:
+                    - application-name: 'RegistryOffice'
+                      release-number: '2.0.0'
+                      protocol: 'HTTP'
+                      address:
+                        ip-address:
+                          ipv-4-address: '1.1.3.8'
+                      port: 3008
+                    - application-name: 'TypeApprovalRegister'
+                      release-number: '1.0.0'
+                      protocol: 'HTTPS'
+                      address:
+                        ip-address:
+                          ipv-4-address: '1.2.3.9'
+                      port: 3209
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1099,7 +1206,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-003/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-003/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1133,7 +1240,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ServiceRequestRecord'
-              description: 'create [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/*]'
+              description: 'update elasticsearch'
               example:
                 x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                 trace-indicator: '1.1'
@@ -1151,7 +1258,7 @@ paths:
           description: 'Service request recorded'
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1178,7 +1285,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1215,7 +1322,7 @@ paths:
                 uniqueItems: true
                 items:
                   $ref: '#/components/schemas/ServiceRequestRecord'
-                  description: 'from [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/*]'
+                  description: 'from elasticsearch'
                 example:
                   - x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                     trace-indicator: '1.1'
@@ -1239,7 +1346,7 @@ paths:
                     stringified-response: ''
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1266,7 +1373,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1304,9 +1411,6 @@ paths:
               properties:
                 x-correlator:
                   type: string
-                  description: >
-                    'Identifier of the flow that shall be represented
-                    find in [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/x-correlator]'
       responses:
         '200':
           description: 'List of service request records of the same flow provided'
@@ -1318,10 +1422,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ServiceRequestRecord'
                   description: >
-                    'for
-                    [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/x-correlator]
-                    == requestBody(x-correlator)
-                    from [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/*]'
+                    'from elasticsearch filtered for {$request.body#x-correlator}'
                 example:
                   - x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                     trace-indicator: '1.1'
@@ -1345,7 +1446,7 @@ paths:
                     stringified-response: '{"uri"="https://10.118.125.157:8443/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250011/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on"}'
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1372,7 +1473,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-006/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-006/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1410,10 +1511,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ServiceRequestRecord'
                   description: >
-                    'for 
-                    [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/response-code]
-                    > 204
-                    from [/core-model-1-4:control-construct/profile-collection/profile=*/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability/*]'
+                    'from elasticsearch filtered for response-code > 204'
                 example:
                   - x-correlator: '883e8400-e29b-11d4-a716-446655440333'
                     trace-indicator: '1'
@@ -1427,7 +1525,7 @@ paths:
                     stringified-response: ''
           headers:
             x-correlator:
-              schema: 
+              schema:
                 type: string
                 example: '550e8400-e29b-11d4-a716-446655440000'
               description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
@@ -1454,7 +1552,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                   'Life cycle state of the consumed service
-                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-1-0-0-op-s-is-007/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                  find in [/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-is-007/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -1475,1070 +1573,6 @@ paths:
 ########################################
 #   OAM Layer - Individual Part
 ########################################
-  /core-model-1-4:control-construct:
-    get:
-      operationId: getControlConstruct
-      summary: 'Returns entire data tree'
-      tags:
-        - Core
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'ControlConstruct provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - core-model-1-4:control-construct
-                properties:
-                  core-model-1-4:control-construct:
-                    type: object
-                    required:
-                      - uuid
-                      - profile-collection
-                      - logical-termination-point
-                      - forwarding-domain
-                    properties:
-                      uuid:
-                        type: string
-                      profile-collection:
-                        type: object
-                        required:
-                          - profile
-                        properties:
-                          profile:
-                            type: array
-                            uniqueItems: true
-                            items:
-                              anyOf:
-                                - description: 'admin profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    # Bug in the postman mock server
-                                    # original code is:
-                                    # - admin-profile-1-0:admin-profile-pac
-                                    # workaround code is:
-                                    # - empty line -
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    admin-profile-1-0:admin-profile-pac:
-                                      type: object
-                                      required:
-                                        - admin-profile-capability
-                                        - admin-profile-configuration
-                                      properties:
-                                        admin-profile-capability:
-                                          type: object
-                                          required:
-                                            - administrator-name
-                                          properties:
-                                            administrator-name:
-                                              type: string
-                                        admin-profile-configuration:
-                                          type: object
-                                          required:
-                                            - user-name
-                                            - allowed-methods
-                                          properties:
-                                            user-name:
-                                              type: string
-                                            allowed-methods:
-                                              type: string
-                                              enum:
-                                                - 'admin-profile-1-0:ALLOWED_METHODS_TYPE_GET'
-                                                - 'admin-profile-1-0:ALLOWED_METHODS_TYPE_ALL'
-                                - description: 'string profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    - string-profile-1-0:string-profile-pac
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    string-profile-1-0:string-profile-pac:
-                                      type: object
-                                      required:
-                                        - string-profile-capability
-                                        - string-profile-configuration
-                                      properties:
-                                        string-profile-capability:
-                                          type: object
-                                          required:
-                                            - string-name
-                                          properties:
-                                            string-name:
-                                              type: string
-                                        string-profile-configuration:
-                                          type: object
-                                          required:
-                                            - string-value
-                                          properties:
-                                            string-value:
-                                              type: string
-                                - description: 'integer profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    - integer-profile-1-0:integer-profile-pac
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    integer-profile-1-0:integer-profile-pac:
-                                      type: object
-                                      required:
-                                        - integer-profile-capability
-                                        - integer-profile-configuration
-                                      properties:
-                                        integer-profile-capability:
-                                          type: object
-                                          required:
-                                            - integer-name
-                                          properties:
-                                            integer-name:
-                                              type: string
-                                            unit:
-                                              type: string
-                                            minimum:
-                                              type: integer
-                                            maximum:
-                                              type: integer
-                                        integer-profile-configuration:
-                                          type: object
-                                          required:
-                                            - integer-value
-                                          properties:
-                                            integer-value:
-                                              type: integer
-                                - description: 'application profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    - application-profile-1-0:application-profile-pac
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    application-profile-1-0:application-profile-pac:
-                                      type: object
-                                      required:
-                                        - application-profile-capability
-                                        - application-profile-configuration
-                                      properties:
-                                        application-profile-capability:
-                                          type: object
-                                          required:
-                                            - application-name
-                                            - release-number
-                                          properties:
-                                            application-name:
-                                              type: string
-                                            release-number:
-                                              type: string
-                                        application-profile-configuration:
-                                          type: object
-                                          required:
-                                            - approval-status
-                                          properties:
-                                            approval-status:
-                                              type: string
-                                              enum:
-                                                - 'application-profile-1-0:APPROVAL_STATUS_TYPE_REGISTERED'
-                                                - 'application-profile-1-0:APPROVAL_STATUS_TYPE_APPROVED'
-                                                - 'application-profile-1-0:APPROVAL_STATUS_TYPE_BARRED'
-                                                - 'application-profile-1-0:APPROVAL_STATUS_TYPE_NOT_YET_DEFINED'
-                                - description: 'service record profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    - service-record-profile-1-0:service-record-profile-pac
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    service-record-profile-1-0:service-record-profile-pac:
-                                      type: object
-                                      required:
-                                        - service-record-profile-capability
-                                      properties:
-                                        service-record-profile-capability:
-                                          type: object
-                                          required:
-                                            - x-correlator
-                                            - trace-indicator
-                                            - user
-                                            - originator
-                                            - application-name
-                                            - operation-name
-                                            - response-code
-                                          properties:
-                                            x-correlator:
-                                              type: string
-                                            trace-indicator:
-                                              type: string
-                                            user:
-                                              type: string
-                                            originator:
-                                              type: string
-                                            application-name:
-                                              type: string
-                                            operation-name:
-                                              type: string
-                                            response-code:
-                                              type: integer
-                                            timestamp:
-                                              type: string
-                                            stringified-body:
-                                              type: string
-                                            stringified-response:
-                                              type: string
-                                - description: 'oam record profile'
-                                  type: object
-                                  required:
-                                    - uuid
-                                    - profile-name
-                                    - oam-record-profile-1-0:oam-record-profile-pac
-                                  properties:
-                                    uuid:
-                                      type: string
-                                    profile-name:
-                                      type: string
-                                      enum:
-                                        - 'admin-profile-1-0:PROFILE_NAME_TYPE_ADMIN_PROFILE'
-                                        - 'string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE'
-                                        - 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                        - 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                        - 'service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE'
-                                        - 'oam-record-profile-1-0:PROFILE_NAME_TYPE_OAM_RECORD_PROFILE'
-                                    oam-record-profile-1-0:oam-record-profile-pac:
-                                      type: object
-                                      required:
-                                        - oam-record-profile-capability
-                                      properties:
-                                        oam-record-profile-capability:
-                                          type: object
-                                          required:
-                                            - application-name
-                                            - release-number
-                                            - method
-                                            - resource
-                                            - stringified-body
-                                            - response-code
-                                            - user-name
-                                            - timestamp
-                                          properties:
-                                            application-name:
-                                              type: string
-                                            release-number:
-                                              type: string
-                                            method:
-                                              type: string
-                                              enum:
-                                                - 'oam-record-profile-1-0:METHOD_TYPE_GET'
-                                                - 'oam-record-profile-1-0:METHOD_TYPE_PUT'
-                                                - 'oam-record-profile-1-0:METHOD_TYPE_CREATE'
-                                                - 'oam-record-profile-1-0:METHOD_TYPE_DELETE'
-                                            resource:
-                                              type: string
-                                            stringified-body:
-                                              type: string
-                                            response-code:
-                                              type: integer
-                                            user-name:
-                                              type: string
-                                            timestamp:
-                                              type: string
-                            example:
-                              - uuid: 'eatl-1-0-0-integer-p-0000'
-                                profile-name: 'integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE'
-                                integer-profile-1-0:integer-profile-pac:
-                                  integer-profile-capability:
-                                    integer-name: 'maximumNumberOfEntries'
-                                    unit: 'records'
-                                    minimum: 0
-                                    maximum: 1000000
-                                  integer-profile-configuration:
-                                    integer-value: 1000000
-                              - uuid: 'eatl-1-0-0-application-p-0000'
-                                profile-name: 'application-profile-1-0:PROFILE_NAME_TYPE_APPLICATION_PROFILE'
-                                application-profile-1-0:application-profile-pac:
-                                  application-profile-capability:
-                                    application-name: 'RegistryOffice'
-                                    release-number: '1.0.0'
-                                  application-profile-configuration:
-                                    approval-status: 'application-profile-1-0:APPROVAL_STATUS_TYPE_APPROVED'
-                      logical-termination-point:
-                        type: array
-                        uniqueItems: true
-                        items:
-                          type: object
-                          required:
-                            - uuid
-                            - ltp-direction
-                            - client-ltp
-                            - server-ltp
-                            - layer-protocol
-                          properties:
-                            uuid:
-                              type: string
-                            ltp-direction:
-                              type: string
-                              enum:
-                                - 'core-model-1-4:TERMINATION_DIRECTION_BIDIRECTIONAL'
-                                - 'core-model-1-4:TERMINATION_DIRECTION_SINK'
-                                - 'core-model-1-4:TERMINATION_DIRECTION_SOURCE'
-                                - 'core-model-1-4:TERMINATION_DIRECTION_UNDEFINED_OR_UNKNOWN'
-                            client-ltp:
-                              type: array
-                              uniqueItems: true
-                              items:
-                                type: string
-                            server-ltp:
-                              type: array
-                              uniqueItems: true
-                              items:
-                                type: string
-                            layer-protocol:
-                              type: array
-                              minItems: 1
-                              maxItems: 1
-                              items:
-                                oneOf:
-                                  - description: 'operation server'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - operation-server-interface-1-0:operation-server-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      operation-server-interface-1-0:operation-server-interface-pac:
-                                        type: object
-                                        required:
-                                          - operation-server-interface-capability
-                                          - operation-server-interface-configuration
-                                        properties:
-                                          operation-server-interface-capability:
-                                            type: object
-                                            required:
-                                              - operation-name
-                                            properties:
-                                              operation-name:
-                                                type: string
-                                          operation-server-interface-configuration:
-                                            type: object
-                                            required:
-                                              - life-cycle-state
-                                              - operation-key
-                                            properties:
-                                              life-cycle-state:
-                                                type: string
-                                                enum:
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL'
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_OPERATIONAL'
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_DEPRECATED'
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_OBSOLETE'
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_UNKNOWN'
-                                                  - 'operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED'
-                                              operation-key:
-                                                type: string
-                                  - description: 'http server'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - http-server-interface-1-0:http-server-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      http-server-interface-1-0:http-server-interface-pac:
-                                        type: object
-                                        required:
-                                          - http-server-interface-capability
-                                        properties:
-                                          http-server-interface-capability:
-                                            type: object
-                                            required:
-                                              - application-name
-                                              - release-number
-                                              - application-purpose
-                                              - data-update-period
-                                              - owner-name
-                                              - owner-email-address
-                                              - release-list
-                                            properties:
-                                              application-name:
-                                                type: string
-                                              release-number:
-                                                type: string
-                                              application-purpose:
-                                                type: string
-                                              data-update-period:
-                                                type: string
-                                                enum:
-                                                  - 'http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_REAL_TIME'
-                                                  - 'http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_1H_PERIOD'
-                                                  - 'http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_24H_PERIOD'
-                                                  - 'http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_MANUAL'
-                                              owner-name:
-                                                type: string
-                                              owner-email-address:
-                                                type: string
-                                              release-list:
-                                                type: array
-                                                uniqueItems: true
-                                                items:
-                                                  type: object
-                                                  required:
-                                                  - release-number
-                                                  - release-date
-                                                  - changes
-                                                  properties:
-                                                    release-number:
-                                                      type: string
-                                                    release-date:
-                                                      type: string
-                                                    changes:
-                                                      type: string
-                                  - description: 'tcp server'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - tcp-server-interface-1-0:tcp-server-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      tcp-server-interface-1-0:tcp-server-interface-pac:
-                                        type: object
-                                        required:
-                                          - tcp-server-interface-configuration
-                                        properties:
-                                          tcp-server-interface-configuration:
-                                            type: object
-                                            required:
-                                              - local-address
-                                              - local-port
-                                            properties:
-                                              local-address:
-                                                type: object
-                                                properties:
-                                                  ipv-4-address:
-                                                    type: string
-                                              local-port:
-                                                type: integer
-                                  - description: 'operation client'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - operation-client-interface-1-0:operation-client-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      operation-client-interface-1-0:operation-client-interface-pac:
-                                        type: object
-                                        required:
-                                          - operation-client-interface-configuration
-                                          - operation-client-interface-status
-                                        properties:
-                                          operation-client-interface-configuration:
-                                            type: object
-                                            required:
-                                              - operation-name
-                                              - operation-key
-                                            properties:
-                                              operation-name:
-                                                type: string
-                                              operation-key:
-                                                type: string
-                                          operation-client-interface-status:
-                                            type: object
-                                            required:
-                                              - operational-state
-                                              - life-cycle-state
-                                            properties:
-                                              operational-state:
-                                                type: string
-                                                enum:
-                                                  - 'operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_AVAILABLE'
-                                                  - 'operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_UNAVAILABLE'
-                                                  - 'operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED'
-                                              life-cycle-state:
-                                                type: string
-                                                enum:
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL'
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_OPERATIONAL'
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_DEPRECATED'
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_OBSOLETE'
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_UNKNOWN'
-                                                  - 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED'
-                                  - description: 'http client'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - http-client-interface-1-0:http-client-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      http-client-interface-1-0:http-client-interface-pac:
-                                        type: object
-                                        required:
-                                          - http-client-interface-capability
-                                          - http-client-interface-configuration
-                                        properties:
-                                          http-client-interface-capability:
-                                            type: object
-                                            required:
-                                              - application-name
-                                            properties:
-                                              application-name:
-                                                type: string
-                                          http-client-interface-configuration:
-                                            type: object
-                                            required:
-                                              - release-number
-                                            properties:
-                                              release-number:
-                                                type: string
-                                  - description: 'tcp client'
-                                    type: object
-                                    required:
-                                      - local-id
-                                      - layer-protocol-name
-                                      - tcp-client-interface-1-0:tcp-client-interface-pac
-                                    properties:
-                                      local-id:
-                                        type: string
-                                      layer-protocol-name:
-                                        type: string
-                                        enum:
-                                          - 'operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                          - 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                          - 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                          - 'tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER'
-                                      tcp-client-interface-1-0:tcp-client-interface-pac:
-                                        type: object
-                                        required:
-                                          - tcp-client-interface-configuration
-                                        properties:
-                                          tcp-client-interface-configuration:
-                                            type: object
-                                            required:
-                                              - remote-address
-                                              - remote-port
-                                            properties:
-                                              remote-address:
-                                                type: object
-                                                required:
-                                                  - ip-address
-                                                properties:
-                                                  ip-address:
-                                                    type: object
-                                                    required:
-                                                      - ipv-4-address
-                                                    properties:
-                                                      ipv-4-address:
-                                                        type: string
-                                              remote-port:
-                                                type: integer
-                        example:
-                          - uuid: 'eatl-1-0-0-op-c-bm-ro-1-0-0-000'
-                            ltp-direction: 'core-model-1-4:TERMINATION_DIRECTION_SINK'
-                            client-ltp: []
-                            server-ltp: ['eatl-1-0-0-http-c-bm-ro-1-0-0-000']
-                            layer-protocol:
-                              - local-id: '0'
-                                layer-protocol-name: 'operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER'
-                                operation-client-interface-1-0:operation-client-interface-pac:
-                                  operation-client-interface-configuration:
-                                    operation-name: '/v1/register-application'
-                                    operation-key: 'Operation key not yet provided.'
-                                  operation-client-interface-status:
-                                    operational-state: 'operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED'
-                                    life-cycle-state: 'operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED'
-                          - uuid: 'eatl-1-0-0-http-c-bm-ro-1-0-0-000'
-                            ltp-direction: 'core-model-1-4:TERMINATION_DIRECTION_SINK'
-                            client-ltp: ['eatl-1-0-0-op-c-bm-ro-1-0-0-000']
-                            server-ltp: ['eatl-1-0-0-tcp-c-bm-ro-1-0-0-000']
-                            layer-protocol:
-                              - local-id: '0'
-                                layer-protocol-name: 'http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER'
-                                http-client-interface-1-0:http-client-interface-pac:
-                                  http-client-interface-capability:
-                                    application-name: 'RegistryOffice'
-                                  http-client-interface-configuration:
-                                    release-number: '1.0.0'
-                      forwarding-domain:
-                        type: array
-                        minItems: 1
-                        maxItems: 1
-                        items:
-                          type: object
-                          required:
-                            - uuid
-                            - forwarding-construct
-                          properties:
-                            uuid:
-                              type: string
-                            forwarding-construct:
-                              type: array
-                              items:
-                                type: object
-                                required:
-                                  - uuid
-                                  - name
-                                  - fc-port
-                                properties:
-                                  uuid:
-                                    type: string
-                                  name:
-                                    type: array
-                                    items:
-                                      type: object
-                                      required:
-                                        - value-name
-                                        - value
-                                      properties:
-                                        value-name:
-                                          type: string
-                                        value:
-                                          type: string
-                                  fc-port:
-                                    type: array
-                                    items:
-                                      type: object
-                                      required:
-                                        - local-id
-                                        - port-direction
-                                        - logical-termination-point
-                                      properties:
-                                        local-id:
-                                          type: string
-                                        port-direction:
-                                          type: string
-                                          enum:
-                                            - 'core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT'
-                                            - 'core-model-1-4:PORT_DIRECTION_TYPE_INPUT'
-                                            - 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                                        logical-termination-point:
-                                          type: string
-                        example:
-                          - uuid: 'eatl-1-0-0-op-fd-0000'
-                            forwarding-construct:
-                              - uuid: 'eatl-1-0-0-op-fc-0003'
-                                name:
-                                  - value-name: 'ForwardingKind'
-                                    value: 'core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET'
-                                  - value-name: 'ForwardingName'
-                                    value: 'OamRequestCausesLoggingRequest'
-                                fc-port:
-                                  - local-id: '000'
-                                    port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT'
-                                    logical-termination-point: 'eatl-1-0-0-op-s-bm-003'
-                                  - local-id: '200'
-                                    port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                                    logical-termination-point: 'eatl-1-0-0-op-c-bs-ol-1-0-0-000'
-                              - uuid: 'eatl-1-0-0-op-fc-0004'
-                                name:
-                                  - value-name: 'ForwardingKind'
-                                    value: 'core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET'
-                                  - value-name: 'ForwardingName'
-                                    value: 'OamRequestCausesInquiryForAuthentication'
-                                fc-port:
-                                  - local-id: '000'
-                                    port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT'
-                                    logical-termination-point: 'eatl-1-0-0-op-s-bm-005'
-                                  - local-id: '200'
-                                    port-direction: 'core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT'
-                                    logical-termination-point: 'eatl-1-0-0-op-c-bs-aa-1-0-0-000'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-
-  /core-model-1-4:control-construct/profile-collection/profile={uuid}/service-record-profile-1-0:service-record-profile-pac/service-record-profile-capability:
-    parameters:
-      - in: path
-        name: uuid
-        required: true
-        schema:
-          type: string
-          pattern: '^eatl-1-0-0-op-s-\d{4}$'
-          example: 'eatl-1-0-0-service-record-p-000000'
-    get:
-      operationId: getServiceRecordProfileCapability
-      summary: 'Returns entire record of a service request'
-      tags:
-        - ServiceRecordProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Service record provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - service-record-profile-1-0:service-record-profile-capability
-                properties:
-                  service-record-profile-1-0:service-record-profile-capability:
-                    type: object
-                    required:
-                      - x-correlator
-                      - trace-indicator
-                      - user
-                      - originator
-                      - application-name
-                      - application-release-number
-                      - operation-name
-                      - response-code
-                    properties:
-                      x-correlator:
-                        type: string
-                        pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
-                      trace-indicator:
-                        type: string
-                        pattern: '^([0-9]+)(\.([0-9]+))*$'
-                      user:
-                        type: string
-                      originator:
-                        type: string
-                      application-name:
-                        type: string
-                      application-release-number:
-                        type: string
-                      operation-name:
-                        type: string
-                      response-code:
-                        type: integer
-                      timestamp:
-                        type: string
-                      stringified-body:
-                        type: string
-                      stringified-response:
-                        type: string
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-
-  /core-model-1-4:control-construct/profile-collection/profile=eatl-1-0-0-integer-p-0000/integer-profile-1-0:integer-profile-pac/integer-profile-capability/integer-name:
-    get:
-      operationId: getIntegerProfileIntegerName
-      summary: 'Returns the name of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Integer name provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - integer-profile-1-0:integer-name
-                properties:
-                  integer-profile-1-0:integer-name:
-                    type: string
-                    example: 'maximumNumberOfEntries'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /core-model-1-4:control-construct/profile-collection/profile=eatl-1-0-0-integer-p-0000/integer-profile-1-0:integer-profile-pac/integer-profile-capability/unit:
-    get:
-      operationId: getIntegerProfileUnit
-      summary: 'Returns the unit of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Integer unit provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - integer-profile-1-0:unit
-                properties:
-                  integer-profile-1-0:unit:
-                    type: string
-                    example: 'records'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /core-model-1-4:control-construct/profile-collection/profile=eatl-1-0-0-integer-p-0000/integer-profile-1-0:integer-profile-pac/integer-profile-capability/minimum:
-    get:
-      operationId: getIntegerProfileMinimum
-      summary: 'Returns the minimum value of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Minimum value provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - integer-profile-1-0:minimum
-                properties:
-                  integer-profile-1-0:minimum:
-                    type: integer
-                    example: 0
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /core-model-1-4:control-construct/profile-collection/profile=eatl-1-0-0-integer-p-0000/integer-profile-1-0:integer-profile-pac/integer-profile-capability/maximum:
-    get:
-      operationId: getIntegerProfileMaximum
-      summary: 'Returns the maximum value of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Maximum value provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - integer-profile-1-0:maximum
-                properties:
-                  integer-profile-1-0:maximum:
-                    type: integer
-                    example: 1000000
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /core-model-1-4:control-construct/profile-collection/profile=eatl-1-0-0-integer-p-0000/integer-profile-1-0:integer-profile-pac/integer-profile-configuration/integer-value:
-    get:
-      operationId: getIntegerProfileIntegerValue
-      summary: 'Returns the configured value of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'Integer value provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - integer-profile-1-0:integer-value
-                properties:
-                  integer-profile-1-0:integer-value:
-                    type: integer
-                    example: 1000000
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-    put:
-      operationId: putIntegerProfileIntegerValue
-      summary: 'Configures value of the Integer'
-      tags:
-        - IntegerProfile
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - integer-profile-1-0:integer-value
-              properties:
-                integer-profile-1-0:integer-value:
-                  type: integer
-                  example: 1000000
-      responses:
-        '204':
-          description: 'Integer value configured'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
 
 ########################################
 #   OAM Layer - Basic Part
@@ -2553,7 +1587,7 @@ components:
       name: user
       in: header
       required: true
-      schema: 
+      schema:
         type: string
         example: 'User Name'
       description: 'User identifier from the system starting the service call'
@@ -2561,18 +1595,18 @@ components:
       name: originator
       in: header
       required: true
-      schema: 
+      schema:
         type: string
         minLength: 3
         example: 'Resolver'
       description: >
         'Identification for the system consuming the API, as defined in
-         [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]'
+         [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
     x-correlator:
       name: x-correlator
       in: header
       required: true
-      schema: 
+      schema:
         type: string
         pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
         description: 'Empty string accepted from external applications.'
@@ -2582,7 +1616,7 @@ components:
       name: trace-indicator
       in: header
       required: true
-      schema: 
+      schema:
         type: string
         pattern: '^([0-9]+)(\.([0-9]+))*$'
         description: 'Empty string accepted from external applications.'
@@ -2592,7 +1626,7 @@ components:
       name: customer-journey
       in: header
       required: true
-      schema: 
+      schema:
         type: string
         example: 'Unknown value'
       description: 'Holds information supporting customer’s journey to which the execution applies'
@@ -2605,7 +1639,7 @@ components:
             $ref: '#/components/schemas/errorDescription'
       headers:
         x-correlator:
-          schema: 
+          schema:
             type: string
             pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
             example: '550e8400-e29b-11d4-a716-446655440000'
@@ -2660,7 +1694,7 @@ components:
           description: 'ApplicationName on the server side'
         application-release-number:
           type: string
-          pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+          pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
           description: 'ReleaseNumber on the server side'
         operation-name:
           type: string
@@ -2688,6 +1722,387 @@ components:
           format: int32
         message:
           type: string
+    genericRepresentation:
+      type: object
+      required:
+        - response-value-list
+        - consequent-action-list
+      properties:
+        response-value-list:
+          type: array
+          items:
+            type: object
+            required:
+              - field-name
+              - value
+              - datatype
+            properties:
+              field-name:
+                type: string
+                description: >
+                  'Field name
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/field-name]'
+              value:
+                type: string
+                description: >
+                  'Field value
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-configuration/value]'
+              datatype:
+                type: string
+                description: >
+                  'Field datatype
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/datatype]'
+        consequent-action-list:
+          type: array
+          items:
+            type: object
+            required:
+              - label
+              - request
+              - display-in-new-browser-window
+            properties:
+              label:
+                type: string
+                description: >
+                  'Label that shall be presented on the button
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/label]'
+              request:
+                type: string
+                description: >
+                  'Request that shall be called, when button gets pressed
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-configuration/request]'
+              input-value-list:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - field-name
+                  properties:
+                    field-name:
+                      type: string
+                      description: >
+                        'Name of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/name]'
+                    unit:
+                      type: string
+                      description: >
+                        'Unit of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/unit]'
+              display-in-new-browser-window:
+                type: boolean
+                description: >
+                  'True in case Request shall be represented in a new browser window
+                  from [/core-model-1-4:control-construct/profile-collection/profile=eatl-2-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/display-in-new-browser-window]'
+    logicalTerminationPoint:
+      type: object
+      required:
+        - uuid
+        - ltp-direction
+        - client-ltp
+        - server-ltp
+        - layer-protocol
+      properties:
+        uuid:
+          type: string
+        ltp-direction:
+          type: string
+        client-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        server-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        layer-protocol:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            oneOf:
+              - description: 'operation server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-server-interface-1-0:operation-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-server-interface-1-0:operation-server-interface-pac:
+                    type: object
+                    required:
+                      - operation-server-interface-capability
+                      - operation-server-interface-configuration
+                    properties:
+                      operation-server-interface-capability:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-server-interface-configuration:
+                        type: object
+                        required:
+                          - life-cycle-state
+                        properties:
+                          life-cycle-state:
+                            type: string
+              - description: 'http server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-server-interface-1-0:http-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-server-interface-1-0:http-server-interface-pac:
+                    type: object
+                    required:
+                      - http-server-interface-capability
+                    properties:
+                      http-server-interface-capability:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                          - data-update-period
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+                          data-update-period:
+                            type: string
+              - description: 'tcp server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-server-interface-1-0:tcp-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-server-interface-1-0:tcp-server-interface-pac:
+                    type: object
+                    required:
+                      - tcp-server-interface-configuration
+                    properties:
+                      tcp-server-interface-configuration:
+                        type: object
+                        required:
+                          - description
+                          - local-protocol
+                          - local-address
+                          - local-port
+                        properties:
+                          description:
+                            type: string
+                          local-protocol:
+                            type: string
+                          local-address:
+                            type: object
+                            minProperties: 1
+                            additionalProperties: false
+                            properties:
+                              ipv-4-address:
+                                type: string
+                              domain-name:
+                                type: string
+                          local-port:
+                            type: integer
+              - description: 'operation client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-client-interface-1-0:operation-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-client-interface-1-0:operation-client-interface-pac:
+                    type: object
+                    required:
+                      - operation-client-interface-configuration
+                      - operation-client-interface-status
+                    properties:
+                      operation-client-interface-configuration:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'elasticsearch client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac:
+                    type: object
+                    required:
+                      - elasticsearch-client-interface-configuration
+                      - elasticsearch-client-interface-status
+                    properties:
+                      elasticsearch-client-interface-configuration:
+                        type: object
+                        required:
+                          - index-alias
+                        properties:
+                          index-alias:
+                            type: string
+                      elasticsearch-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'http client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-client-interface-1-0:http-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-client-interface-1-0:http-client-interface-pac:
+                    type: object
+                    required:
+                      - http-client-interface-configuration
+                    properties:
+                      http-client-interface-configuration:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+              - description: 'tcp client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-client-interface-1-0:tcp-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-client-interface-1-0:tcp-client-interface-pac:
+                    type: object
+                    required:
+                      - tcp-client-interface-configuration
+                    properties:
+                      tcp-client-interface-configuration:
+                        type: object
+                        required:
+                          - remote-protocol
+                          - remote-address
+                          - remote-port
+                        properties:
+                          remote-protocol:
+                            type: string
+                          remote-address:
+                            type: object
+                            minProperties: 1
+                            maxProperties: 1
+                            additionalProperties: false
+                            properties:
+                              ip-address:
+                                type: object
+                                minProperties: 1
+                                additionalProperties: false
+                                properties:
+                                  ipv-4-address:
+                                    type: string
+                              domain-name:
+                                type: string
+                          remote-port:
+                            type: integer
+    forwardingDomain:
+      type: object
+      required:
+        - uuid
+        - forwarding-construct
+      properties:
+        uuid:
+          type: string
+        forwarding-construct:
+          type: array
+          items:
+            type: object
+            required:
+              - uuid
+              - name
+              - fc-port
+            properties:
+              uuid:
+                type: string
+              name:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - value-name
+                    - value
+                  properties:
+                    value-name:
+                      type: string
+                    value:
+                      type: string
+              fc-port:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - local-id
+                    - port-direction
+                    - logical-termination-point
+                  properties:
+                    local-id:
+                      type: string
+                    port-direction:
+                      type: string
+                    logical-termination-point:
+                      type: string
   securitySchemes:
     apiKeyAuth:
       type: apiKey
