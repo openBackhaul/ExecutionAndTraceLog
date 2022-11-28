@@ -1239,7 +1239,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRecord'
+              $ref: '#/components/schemas/serviceRequestRecord'
               description: 'update elasticsearch'
               example:
                 x-correlator: '550e8400-e29b-11d4-a716-446655440000'
@@ -1321,7 +1321,7 @@ paths:
                 type: array
                 uniqueItems: true
                 items:
-                  $ref: '#/components/schemas/ServiceRequestRecord'
+                  $ref: '#/components/schemas/serviceRequestRecord'
                   description: 'from elasticsearch'
                 example:
                   - x-correlator: '550e8400-e29b-11d4-a716-446655440000'
@@ -1420,7 +1420,7 @@ paths:
                 type: array
                 uniqueItems: true
                 items:
-                  $ref: '#/components/schemas/ServiceRequestRecord'
+                  $ref: '#/components/schemas/serviceRequestRecord'
                   description: >
                     'from elasticsearch filtered for {$request.body#x-correlator}'
                 example:
@@ -1509,7 +1509,7 @@ paths:
                 type: array
                 uniqueItems: true
                 items:
-                  $ref: '#/components/schemas/ServiceRequestRecord'
+                  $ref: '#/components/schemas/serviceRequestRecord'
                   description: >
                     'from elasticsearch filtered for response-code > 204'
                 example:
@@ -1661,56 +1661,6 @@ components:
           schema:
             $ref: '#/components/schemas/errorDescription'
   schemas:
-    ServiceRequestRecord:
-      type: object
-      required:
-        - x-correlator
-        - trace-indicator
-        - user
-        - originator
-        - application-name
-        - application-release-number
-        - operation-name
-        - response-code
-      properties:
-        x-correlator:
-          type: string
-          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
-          description: 'UUID for the service execution flow that allows to correlate requests and responses'
-        trace-indicator:
-          type: string
-          pattern: '^([0-9]+)(\.([0-9]+))*$'
-          description: 'Sequence of request numbers along the flow'
-        user:
-          type: string
-          description: 'User identifier from the system starting the service call'
-        originator:
-          type: string
-          minLength: 3
-          description: 'ApplicationName on the client side'
-        application-name:
-          type: string
-          minLength: 3
-          description: 'ApplicationName on the server side'
-        application-release-number:
-          type: string
-          pattern: '^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})$'
-          description: 'ReleaseNumber on the server side'
-        operation-name:
-          type: string
-          minLength: 3
-          description: 'Name of operation consumed on the server side'
-        response-code:
-          type: integer
-        timestamp:
-          type: string
-          description: 'Date and time when response was sent'
-        stringified-body:
-          type: string
-          description: 'Body of the request'
-        stringified-response:
-          type: string
-          description: 'Body of the response'
     errorDescription:
       type: object
       required:
@@ -1920,8 +1870,6 @@ components:
                             type: string
                           local-address:
                             type: object
-                            minProperties: 1
-                            additionalProperties: false
                             properties:
                               ipv-4-address:
                                 type: string
@@ -2050,14 +1998,9 @@ components:
                             type: string
                           remote-address:
                             type: object
-                            minProperties: 1
-                            maxProperties: 1
-                            additionalProperties: false
                             properties:
                               ip-address:
                                 type: object
-                                minProperties: 1
-                                additionalProperties: false
                                 properties:
                                   ipv-4-address:
                                     type: string
@@ -2111,6 +2054,56 @@ components:
                       type: string
                     logical-termination-point:
                       type: string
+    serviceRequestRecord:
+      type: object
+      required:
+        - x-correlator
+        - trace-indicator
+        - user
+        - originator
+        - application-name
+        - application-release-number
+        - operation-name
+        - response-code
+      properties:
+        x-correlator:
+          type: string
+          pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+          description: 'UUID for the service execution flow that allows to correlate requests and responses'
+        trace-indicator:
+          type: string
+          pattern: '^([0-9]+)(\.([0-9]+))*$'
+          description: 'Sequence of request numbers along the flow'
+        user:
+          type: string
+          description: 'User identifier from the system starting the service call'
+        originator:
+          type: string
+          minLength: 3
+          description: 'ApplicationName on the client side'
+        application-name:
+          type: string
+          minLength: 3
+          description: 'ApplicationName on the server side'
+        application-release-number:
+          type: string
+          pattern: ^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$
+          description: 'ReleaseNumber on the server side'
+        operation-name:
+          type: string
+          minLength: 6
+          description: 'Name of operation consumed on the server side'
+        response-code:
+          type: integer
+        timestamp:
+          type: string
+          description: 'Date and time when response was sent'
+        stringified-body:
+          type: string
+          description: 'Body of the request'
+        stringified-response:
+          type: string
+          description: 'Body of the response'
   securitySchemes:
     apiKeyAuth:
       type: apiKey
