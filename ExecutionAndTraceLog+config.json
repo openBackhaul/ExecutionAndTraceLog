@@ -888,7 +888,7 @@
                 "http-server-interface-1-0:http-server-interface-pac": {
                   "http-server-interface-capability": {
                     "application-name": "ExecutionAndTraceLog",
-                    "release-number": "1.0.0",
+                    "release-number": "2.0.0",
                     "application-purpose": "Logs service requests for execution and trace analysis.",
                     "data-update-period": "http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_REAL_TIME",
                     "owner-name": "Thorsten Heinze",
@@ -1050,7 +1050,7 @@
                     "application-name": "NewRelease"
                   },
                   "http-client-interface-configuration": {
-                    "release-number": "1.0.0"
+                    "release-number": "2.0.0"
                   }
                 }
               }
@@ -1306,7 +1306,7 @@
                     "application-name": "RegistryOffice"
                   },
                   "http-client-interface-configuration": {
-                    "release-number": "1.0.0"
+                    "release-number": "2.0.0"
                   }
                 }
               }
@@ -1482,7 +1482,7 @@
                     "application-name": "ExecutionAndTraceLog"
                   },
                   "http-client-interface-configuration": {
-                    "release-number": "1.0.0"
+                    "release-number": "2.0.0"
                   }
                 }
               }
