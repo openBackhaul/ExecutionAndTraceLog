@@ -174,7 +174,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-tar-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-tar-1-0-0-004
       service:
         basic:
         individual:
@@ -193,7 +193,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-eatl-2-0-0-000
+            uuid: eatl-2-0-0-op-c-im-eatl-2-0-0-004
       service:
         basic:
           - service-name: /v1/record-service-request
@@ -214,7 +214,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-ol-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-ol-1-0-0-004
       service:
         basic:
           - service-name: /v1/record-oam-request
@@ -235,7 +235,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-aa-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-aa-1-0-0-004
       service:
         basic:
           - service-name: /v1/approve-oam-request
@@ -268,7 +268,7 @@ clients:
             uuid: eatl-2-0-0-op-c-bm-alt-1-0-0-005
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-alt-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-alt-1-0-0-004
       service:
         basic:
         individual:
@@ -287,7 +287,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-okm-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-okm-1-0-0-004
       service:
         basic:
         individual:
@@ -306,7 +306,7 @@ clients:
         basic:
         individual:
           - service-name: /v1/redirect-service-request-information
-            uuid: eatl-2-0-0-op-c-im-cc-1-0-0-000
+            uuid: eatl-2-0-0-op-c-im-cc-1-0-0-004
       service:
         basic:
         individual:
