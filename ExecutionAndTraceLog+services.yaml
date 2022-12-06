@@ -249,7 +249,7 @@ clients:
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.6
-      tcp-port: 3005
+      tcp-port: 3006
       uuid: eatl-2-0-0-tcp-c-bm-alt-1-0-0-000
     operation-clients:
       own-oam:
