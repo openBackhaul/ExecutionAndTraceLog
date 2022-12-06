@@ -1252,7 +1252,7 @@ paths:
                 response-code: 200
                 timestamp: '2010-11-20T14:00:00+01:00'
                 stringified-body: '{}'
-                stringified-response: '{"current-controller": "1.1.4.1:8443"}'
+                stringified-response: '{"current-controller": "1.1.4.1:4001"}'
       responses:
         '204':
           description: 'Service request recorded'
@@ -1333,7 +1333,7 @@ paths:
                     response-code: 200
                     timestamp: '2010-11-20T14:00:00+01:00'
                     stringified-body: '{}'
-                    stringified-response: '{"current-controller": "1.1.4.1:8443"}'
+                    stringified-response: '{"current-controller": "1.1.4.1:4001"}'
                   - x-correlator: '883e8400-e29b-11d4-a716-446655440333'
                     trace-indicator: '1'
                     user: 'User Name'
@@ -1433,7 +1433,7 @@ paths:
                     response-code: 200
                     timestamp: '2010-11-20T14:00:00+01:00'
                     stringified-body: '{}'
-                    stringified-response: '{"current-controller": "1.1.4.1:8443"}'
+                    stringified-response: '{"current-controller": "1.1.4.1:4001"}'
                   - x-correlator: '550e8400-e29b-11d4-a716-446655440000'
                     trace-indicator: '1'
                     user: 'User Name'
@@ -1443,7 +1443,7 @@ paths:
                     response-code: 200
                     timestamp: '2010-11-20T14:00:00+01:04'
                     stringified-body: '{"uri"="https://[CurrentController/v1/provide-current-controller]/rests/data/network-topology:network-topology/topology=topology-netconf/node=305251234/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=[Connector2LtpUuid/v1/provide-ltp-uuid(305251234,305551234)]/layer-protocol=[Connector2LtpUuid/v1/provide-lp-lid(305251234,305551234)]/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on"}'
-                    stringified-response: '{"uri"="https://1.1.4.1:8443/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250011/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on"}'
+                    stringified-response: '{"uri"="https://1.1.4.1:4001/rests/data/network-topology:network-topology/topology=topology-netconf/node=513250011/yang-ext:mount/core-model-1-4:control-construct/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-configuration/mimo-is-on"}'
           headers:
             x-correlator:
               schema:
