@@ -2020,10 +2020,10 @@
                     "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
-                        "ipv-4-address": "1.1.3.13"
+                        "ipv-4-address": "1.1.3.6"
                       }
                     },
-                    "remote-port": 3013
+                    "remote-port": 3006
                   }
                 }
               }
@@ -2095,10 +2095,10 @@
                     "remote-protocol": "http",
                     "remote-address": {
                       "ip-address": {
-                        "ipv-4-address": "1.1.3.14"
+                        "ipv-4-address": "1.1.3.7"
                       }
                     },
-                    "remote-port": 3014
+                    "remote-port": 3007
                   }
                 }
               }
