@@ -1312,6 +1312,25 @@ paths:
         - IndividualServices
       security:
         - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - latest-record
+                - number-of-records
+              properties:
+                latest-record:
+                  type: integer
+                  description: 'Youngest record to be returned.'
+                number-of-records:
+                  type: integer
+                  description: 'Maximum number of records to be returned.'
+              example:
+                latest-record: 0
+                number-of-records: 1000
       responses:
         '200':
           description: 'List of recorded service requests provided'
@@ -1319,7 +1338,6 @@ paths:
             application/json:
               schema:
                 type: array
-                uniqueItems: true
                 items:
                   $ref: '#/components/schemas/serviceRequestRecord'
                   description: 'from elasticsearch'
@@ -1408,9 +1426,21 @@ paths:
               type: object
               required:
                 - x-correlator
+                - latest-match
+                - number-of-records
               properties:
                 x-correlator:
                   type: string
+                latest-match:
+                  type: integer
+                  description: 'Youngest record, which is matching the filter criteria, to be returned.'
+                number-of-records:
+                  type: integer
+                  description: 'Maximum number of records to be returned.'
+              example:
+                x-correlator: '550e8400-e29b-11d4-a716-446655440000'
+                latest-match: 0
+                number-of-records: 100
       responses:
         '200':
           description: 'List of service request records of the same flow provided'
@@ -1418,7 +1448,6 @@ paths:
             application/json:
               schema:
                 type: array
-                uniqueItems: true
                 items:
                   $ref: '#/components/schemas/serviceRequestRecord'
                   description: >
@@ -1500,6 +1529,25 @@ paths:
         - IndividualServices
       security:
         - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - latest-unsuccessful
+                - number-of-records
+              properties:
+                latest-unsuccessful:
+                  type: integer
+                  description: 'Youngest record, which had an http response code higher than 204, to be returned.'
+                number-of-records:
+                  type: integer
+                  description: 'Maximum number of records to be returned.'
+              example:
+                latest-unsuccessful: 0
+                number-of-records: 100
       responses:
         '200':
           description: 'List of unsuccessful service requests provided'
@@ -1507,7 +1555,6 @@ paths:
             application/json:
               schema:
                 type: array
-                uniqueItems: true
                 items:
                   $ref: '#/components/schemas/serviceRequestRecord'
                   description: >
