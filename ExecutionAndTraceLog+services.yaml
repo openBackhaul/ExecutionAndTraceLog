@@ -59,7 +59,7 @@ servers:
           uuid: eatl-2-0-0-op-s-is-007
   http-server:
     own-application-name: ExecutionAndTraceLog
-    own-release-number: 1.0.0
+    own-release-number: 2.0.0
     uuid: eatl-2-0-0-http-s-bm-000
   tpc-server:
     - description: Without TLS layer
@@ -110,7 +110,7 @@ clients:
 
   - http-client:
       application-name: NewRelease
-      release-number: 1.0.0
+      release-number: 2.0.0
       uuid: eatl-2-0-0-http-c-im-nr-2-0-0-000
     tcp-client:
       remote-protocol: http
@@ -129,7 +129,7 @@ clients:
 
   - http-client:
       application-name: RegistryOffice
-      release-number: 1.0.0
+      release-number: 2.0.0
       uuid: eatl-2-0-0-http-c-bm-ro-2-0-0-000
     tcp-client:
       remote-protocol: http
@@ -181,7 +181,7 @@ clients:
 
   - http-client:
       application-name: ExecutionAndTraceLog
-      release-number: 1.0.0
+      release-number: 2.0.0
       uuid: eatl-2-0-0-http-c-im-eatl-2-0-0-000
     tcp-client:
       remote-protocol: http
