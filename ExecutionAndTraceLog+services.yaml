@@ -60,18 +60,18 @@ servers:
   http-server:
     own-application-name: ExecutionAndTraceLog
     own-release-number: 1.0.0
-    uuid: eatl-2-0-0-http-s-bm-000
+    uuid: eatl-2-0-0-http-s-000
   tpc-server:
     - description: Without TLS layer
       local-protocol: http
       own-ip-address: 1.1.3.10
       own-tcp-port: 3010
-      uuid: eatl-2-0-0-tcp-s-bm-000
+      uuid: eatl-2-0-0-tcp-s-000
     - description: With TLS layer
       local-protocol: https
       own-ip-address: 1.2.3.10
       own-tcp-port: 3210
-      uuid: eatl-2-0-0-tcp-s-bm-001
+      uuid: eatl-2-0-0-tcp-s-001
 
 
 clients:
@@ -92,12 +92,12 @@ clients:
   - http-client:
       application-name: OldRelease
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-bm-or-1-0-0-000
+      uuid: eatl-2-0-0-http-c-or-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.3
       tcp-port: 3003
-      uuid: eatl-2-0-0-tcp-c-bm-or-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-or-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -111,12 +111,12 @@ clients:
   - http-client:
       application-name: NewRelease
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-nr-2-0-0-000
+      uuid: eatl-2-0-0-http-c-nr-2-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.10
       tcp-port: 3010
-      uuid: eatl-2-0-0-tcp-c-im-nr-2-0-0-000
+      uuid: eatl-2-0-0-tcp-c-nr-2-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -130,12 +130,12 @@ clients:
   - http-client:
       application-name: RegistryOffice
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-bm-ro-2-0-0-000
+      uuid: eatl-2-0-0-http-c-ro-2-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.8
       tcp-port: 3008
-      uuid: eatl-2-0-0-tcp-c-bm-ro-2-0-0-000
+      uuid: eatl-2-0-0-tcp-c-ro-2-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -163,12 +163,12 @@ clients:
   - http-client:
       application-name: TypeApprovalRegister
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-tar-1-0-0-000
+      uuid: eatl-2-0-0-http-c-tar-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.2
       tcp-port: 3002
-      uuid: eatl-2-0-0-tcp-c-im-tar-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-tar-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -182,12 +182,12 @@ clients:
   - http-client:
       application-name: ExecutionAndTraceLog
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-eatl-2-0-0-000
+      uuid: eatl-2-0-0-http-c-eatl-2-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.10
       tcp-port: 3010
-      uuid: eatl-2-0-0-tcp-c-im-eatl-2-0-0-000
+      uuid: eatl-2-0-0-tcp-c-eatl-2-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -203,12 +203,12 @@ clients:
   - http-client:
       application-name: OamLog
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-ol-1-0-0-000
+      uuid: eatl-2-0-0-http-c-ol-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.4
       tcp-port: 3004
-      uuid: eatl-2-0-0-tcp-c-im-ol-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-ol-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -224,12 +224,12 @@ clients:
   - http-client:
       application-name: AdministratorAdministration
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-aa-1-0-0-000
+      uuid: eatl-2-0-0-http-c-aa-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.5
       tcp-port: 3005
-      uuid: eatl-2-0-0-tcp-c-im-aa-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-aa-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -245,12 +245,12 @@ clients:
   - http-client:
       application-name: ApplicationLayerTopology
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-bm-alt-1-0-0-000
+      uuid: eatl-2-0-0-http-c-alt-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.6
       tcp-port: 3006
-      uuid: eatl-2-0-0-tcp-c-bm-alt-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-alt-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -276,12 +276,12 @@ clients:
   - http-client:
       application-name: OperationKeyManagement
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-okm-1-0-0-000
+      uuid: eatl-2-0-0-http-c-okm-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.3.7
       tcp-port: 3007
-      uuid: eatl-2-0-0-tcp-c-im-okm-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-okm-1-0-0-000
     operation-clients:
       own-oam:
         basic:
@@ -295,12 +295,12 @@ clients:
   - http-client:
       application-name: CurrentController
       release-number: 1.0.0
-      uuid: eatl-2-0-0-http-c-im-cc-1-0-0-000
+      uuid: eatl-2-0-0-http-c-cc-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 1.1.4.1
       tcp-port: 4001
-      uuid: eatl-2-0-0-tcp-c-im-cc-1-0-0-000
+      uuid: eatl-2-0-0-tcp-c-cc-1-0-0-000
     operation-clients:
       own-oam:
         basic:
