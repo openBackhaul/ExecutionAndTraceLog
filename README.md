@@ -1,38 +1,21 @@
 # ExecutionAndTraceLog
-- List of records about service requests
-- Thorsten Heinze (Thorsten.Heinze@openBackhaul.com)
 
-### ServiceList
-- [ExecutionAndTraceLog+services](./ExecutionAndTraceLog+services.yaml)
+### Location
+The ExecutionAndTraceLog is part of the TinyApplicationController.  
+The TinyApplicationController is for managing the REST microservices of the application layer.  
 
-### ProfileList and ProfileInstanceList
-- to be provided
-- to be provided
+### Description
+Every application that belongs to the application layer sends a record about every processed service request to the ExecutionAndTraceLog.  
+The ExecutionAndTraceLog stores these records into an ElasticSearch database.  
+Filtering service records for unsuccessfully executed requests or requests belonging to the same flow is supported.  
 
-### ForwardingList
-- [ExecutionAndTraceLog+forwardings](./ExecutionAndTraceLog+forwardings.yaml)
+### Relevance
+The ExecutionAndTraceLog is core element of the application layer running in the live network at Telefonica Germany.  
 
-### Open API specification (Swagger)
-- [ExecutionAndTraceLog](ExecutionAndTraceLog.yaml)
-
-### CONFIGfile (JSON)
-- to be provided
-
-### Test Cases (Postman Export) and Data File
-- [ExecutionAndTraceLog+testcases](./ExecutionAndTraceLog%2Btestcases.json)
-- [ExecutionAndTraceLog+data](./ExecutionAndTraceLog+data.json)
-
-### NodeJS Implementation
-- to be provided
-
-### Publication
-- No official publication planned
-
-### Aspired Classification
-- Live Network
-
-### Open Issue List
-- [ExecutionAndTraceLog/issues](../../issues)
+### Resources
+- [Specification](./spec/)
+- [TestSuite](./testing/)
+- [Implementation](./server/)
 
 ### Comments
-This application is part of the TinyApplicationController for managing the REST applications forming the MBH SDN application layer at Telefonica Germany.
+./.
