@@ -25,7 +25,6 @@ exports.getHttpClientApplicationName = function (url) {
   });
 }
 
-
 /**
  * Returns release number of application to be addressed
  *
@@ -50,6 +49,22 @@ exports.getHttpClientReleaseNumber = function (url) {
   });
 }
 
+/**
+ * Configures name of application to be addressed
+ *
+ * body Httpclientinterfaceconfiguration_applicationname_body
+ * uuid String
+ * no response value expected for this operation
+ **/
+exports.putHttpClientApplicationName = function(body, url) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      await fileOperation.writeToDatabaseAsync(url, body, false);
+      resolve();
+    } catch (error) {}
+    reject();
+  });
+}
 
 /**
  * Configures release number of application to be addressed
