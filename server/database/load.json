@@ -1,10 +1,226 @@
 {
     "core-model-1-4:control-construct": {
-        "uuid": "eatl-0-0-1",
+        "uuid": "eatl-2-0-0",
         "profile-collection": {
             "profile": [
                 {
-                    "uuid": "eatl-0-0-1-integer-p-0000",
+                    "uuid": "eatl-2-0-0-action-p-000",
+                    "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+                    "action-profile-1-0:action-profile-pac": {
+                        "action-profile-capability": {
+                            "operation-name": "/v1/start-application-in-generic-representation",
+                            "label": "Inform about Application",
+                            "input-value-list": [],
+                            "display-in-new-browser-window": false
+                        },
+                        "action-profile-configuration": {
+                            "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-bs-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-action-p-001",
+                    "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+                    "action-profile-1-0:action-profile-pac": {
+                        "action-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "label": "Release History",
+                            "input-value-list": [],
+                            "display-in-new-browser-window": false
+                        },
+                        "action-profile-configuration": {
+                            "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-bs-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-action-p-002",
+                    "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+                    "action-profile-1-0:action-profile-pac": {
+                        "action-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "label": "API Documentation",
+                            "input-value-list": [],
+                            "display-in-new-browser-window": true
+                        },
+                        "action-profile-configuration": {
+                            "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-op-s-bs-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-000",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/start-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "applicationName"
+                            },
+                            "description": "Own application name",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-001",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "applicationName"
+                            },
+                            "description": "Name of this application",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-002",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "releaseNumber"
+                            },
+                            "description": "Number of this release",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-003",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "applicationPurpose"
+                            },
+                            "description": "Purpose of this application",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-purpose"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-004",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "dataUpdatePeriod"
+                            },
+                            "description": "Period of updating the data inside this application",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/data-update-period"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-005",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "ownerName"
+                            },
+                            "description": "Name of the ApplicationOwner",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-name"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-006",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-application-in-generic-representation",
+                            "field-name": {
+                                "static-field-name": "ownerEmailAddress"
+                            },
+                            "description": "Email address of the ApplicationOwner",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-email-address"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-007",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-release-history-in-generic-representation",
+                            "field-name": {
+                                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/release-number"
+                            },
+                            "description": "Represents the first entry in the list of releases",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-response-p-008",
+                    "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+                    "response-profile-1-0:response-profile-pac": {
+                        "response-profile-capability": {
+                            "operation-name": "/v1/inform-about-release-history-in-generic-representation",
+                            "field-name": {
+                                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/release-number"
+                            },
+                            "description": "List of release numbers and changes",
+                            "datatype": "string"
+                        },
+                        "response-profile-configuration": {
+                            "value": {
+                                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=eatl-2-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/changes"
+                            }
+                        }
+                    }
+                },
+                {
+                    "uuid": "eatl-2-0-0-integer-p-000",
                     "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
                     "integer-profile-1-0:integer-profile-pac": {
                         "integer-profile-capability": {
@@ -17,35 +233,16 @@
                             "integer-value": 1000000
                         }
                     }
-                },
-                {
-                    "uuid": "eatl-0-0-1-service-record-p-000000",
-                    "profile-name": "service-record-profile-1-0:PROFILE_NAME_TYPE_SERVICE_RECORD_PROFILE",
-                    "service-record-profile-1-0:service-record-profile-pac": {
-                        "service-record-profile-capability": {
-                            "x-correlator": "550e8400-e29b-11d4-a716-446655440000",
-                            "trace-indicator": "1.1",
-                            "user": "User Name",
-                            "originator": "Resolver",
-                            "application-name": "CurrentController",
-                            "application-release-number": "0.0.1",
-                            "operation-name": "/v1/provide-current-controller",
-                            "response-code": 200,
-                            "timestamp": "2010-11-20T14:00:00+01:00",
-                            "stringified-body": "{}",
-                            "stringified-response": "{'current-controller': '10.118.125.157:8443'}"
-                        }
-                    }
                 }
             ]
         },
         "logical-termination-point": [
             {
-                "uuid": "eatl-0-0-1-op-s-0000",
+                "uuid": "eatl-2-0-0-op-s-bm-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -64,11 +261,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0001",
+                "uuid": "eatl-2-0-0-op-s-bm-001",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -87,11 +284,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0002",
+                "uuid": "eatl-2-0-0-op-s-bm-002",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -110,11 +307,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0003",
+                "uuid": "eatl-2-0-0-op-s-bm-003",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -133,11 +330,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0004",
+                "uuid": "eatl-2-0-0-op-s-bm-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -156,11 +353,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0005",
+                "uuid": "eatl-2-0-0-op-s-bm-005",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -179,11 +376,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0007",
+                "uuid": "eatl-2-0-0-op-s-bm-007",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -202,11 +399,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0008",
+                "uuid": "eatl-2-0-0-op-s-bm-008",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -225,11 +422,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0009",
+                "uuid": "eatl-2-0-0-op-s-bm-009",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -248,11 +445,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0010",
+                "uuid": "eatl-2-0-0-op-s-bm-010",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -271,11 +468,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-0011",
+                "uuid": "eatl-2-0-0-op-s-bm-011",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -294,11 +491,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-1000",
+                "uuid": "eatl-2-0-0-op-s-im-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -317,103 +514,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-2001",
+                "uuid": "eatl-2-0-0-op-s-bs-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-server-interface-1-0:operation-server-interface-pac": {
-                            "operation-server-interface-capability": {
-                                "operation-name": "/v1/inform-about-application"
-                            },
-                            "operation-server-interface-configuration": {
-                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                                "operation-key": "n.a."
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-s-2002",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-server-interface-1-0:operation-server-interface-pac": {
-                            "operation-server-interface-capability": {
-                                "operation-name": "/v1/inform-about-application-in-generic-representation"
-                            },
-                            "operation-server-interface-configuration": {
-                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                                "operation-key": "n.a."
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-s-2003",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-server-interface-1-0:operation-server-interface-pac": {
-                            "operation-server-interface-capability": {
-                                "operation-name": "/v1/inform-about-release-history"
-                            },
-                            "operation-server-interface-configuration": {
-                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                                "operation-key": "n.a."
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-s-2004",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-server-interface-1-0:operation-server-interface-pac": {
-                            "operation-server-interface-capability": {
-                                "operation-name": "/v1/inform-about-release-history-in-generic-representation"
-                            },
-                            "operation-server-interface-configuration": {
-                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                                "operation-key": "n.a."
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-s-3000",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -432,11 +537,126 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3001",
+                "uuid": "eatl-2-0-0-op-s-bs-001",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-server-interface-1-0:operation-server-interface-pac": {
+                            "operation-server-interface-capability": {
+                                "operation-name": "/v1/inform-about-application"
+                            },
+                            "operation-server-interface-configuration": {
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "n.a."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-s-bs-002",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-s-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-server-interface-1-0:operation-server-interface-pac": {
+                            "operation-server-interface-capability": {
+                                "operation-name": "/v1/inform-about-application-in-generic-representation"
+                            },
+                            "operation-server-interface-configuration": {
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "n.a."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-s-bs-003",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-s-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-server-interface-1-0:operation-server-interface-pac": {
+                            "operation-server-interface-capability": {
+                                "operation-name": "/v1/inform-about-release-history"
+                            },
+                            "operation-server-interface-configuration": {
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "n.a."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-s-bs-004",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-s-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-server-interface-1-0:operation-server-interface-pac": {
+                            "operation-server-interface-capability": {
+                                "operation-name": "/v1/inform-about-release-history-in-generic-representation"
+                            },
+                            "operation-server-interface-configuration": {
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "n.a."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-s-bs-005",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-s-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-server-interface-1-0:operation-server-interface-pac": {
+                            "operation-server-interface-capability": {
+                                "operation-name": "/docs"
+                            },
+                            "operation-server-interface-configuration": {
+                                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                                "operation-key": "n.a."
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-s-is-001",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -455,11 +675,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3002",
+                "uuid": "eatl-2-0-0-op-s-is-002",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -478,11 +698,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3003",
+                "uuid": "eatl-2-0-0-op-s-is-003",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -501,11 +721,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3004",
+                "uuid": "eatl-2-0-0-op-s-is-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -524,11 +744,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3005",
+                "uuid": "eatl-2-0-0-op-s-is-005",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -547,11 +767,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3006",
+                "uuid": "eatl-2-0-0-op-s-is-006",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -570,11 +790,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-s-3007",
+                "uuid": "eatl-2-0-0-op-s-is-007",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -593,36 +813,37 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-s-0000",
+                "uuid": "eatl-2-0-0-http-s-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [
-                    "eatl-0-0-1-op-s-0000",
-                    "eatl-0-0-1-op-s-0001",
-                    "eatl-0-0-1-op-s-0002",
-                    "eatl-0-0-1-op-s-0003",
-                    "eatl-0-0-1-op-s-0004",
-                    "eatl-0-0-1-op-s-0005",
-                    "eatl-0-0-1-op-s-0007",
-                    "eatl-0-0-1-op-s-0008",
-                    "eatl-0-0-1-op-s-0009",
-                    "eatl-0-0-1-op-s-0010",
-                    "eatl-0-0-1-op-s-0011",
-                    "eatl-0-0-1-op-s-1000",
-                    "eatl-0-0-1-op-s-2001",
-                    "eatl-0-0-1-op-s-2002",
-                    "eatl-0-0-1-op-s-2003",
-                    "eatl-0-0-1-op-s-2004",
-                    "eatl-0-0-1-op-s-3000",
-                    "eatl-0-0-1-op-s-3001",
-                    "eatl-0-0-1-op-s-3002",
-                    "eatl-0-0-1-op-s-3003",
-                    "eatl-0-0-1-op-s-3004",
-                    "eatl-0-0-1-op-s-3005",
-                    "eatl-0-0-1-op-s-3006",
-                    "eatl-0-0-1-op-s-3007"
+                    "eatl-2-0-0-op-s-bm-000",
+                    "eatl-2-0-0-op-s-bm-001",
+                    "eatl-2-0-0-op-s-bm-002",
+                    "eatl-2-0-0-op-s-bm-003",
+                    "eatl-2-0-0-op-s-bm-004",
+                    "eatl-2-0-0-op-s-bm-005",
+                    "eatl-2-0-0-op-s-bm-007",
+                    "eatl-2-0-0-op-s-bm-008",
+                    "eatl-2-0-0-op-s-bm-009",
+                    "eatl-2-0-0-op-s-bm-010",
+                    "eatl-2-0-0-op-s-bm-011",
+                    "eatl-2-0-0-op-s-im-000",
+                    "eatl-2-0-0-op-s-bs-000",
+                    "eatl-2-0-0-op-s-bs-001",
+                    "eatl-2-0-0-op-s-bs-002",
+                    "eatl-2-0-0-op-s-bs-003",
+                    "eatl-2-0-0-op-s-bs-004",
+                    "eatl-2-0-0-op-s-bs-005",
+                    "eatl-2-0-0-op-s-is-001",
+                    "eatl-2-0-0-op-s-is-002",
+                    "eatl-2-0-0-op-s-is-003",
+                    "eatl-2-0-0-op-s-is-004",
+                    "eatl-2-0-0-op-s-is-005",
+                    "eatl-2-0-0-op-s-is-006",
+                    "eatl-2-0-0-op-s-is-007"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-s-0000"
+                    "eatl-2-0-0-tcp-s-000"
                 ],
                 "layer-protocol": [
                     {
@@ -631,16 +852,23 @@
                         "http-server-interface-1-0:http-server-interface-pac": {
                             "http-server-interface-capability": {
                                 "application-name": "ExecutionAndTraceLog",
-                                "release-number": "0.0.1",
+                                "release-number": "2.0.0",
                                 "application-purpose": "Logs service requests for execution and trace analysis.",
                                 "data-update-period": "http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_REAL_TIME",
                                 "owner-name": "Thorsten Heinze",
                                 "owner-email-address": "Thorsten.Heinze@telefonica.com",
                                 "release-list": [
                                     {
-                                        "release-number": "0.0.1",
+                                        "local-id": "0",
+                                        "release-number": "1.0.0",
                                         "release-date": "17.12.2021",
                                         "changes": "Initial version."
+                                    },
+                                    {
+                                        "local-id": "1",
+                                        "release-number": "2.0.0",
+                                        "release-date": "17.12.2022",
+                                        "changes": "Update on ApplicationPattern 2.0.0."
                                     }
                                 ]
                             }
@@ -649,10 +877,10 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-s-0000",
+                "uuid": "eatl-2-0-0-tcp-s-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
                 "client-ltp": [
-                    "eatl-0-0-1-http-s-0000"
+                    "eatl-2-0-0-http-s-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -661,21 +889,96 @@
                         "layer-protocol-name": "tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-server-interface-1-0:tcp-server-interface-pac": {
                             "tcp-server-interface-configuration": {
+                                "description": "Without TLS layer",
+                                "local-protocol": "http",
                                 "local-address": {
-                                    "ipv-4-address": "10.118.125.157"
+                                    "ipv-4-address": "1.1.3.10"
                                 },
-                                "local-port": 1002
+                                "local-port": 3010
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0000",
+                "uuid": "eatl-2-0-0-es-c-es-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0000"
+                    "eatl-2-0-0-http-c-es-1-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "elasticsearch-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_ELASTICSEARCH_LAYER",
+                        "elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac": {
+                            "elasticsearch-client-interface-configuration": {
+                                "auth": {
+                                    "api-key": "API key not yet defined."
+                                },
+                                "index-alias": "eatl-2-0-0"
+                            },
+                            "elasticsearch-client-interface-status": {
+                                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-http-c-es-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-es-c-es-1-0-0-000"
+                ],
+                "server-ltp": [
+                    "eatl-2-0-0-tcp-c-es-1-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+                        "http-client-interface-1-0:http-client-interface-pac": {
+                            "http-client-interface-configuration": {
+                                "application-name": "ElasticSearch",
+                                "release-number": "1.0.0"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-tcp-c-es-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-http-c-es-1-0-0-000"
+                ],
+                "server-ltp": [],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
+                            "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
+                                "remote-address": {
+                                    "ip-address": {
+                                        "ipv-4-address": "1.1.3.15"
+                                    }
+                                },
+                                "remote-port": 3015
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-c-bm-or-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-c-or-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -695,34 +998,32 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-0000",
+                "uuid": "eatl-2-0-0-http-c-or-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-0000"
+                    "eatl-2-0-0-op-c-bm-or-1-0-0-000"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0000"
+                    "eatl-2-0-0-tcp-c-or-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "OldRelease"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
+                                "application-name": "OldRelease",
+                                "release-number": "1.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-0000",
+                "uuid": "eatl-2-0-0-tcp-c-or-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-0000"
+                    "eatl-2-0-0-http-c-or-1-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -731,143 +1032,24 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.3"
                                     }
                                 },
-                                "remote-port": 1002
+                                "remote-port": 3003
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0010",
+                "uuid": "eatl-2-0-0-op-c-im-nr-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/embed-yourself",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0011",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/redirect-service-request-information",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0012",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/redirect-oam-request-information",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0013",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/inquire-oam-request-approvals",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0014",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/redirect-topology-change-information",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-1010",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
+                    "eatl-2-0-0-http-c-nr-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -887,64 +1069,32 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-1011",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0010"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/record-service-request",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-http-c-0010",
+                "uuid": "eatl-2-0-0-http-c-nr-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-0010",
-                    "eatl-0-0-1-op-c-0011",
-                    "eatl-0-0-1-op-c-0012",
-                    "eatl-0-0-1-op-c-0013",
-                    "eatl-0-0-1-op-c-0014",
-                    "eatl-0-0-1-op-c-1010",
-                    "eatl-0-0-1-op-c-1011"
+                    "eatl-2-0-0-op-c-im-nr-2-0-0-000"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0010"
+                    "eatl-2-0-0-tcp-c-nr-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "NewRelease"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.2"
+                                "application-name": "NewRelease",
+                                "release-number": "2.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-0010",
+                "uuid": "eatl-2-0-0-tcp-c-nr-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-0010"
+                    "eatl-2-0-0-http-c-nr-2-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -953,23 +1103,24 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.10"
                                     }
                                 },
-                                "remote-port": 7002
+                                "remote-port": 3010
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0020",
+                "uuid": "eatl-2-0-0-op-c-bm-ro-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -978,7 +1129,7 @@
                         "operation-client-interface-1-0:operation-client-interface-pac": {
                             "operation-client-interface-configuration": {
                                 "operation-name": "/v1/register-application",
-                                "operation-key": "Operation key not yet provided."
+                                "operation-key": "n.a."
                             },
                             "operation-client-interface-status": {
                                 "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -989,11 +1140,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0021",
+                "uuid": "eatl-2-0-0-op-c-bm-ro-2-0-0-001",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1013,11 +1164,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0022",
+                "uuid": "eatl-2-0-0-op-c-bm-ro-2-0-0-002",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1037,11 +1188,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0023",
+                "uuid": "eatl-2-0-0-op-c-bm-ro-2-0-0-003",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1061,35 +1212,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2020",
+                "uuid": "eatl-2-0-0-op-c-im-ro-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/redirect-service-request-information",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-3020",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1109,11 +1236,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-3021",
+                "uuid": "eatl-2-0-0-op-c-im-ro-2-0-0-001",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1133,11 +1260,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-3022",
+                "uuid": "eatl-2-0-0-op-c-im-ro-2-0-0-002",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0020"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1157,66 +1284,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-0020",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-op-c-0020",
-                    "eatl-0-0-1-op-c-0021",
-                    "eatl-0-0-1-op-c-0022",
-                    "eatl-0-0-1-op-c-0023",
-                    "eatl-0-0-1-op-c-2020",
-                    "eatl-0-0-1-op-c-3020",
-                    "eatl-0-0-1-op-c-3021",
-                    "eatl-0-0-1-op-c-3022"
-                ],
-                "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0020"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
-                        "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "RegistryOffice"
-                            },
-                            "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-tcp-c-0020",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-http-c-0020"
-                ],
-                "server-ltp": [],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
-                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
-                            "tcp-client-interface-configuration": {
-                                "remote-address": {
-                                    "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
-                                    }
-                                },
-                                "remote-port": 1000
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-2030",
+                "uuid": "eatl-2-0-0-op-c-im-ro-2-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-2030"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1236,34 +1308,39 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-2030",
+                "uuid": "eatl-2-0-0-http-c-ro-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-2030"
+                    "eatl-2-0-0-op-c-bm-ro-2-0-0-000",
+                    "eatl-2-0-0-op-c-bm-ro-2-0-0-001",
+                    "eatl-2-0-0-op-c-bm-ro-2-0-0-002",
+                    "eatl-2-0-0-op-c-bm-ro-2-0-0-003",
+                    "eatl-2-0-0-op-c-im-ro-2-0-0-000",
+                    "eatl-2-0-0-op-c-im-ro-2-0-0-001",
+                    "eatl-2-0-0-op-c-im-ro-2-0-0-002",
+                    "eatl-2-0-0-op-c-im-ro-2-0-0-004"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-2030"
+                    "eatl-2-0-0-tcp-c-ro-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "TypeApprovalRegister"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
+                                "application-name": "RegistryOffice",
+                                "release-number": "2.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-2030",
+                "uuid": "eatl-2-0-0-tcp-c-ro-2-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-2030"
+                    "eatl-2-0-0-http-c-ro-2-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -1272,23 +1349,119 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.8"
                                     }
                                 },
-                                "remote-port": 1001
+                                "remote-port": 3008
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0040",
+                "uuid": "eatl-2-0-0-op-c-im-tar-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0040"
+                    "eatl-2-0-0-http-c-tar-1-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-client-interface-1-0:operation-client-interface-pac": {
+                            "operation-client-interface-configuration": {
+                                "operation-name": "/v1/redirect-service-request-information",
+                                "operation-key": "Operation key not yet provided."
+                            },
+                            "operation-client-interface-status": {
+                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-http-c-tar-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-op-c-im-tar-1-0-0-004"
+                ],
+                "server-ltp": [
+                    "eatl-2-0-0-tcp-c-tar-1-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+                        "http-client-interface-1-0:http-client-interface-pac": {
+                            "http-client-interface-configuration": {
+                                "application-name": "TypeApprovalRegister",
+                                "release-number": "1.0.0"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-tcp-c-tar-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-http-c-tar-1-0-0-000"
+                ],
+                "server-ltp": [],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
+                            "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
+                                "remote-address": {
+                                    "ip-address": {
+                                        "ipv-4-address": "1.1.3.2"
+                                    }
+                                },
+                                "remote-port": 3002
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-c-im-eatl-2-0-0-004",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-c-eatl-2-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+                        "operation-client-interface-1-0:operation-client-interface-pac": {
+                            "operation-client-interface-configuration": {
+                                "operation-name": "/v1/redirect-service-request-information",
+                                "operation-key": "Operation key not yet provided."
+                            },
+                            "operation-client-interface-status": {
+                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-c-bs-eatl-2-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [],
+                "server-ltp": [
+                    "eatl-2-0-0-http-c-eatl-2-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1309,11 +1482,59 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2040",
+                "uuid": "eatl-2-0-0-http-c-eatl-2-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-op-c-im-eatl-2-0-0-004",
+                    "eatl-2-0-0-op-c-bs-eatl-2-0-0-000"
+                ],
+                "server-ltp": [
+                    "eatl-2-0-0-tcp-c-eatl-2-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+                        "http-client-interface-1-0:http-client-interface-pac": {
+                            "http-client-interface-configuration": {
+                                "application-name": "ExecutionAndTraceLog",
+                                "release-number": "2.0.0"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-tcp-c-eatl-2-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-http-c-eatl-2-0-0-000"
+                ],
+                "server-ltp": [],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
+                            "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
+                                "remote-address": {
+                                    "ip-address": {
+                                        "ipv-4-address": "1.1.3.10"
+                                    }
+                                },
+                                "remote-port": 3010
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-c-im-ol-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0040"
+                    "eatl-2-0-0-http-c-ol-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1322,8 +1543,7 @@
                         "operation-client-interface-1-0:operation-client-interface-pac": {
                             "operation-client-interface-configuration": {
                                 "operation-name": "/v1/redirect-service-request-information",
-                                "operation-key": "Operation key not yet provided.",
-                                "detailed-logging-is-on": "false"
+                                "operation-key": "Operation key not yet provided."
                             },
                             "operation-client-interface-status": {
                                 "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -1334,60 +1554,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-0040",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-op-c-0040",
-                    "eatl-0-0-1-op-c-2040"
-                ],
-                "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0040"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
-                        "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "ExecutionAndTraceLog"
-                            },
-                            "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-tcp-c-0040",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-http-c-0040"
-                ],
-                "server-ltp": [],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
-                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
-                            "tcp-client-interface-configuration": {
-                                "remote-address": {
-                                    "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
-                                    }
-                                },
-                                "remote-port": 1002
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0050",
+                "uuid": "eatl-2-0-0-op-c-bs-ol-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0050"
+                    "eatl-2-0-0-http-c-ol-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1407,11 +1578,59 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2050",
+                "uuid": "eatl-2-0-0-http-c-ol-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-op-c-im-ol-1-0-0-004",
+                    "eatl-2-0-0-op-c-bs-ol-1-0-0-000"
+                ],
+                "server-ltp": [
+                    "eatl-2-0-0-tcp-c-ol-1-0-0-000"
+                ],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+                        "http-client-interface-1-0:http-client-interface-pac": {
+                            "http-client-interface-configuration": {
+                                "application-name": "OamLog",
+                                "release-number": "1.0.0"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-tcp-c-ol-1-0-0-000",
+                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+                "client-ltp": [
+                    "eatl-2-0-0-http-c-ol-1-0-0-000"
+                ],
+                "server-ltp": [],
+                "layer-protocol": [
+                    {
+                        "local-id": "0",
+                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
+                            "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
+                                "remote-address": {
+                                    "ip-address": {
+                                        "ipv-4-address": "1.1.3.4"
+                                    }
+                                },
+                                "remote-port": 3004
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "eatl-2-0-0-op-c-im-aa-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0050"
+                    "eatl-2-0-0-http-c-aa-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1431,60 +1650,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-0050",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-op-c-0050",
-                    "eatl-0-0-1-op-c-2050"
-                ],
-                "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0050"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
-                        "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "OamLog"
-                            },
-                            "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-tcp-c-0050",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [
-                    "eatl-0-0-1-http-c-0050"
-                ],
-                "server-ltp": [],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
-                        "tcp-client-interface-1-0:tcp-client-interface-pac": {
-                            "tcp-client-interface-configuration": {
-                                "remote-address": {
-                                    "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
-                                    }
-                                },
-                                "remote-port": 1003
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-op-c-0060",
+                "uuid": "eatl-2-0-0-op-c-bs-aa-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0060"
+                    "eatl-2-0-0-http-c-aa-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1504,59 +1674,33 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2060",
-                "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-                "client-ltp": [],
-                "server-ltp": [
-                    "eatl-0-0-1-http-c-0060"
-                ],
-                "layer-protocol": [
-                    {
-                        "local-id": "0",
-                        "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
-                        "operation-client-interface-1-0:operation-client-interface-pac": {
-                            "operation-client-interface-configuration": {
-                                "operation-name": "/v1/redirect-service-request-information",
-                                "operation-key": "Operation key not yet provided."
-                            },
-                            "operation-client-interface-status": {
-                                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-                                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "uuid": "eatl-0-0-1-http-c-0060",
+                "uuid": "eatl-2-0-0-http-c-aa-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-0060",
-                    "eatl-0-0-1-op-c-2060"
+                    "eatl-2-0-0-op-c-im-aa-1-0-0-004",
+                    "eatl-2-0-0-op-c-bs-aa-1-0-0-000"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0060"
+                    "eatl-2-0-0-tcp-c-aa-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "AdministratorAdministration"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
+                                "application-name": "AdministratorAdministration",
+                                "release-number": "1.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-0060",
+                "uuid": "eatl-2-0-0-tcp-c-aa-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-0060"
+                    "eatl-2-0-0-http-c-aa-1-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -1565,23 +1709,24 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.5"
                                     }
                                 },
-                                "remote-port": 1004
+                                "remote-port": 3005
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0070",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1601,11 +1746,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0071",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-001",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1625,11 +1770,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0072",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-002",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1649,11 +1794,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0073",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-003",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1673,11 +1818,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0074",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1697,11 +1842,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-0075",
+                "uuid": "eatl-2-0-0-op-c-bm-alt-1-0-0-005",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1721,11 +1866,11 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2070",
+                "uuid": "eatl-2-0-0-op-c-im-alt-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1745,40 +1890,38 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-0070",
+                "uuid": "eatl-2-0-0-http-c-alt-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-0070",
-                    "eatl-0-0-1-op-c-0071",
-                    "eatl-0-0-1-op-c-0072",
-                    "eatl-0-0-1-op-c-0073",
-                    "eatl-0-0-1-op-c-0074",
-                    "eatl-0-0-1-op-c-0075",
-                    "eatl-0-0-1-op-c-2070"
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-000",
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-001",
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-002",
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-003",
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-004",
+                    "eatl-2-0-0-op-c-bm-alt-1-0-0-005",
+                    "eatl-2-0-0-op-c-im-alt-1-0-0-004"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-0070"
+                    "eatl-2-0-0-tcp-c-alt-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "ApplicationLayerTopology"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
+                                "application-name": "ApplicationLayerTopology",
+                                "release-number": "1.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-0070",
+                "uuid": "eatl-2-0-0-tcp-c-alt-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-0070"
+                    "eatl-2-0-0-http-c-alt-1-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -1787,23 +1930,24 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.6"
                                     }
                                 },
-                                "remote-port": 1005
+                                "remote-port": 3006
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2080",
+                "uuid": "eatl-2-0-0-op-c-im-okm-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-2080"
+                    "eatl-2-0-0-http-c-okm-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1823,34 +1967,32 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-2080",
+                "uuid": "eatl-2-0-0-http-c-okm-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-2080"
+                    "eatl-2-0-0-op-c-im-okm-1-0-0-004"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-2080"
+                    "eatl-2-0-0-tcp-c-okm-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "OperationKeyManagement"
-                            },
                             "http-client-interface-configuration": {
-                                "release-number": "0.0.1"
+                                "application-name": "OperationKeyManagement",
+                                "release-number": "1.0.0"
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-2080",
+                "uuid": "eatl-2-0-0-tcp-c-okm-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-2080"
+                    "eatl-2-0-0-http-c-okm-1-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -1859,23 +2001,24 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.157"
+                                        "ipv-4-address": "1.1.3.7"
                                     }
                                 },
-                                "remote-port": 1006
+                                "remote-port": 3007
                             }
                         }
                     }
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-op-c-2300",
+                "uuid": "eatl-2-0-0-op-c-im-cc-1-0-0-004",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-0-0-1-http-c-2300"
+                    "eatl-2-0-0-http-c-cc-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1895,23 +2038,21 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-http-c-2300",
+                "uuid": "eatl-2-0-0-http-c-cc-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-op-c-2300"
+                    "eatl-2-0-0-op-c-im-cc-1-0-0-004"
                 ],
                 "server-ltp": [
-                    "eatl-0-0-1-tcp-c-2300"
+                    "eatl-2-0-0-tcp-c-cc-1-0-0-000"
                 ],
                 "layer-protocol": [
                     {
                         "local-id": "0",
                         "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
                         "http-client-interface-1-0:http-client-interface-pac": {
-                            "http-client-interface-capability": {
-                                "application-name": "CurrentController"
-                            },
                             "http-client-interface-configuration": {
+                                "application-name": "CurrentController",
                                 "release-number": "0.0.6"
                             }
                         }
@@ -1919,10 +2060,10 @@
                 ]
             },
             {
-                "uuid": "eatl-0-0-1-tcp-c-2300",
+                "uuid": "eatl-2-0-0-tcp-c-cc-1-0-0-000",
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [
-                    "eatl-0-0-1-http-c-2300"
+                    "eatl-2-0-0-http-c-cc-1-0-0-000"
                 ],
                 "server-ltp": [],
                 "layer-protocol": [
@@ -1931,12 +2072,13 @@
                         "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
                         "tcp-client-interface-1-0:tcp-client-interface-pac": {
                             "tcp-client-interface-configuration": {
+                                "remote-protocol": "http",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "10.118.125.186"
+                                        "ipv-4-address": "1.1.4.1"
                                     }
                                 },
-                                "remote-port": 2000
+                                "remote-port": 4001
                             }
                         }
                     }
@@ -1945,10 +2087,10 @@
         ],
         "forwarding-domain": [
             {
-                "uuid": "eatl-0-0-1-op-fd-0000",
+                "uuid": "eatl-2-0-0-op-fd-000",
                 "forwarding-construct": [
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0000",
+                        "uuid": "eatl-2-0-0-op-fc-bm-000",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -1963,22 +2105,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-000"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0020"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-ro-2-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0001",
+                        "uuid": "eatl-2-0-0-op-fc-bm-001",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -1993,17 +2135,17 @@
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0000"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-or-1-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0002",
+                        "uuid": "eatl-2-0-0-op-fc-bm-002",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2018,137 +2160,137 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-002"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-000"
                             },
                             {
                                 "local-id": "101",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "102",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-002"
                             },
                             {
                                 "local-id": "103",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0003"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-003"
                             },
                             {
                                 "local-id": "104",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0004"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-004"
                             },
                             {
                                 "local-id": "105",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0005"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-005"
                             },
                             {
                                 "local-id": "106",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0007"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-007"
                             },
                             {
                                 "local-id": "107",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0008"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-008"
                             },
                             {
                                 "local-id": "108",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "109",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0010"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-010"
                             },
                             {
                                 "local-id": "110",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0011"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-011"
                             },
                             {
                                 "local-id": "111",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "112",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-2001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bs-001"
                             },
                             {
                                 "local-id": "113",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-2002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bs-002"
                             },
                             {
                                 "local-id": "114",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-2003"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bs-003"
                             },
                             {
                                 "local-id": "115",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-2004"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bs-004"
                             },
                             {
                                 "local-id": "116",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bs-000"
                             },
                             {
                                 "local-id": "117",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-001"
                             },
                             {
                                 "local-id": "118",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-002"
                             },
                             {
                                 "local-id": "119",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3003"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-003"
                             },
                             {
                                 "local-id": "120",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3004"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-004"
                             },
                             {
                                 "local-id": "121",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3005"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-005"
                             },
                             {
                                 "local-id": "122",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3006"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-006"
                             },
                             {
                                 "local-id": "123",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3007"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-007"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0040"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bs-eatl-2-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0003",
+                        "uuid": "eatl-2-0-0-op-fc-bm-003",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2163,17 +2305,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0003"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-003"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0050"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bs-ol-1-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0004",
+                        "uuid": "eatl-2-0-0-op-fc-bm-004",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2188,17 +2330,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0005"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-005"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0060"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bs-aa-1-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0110",
+                        "uuid": "eatl-2-0-0-op-fc-im-110",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2213,42 +2355,17 @@
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-1010"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-nr-2-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0111",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "value": "PromptForBequeathingDataCausesTransferOfListOfRecords"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-1011"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "eatl-0-0-1-op-fc-0112",
+                        "uuid": "eatl-2-0-0-op-fc-im-112",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2263,17 +2380,17 @@
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-3020"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-ro-2-0-0-000"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0113",
+                        "uuid": "eatl-2-0-0-op-fc-im-113",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2288,17 +2405,17 @@
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-3021"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-ro-2-0-0-001"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0114",
+                        "uuid": "eatl-2-0-0-op-fc-im-114",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2313,17 +2430,17 @@
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-3022"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-ro-2-0-0-002"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0105",
+                        "uuid": "eatl-2-0-0-op-fc-bm-105",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2338,22 +2455,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0021"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-ro-2-0-0-001"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0106",
+                        "uuid": "eatl-2-0-0-op-fc-bm-106",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2368,22 +2485,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0022"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-ro-2-0-0-002"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0107",
+                        "uuid": "eatl-2-0-0-op-fc-bm-107",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2398,52 +2515,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0007"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-007"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0023"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-ro-2-0-0-003"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0005",
-                        "name": [
-                            {
-                                "value-name": "ForwardingKind",
-                                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                            },
-                            {
-                                "value-name": "ForwardingName",
-                                "value": "PromptForRedirectingTopologyInformationCausesSendingAnInitialStateToALT"
-                            }
-                        ],
-                        "fc-port": [
-                            {
-                                "local-id": "000",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
-                            },
-                            {
-                                "local-id": "100",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
-                            },
-                            {
-                                "local-id": "200",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0070"
-                            }
-                        ]
-                    },
-                    {
-                        "uuid": "eatl-0-0-1-op-fc-0006",
+                        "uuid": "eatl-2-0-0-op-fc-bm-006",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2458,72 +2545,67 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-000"
                             },
                             {
                                 "local-id": "101",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-001"
                             },
                             {
                                 "local-id": "102",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-002"
                             },
                             {
                                 "local-id": "103",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0003"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-003"
                             },
                             {
                                 "local-id": "104",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0005"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-005"
                             },
                             {
                                 "local-id": "105",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0007"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-007"
                             },
                             {
                                 "local-id": "106",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
-                            },
-                            {
-                                "local-id": "107",
-                                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0010"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "108",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0011"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-011"
                             },
                             {
                                 "local-id": "109",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-1000"
+                                "logical-termination-point": "eatl-2-0-0-op-s-im-000"
                             },
                             {
                                 "local-id": "110",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-001"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0071"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-001"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0007",
+                        "uuid": "eatl-2-0-0-op-fc-bm-007",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2538,22 +2620,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-002"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0072"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-002"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0008",
+                        "uuid": "eatl-2-0-0-op-fc-bm-008",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2568,22 +2650,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-001"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0073"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-003"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0009",
+                        "uuid": "eatl-2-0-0-op-fc-bm-009",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2598,17 +2680,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0074"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-004"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0010",
+                        "uuid": "eatl-2-0-0-op-fc-bm-010",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2623,22 +2705,22 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0004"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-004"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0075"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-005"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0011",
+                        "uuid": "eatl-2-0-0-op-fc-bm-011",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2653,17 +2735,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0071"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-001"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0012",
+                        "uuid": "eatl-2-0-0-op-fc-bm-012",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2678,17 +2760,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0072"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-002"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0013",
+                        "uuid": "eatl-2-0-0-op-fc-bm-013",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2703,17 +2785,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0073"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-003"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0014",
+                        "uuid": "eatl-2-0-0-op-fc-bm-014",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2728,17 +2810,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0074"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-004"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-0015",
+                        "uuid": "eatl-2-0-0-op-fc-bm-015",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2753,17 +2835,17 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-0009"
+                                "logical-termination-point": "eatl-2-0-0-op-s-bm-009"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-0075"
+                                "logical-termination-point": "eatl-2-0-0-op-c-bm-alt-1-0-0-005"
                             }
                         ]
                     },
                     {
-                        "uuid": "eatl-0-0-1-op-fc-3000",
+                        "uuid": "eatl-2-0-0-op-fc-is-000",
                         "name": [
                             {
                                 "value-name": "ForwardingKind",
@@ -2778,57 +2860,57 @@
                             {
                                 "local-id": "000",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-001"
                             },
                             {
                                 "local-id": "001",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3002"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-002"
                             },
                             {
                                 "local-id": "100",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-s-3001"
+                                "logical-termination-point": "eatl-2-0-0-op-s-is-001"
                             },
                             {
                                 "local-id": "200",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2020"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-ro-2-0-0-004"
                             },
                             {
                                 "local-id": "201",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2030"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-tar-1-0-0-004"
                             },
                             {
                                 "local-id": "202",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2040"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-eatl-2-0-0-004"
                             },
                             {
                                 "local-id": "203",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2050"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-ol-1-0-0-004"
                             },
                             {
                                 "local-id": "204",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2060"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-aa-1-0-0-004"
                             },
                             {
                                 "local-id": "205",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2070"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-alt-1-0-0-004"
                             },
                             {
                                 "local-id": "206",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2080"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-okm-1-0-0-004"
                             },
                             {
                                 "local-id": "207",
                                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                                "logical-termination-point": "eatl-0-0-1-op-c-2300"
+                                "logical-termination-point": "eatl-2-0-0-op-c-im-cc-1-0-0-004"
                             }
                         ]
                     }
