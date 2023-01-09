@@ -346,23 +346,16 @@ exports.listRecordsOfUnsuccessful = function (body, user, originator, xCorrelato
 exports.recordServiceRequest = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     try {
-
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let serviceRecord = body;
-
-      /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let serviceProfile = await serviceRecordProfile.createProfileAsync(
-        serviceRecord
-      );
-      if (serviceProfile) {
-        await ProfileCollection.addProfileAsync(serviceProfile);
+      let indexAlias = await getIndexAliasAsync();
+      let client = await elasticsearchService.getClient();
+      let response = await client.index({
+        index: indexAlias,
+        body: body
+      });
+      if (response.body.result == 'created' || response.body.result == 'updated') {
+        resolve();
       }
-
-      resolve();
+      reject();
     } catch (error) {
       reject(error);
     }
