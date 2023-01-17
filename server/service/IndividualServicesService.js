@@ -2,42 +2,29 @@
 
 const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
-const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
 
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
-const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
 
 const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
-const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
-const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
-const responseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
 
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 
-const serviceRecordProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ServiceRecordProfile');
-const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
+const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+
 /**
  * Initiates process of embedding a new release
  *
@@ -228,6 +215,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
 /**
  * Provides list of recorded service requests
  *
+ * body V1_listrecords_body
  * user String User identifier from the system starting the service call
  * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
@@ -235,40 +223,26 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listRecords = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
+exports.listRecords = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
-    let response = {};
+    let numberOfRecords = body["number-of-records"];
+    let latest = body["latest-record"];
+    let indexAlias = await getIndexAliasAsync();
     try {
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              serviceRecordProfileList.push(serviceRecordCapability);
-            }
+      let client = await elasticsearchService.getClient();
+      const result = await client.search({
+        index: indexAlias,
+        from: latest,
+        size: numberOfRecords,
+        body: {
+          query: {
+              match_all: {}
           }
         }
-      }
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      });
+      resolve(createResultArray(result));
     } catch (error) {
       console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
@@ -277,7 +251,7 @@ exports.listRecords = function (user, originator, xCorrelator, traceIndicator, c
 /**
  * Provides list of service request records belonging to the same flow
  *
- * body V1_listrecordsofflow_body 
+ * body V1_listrecordsofflow_body
  * user String User identifier from the system starting the service call
  * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
@@ -287,45 +261,27 @@ exports.listRecords = function (user, originator, xCorrelator, traceIndicator, c
  **/
 exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
-    let response = {};
+    let numberOfRecords = body["number-of-records"];
+    let latest = body["latest-match"];
+    let desiredXCorrelator = body["x-correlator"];
+    let indexAlias = await getIndexAliasAsync();
     try {
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let flowId = body["x-correlator"];
-
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let xCorrelatorOfTheRecord = serviceRecordCapability["x-correlator"];
-              if (flowId == xCorrelatorOfTheRecord) {
-                serviceRecordProfileList.push(serviceRecordCapability);
-              }
+      let client = await elasticsearchService.getClient();
+      const result = await client.search({
+        index: indexAlias,
+        from: latest,
+        size: numberOfRecords,
+        body: {
+          query: {
+            term: {
+              "x-correlator": desiredXCorrelator
             }
           }
         }
-      }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      });
+      resolve(createResultArray(result));
     } catch (error) {
       console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
@@ -334,6 +290,7 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
 /**
  * Provides list of unsuccessful service requests
  *
+ * body V1_listrecordsofunsuccessful_body
  * user String User identifier from the system starting the service call
  * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
  * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
@@ -341,43 +298,35 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
+exports.listRecordsOfUnsuccessful = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
-    let response = {};
+    let numberOfRecords = body["number-of-records"];
+    let latest = body["latest-unsuccessful"];
+    let indexAlias = await getIndexAliasAsync();
     try {
-      
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let responseCode = (serviceRecordCapability["response-code"]).toString();
-              if (!responseCode.startsWith("2")) {
-                serviceRecordProfileList.push(serviceRecordCapability);
+      let client = await elasticsearchService.getClient();
+      const result = await client.search({
+        index: indexAlias,
+        from: latest,
+        size: numberOfRecords,
+        body: {
+          query: {
+            bool: {
+              must_not: {
+                  range: {
+                    'response-code': {
+                        gte: 200,
+                        lt: 300
+                    }
+                  }
               }
             }
           }
         }
-      }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
+      });
+      resolve(createResultArray(result));
     } catch (error) {
       console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
     }
   });
 }
