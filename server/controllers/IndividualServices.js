@@ -69,12 +69,12 @@ module.exports.listApplications = async function listApplications (req, res, nex
   } catch (error) {}
 };
 
-module.exports.listRecords = async function listRecords (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+module.exports.listRecords = async function listRecords (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
     let responseBodyToDocument = {};
-    await IndividualServices.listRecords(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+    await IndividualServices.listRecords(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -111,12 +111,12 @@ module.exports.listRecordsOfFlow = async function listRecordsOfFlow (req, res, n
   } catch (error) {}
 };
 
-module.exports.listRecordsOfUnsuccessful = async function listRecordsOfUnsuccessful (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+module.exports.listRecordsOfUnsuccessful = async function listRecordsOfUnsuccessful (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
     let responseBodyToDocument = {};
-    await IndividualServices.listRecordsOfUnsuccessful(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+    await IndividualServices.listRecordsOfUnsuccessful(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
