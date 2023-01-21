@@ -1,5 +1,8 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
+const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
+const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 
 /**
  * Returns Description of TcpServer
@@ -104,14 +107,23 @@ exports.getTcpServerLocalProtocol = function(url) {
 /**
  * Documents Description of TcpServer
  *
+ * url String
  * body Tcpserverinterfaceconfiguration_description_body
  * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpServerDescription = function(url, body) {
+exports.putTcpServerDescription = function(url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -126,10 +138,18 @@ exports.putTcpServerDescription = function(url, body) {
  * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalAddress = function (url, body) {
+exports.putTcpServerLocalAddress = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await tcpServerInterface.setLocalAddressAsync(uuid, body["tcp-server-interface-1-0:local-address"]);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -144,10 +164,18 @@ exports.putTcpServerLocalAddress = function (url, body) {
  * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalPort = function (url, body) {
+exports.putTcpServerLocalPort = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await tcpServerInterface.setLocalPortAsync(uuid, body["tcp-server-interface-1-0:local-port"]);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -158,14 +186,23 @@ exports.putTcpServerLocalPort = function (url, body) {
 /**
  * Documents Protocol of TcpServer
  *
+ * url String
  * body Tcpserverinterfaceconfiguration_localprotocol_body
  * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpServerLocalProtocol = function(url, body) {
+exports.putTcpServerLocalProtocol = function(url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();

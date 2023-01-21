@@ -59,7 +59,7 @@ module.exports.getTcpServerLocalProtocol = async function getTcpServerLocalProto
 
 module.exports.putTcpServerDescription = async function putTcpServerDescription (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpServer.putTcpServerDescription(req.url, body)
+  await TcpServer.putTcpServerDescription(req.url, body, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -72,7 +72,7 @@ module.exports.putTcpServerDescription = async function putTcpServerDescription 
 
 module.exports.putTcpServerLocalAddress = async function putTcpServerLocalAddress (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpServer.putTcpServerLocalAddress(req.url, body)
+  await TcpServer.putTcpServerLocalAddress(body, uuid)
       .then(function (response) {
         responseBuilder.buildResponse(res, responseCode, response);
       })
@@ -85,7 +85,7 @@ module.exports.putTcpServerLocalAddress = async function putTcpServerLocalAddres
 
 module.exports.putTcpServerLocalPort = async function putTcpServerLocalPort (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpServer.putTcpServerLocalPort(req.url, body)
+  await TcpServer.putTcpServerLocalPort(body, uuid)
       .then(function (response) {
         responseBuilder.buildResponse(res, responseCode, response);
       })
@@ -98,7 +98,7 @@ module.exports.putTcpServerLocalPort = async function putTcpServerLocalPort (req
 
 module.exports.putTcpServerLocalProtocol = async function putTcpServerLocalProtocol (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpServer.putTcpServerLocalProtocol(req.url, body)
+  await TcpServer.putTcpServerLocalProtocol(req.url, body, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
