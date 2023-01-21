@@ -92,7 +92,6 @@ exports.getElasticsearchClientOperationalState = function(url, uuid) {
       response['application/json'] = {
         "elasticsearch-client-interface-1-0:operational-state" : value
       };
-      await fileOperation.writeToDatabaseAsync(url, value, false);
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
       } else {
