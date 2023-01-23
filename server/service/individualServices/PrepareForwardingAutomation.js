@@ -14,7 +14,7 @@ const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfMod
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const HttpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
 
-exports.regardApplication = function (logicalTerminationPointconfigurationStatus, forwardingConstructConfigurationStatus, applicationName, releaseNumber) {
+exports.regardApplication = function (logicalTerminationPointconfigurationStatus, forwardingConstructConfigurationStatus, serviceLogOperation, applicationName, releaseNumber) {
     return new Promise(async function (resolve, reject) {
         let forwardingConstructAutomationList = [];
         try {
@@ -26,7 +26,7 @@ exports.regardApplication = function (logicalTerminationPointconfigurationStatus
             let redirectServiceRequestRequestBody = {};
             redirectServiceRequestRequestBody.serviceLogApplication = await HttpServerInterface.getApplicationNameAsync();
             redirectServiceRequestRequestBody.serviceLogApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
-            redirectServiceRequestRequestBody.serviceLogOperation = await operationServerInterface.getOperationNameAsync("eatl-0-0-1-op-s-3004");
+            redirectServiceRequestRequestBody.serviceLogOperation = serviceLogOperation;
             redirectServiceRequestRequestBody.serviceLogAddress = await tcpServerInterface.getLocalAddress();
             redirectServiceRequestRequestBody.serviceLogPort = await tcpServerInterface.getLocalPort();
             redirectServiceRequestRequestBody = onfFormatter.modifyJsonObjectKeysToKebabCase(redirectServiceRequestRequestBody);

@@ -1,7 +1,7 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
+const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
 
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
@@ -24,6 +24,9 @@ const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
+
+const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 
 /**
  * Initiates process of embedding a new release
@@ -66,7 +69,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         if (isUpdated) {
           applicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
           let operationList = [];
-          let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
+          let logicalTerminatinPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
             applicationName,
             releaseNumber,
             applicationAddress,
@@ -388,29 +391,31 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
-      let applicationAddress = body["application-address"];
-      let applicationPort = body["application-port"];
-      let inquireOamRequestOperation = "/v1/redirect-service-request-information";
+      let applicationName = body['application-name'];
+      let releaseNumber = body['release-number'];
+      const tcpInfo = [{
+        "address": body['address'],
+        "protocol": body['protocol'],
+        "port": body['port']
+      }]
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      let operationList = [
-        inquireOamRequestOperation
-      ];
-      let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
+      let operationNamesByAttributes = new Map();
+      operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
+      let logicalTerminationPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
         applicationName,
         releaseNumber,
-        applicationAddress,
-        applicationPort,
-        operationList
+        tcpInfo,
+        operationServerName,
+        operationNamesByAttributes,
+        individualServicesOperationsMapping.individualServicesOperationsMapping
       );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-        logicalTerminatinPointConfigurationInput
+      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findOrCreateApplicationInformationAsync(
+        logicalTerminationPointConfigurationInput
       );
 
 
@@ -425,7 +430,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       if (operationClientConfigurationStatusList) {
         forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
           operationClientConfigurationStatusList,
-          inquireOamRequestOperation
+          REDIRECT_SERVICE_REQUEST_OPERATION
         );
         forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
         configureForwardingConstructAsync(
@@ -440,6 +445,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
         logicalTerminationPointconfigurationStatus,
         forwardingConstructConfigurationStatus,
+        REDIRECT_SERVICE_REQUEST_OPERATION,
         applicationName,
         releaseNumber
       );
