@@ -3,59 +3,59 @@ servers:
   operation-servers:
     own-oam:
       basic:
-        - service-name: /v1/register-yourself
+        - operation-name: /v1/register-yourself
           uuid: eatl-2-0-1-op-s-bm-000
-        - service-name: /v1/embed-yourself
+        - operation-name: /v1/embed-yourself
           uuid: eatl-2-0-1-op-s-bm-001
-        - service-name: /v1/redirect-service-request-information
+        - operation-name: /v1/redirect-service-request-information
           uuid: eatl-2-0-1-op-s-bm-002
-        - service-name: /v1/redirect-oam-request-information
+        - operation-name: /v1/redirect-oam-request-information
           uuid: eatl-2-0-1-op-s-bm-003
-        - service-name: /v1/end-subscription
+        - operation-name: /v1/end-subscription
           uuid: eatl-2-0-1-op-s-bm-004
-        - service-name: /v1/inquire-oam-request-approvals
+        - operation-name: /v1/inquire-oam-request-approvals
           uuid: eatl-2-0-1-op-s-bm-005
-        - service-name: /v1/update-client
+        - operation-name: /v1/update-client
           uuid: eatl-2-0-1-op-s-bm-007
-        - service-name: /v1/list-ltps-and-fcs
+        - operation-name: /v1/list-ltps-and-fcs
           uuid: eatl-2-0-1-op-s-bm-008
-        - service-name: /v1/redirect-topology-change-information
+        - operation-name: /v1/redirect-topology-change-information
           uuid: eatl-2-0-1-op-s-bm-009
-        - service-name: /v1/update-operation-key
+        - operation-name: /v1/update-operation-key
           uuid: eatl-2-0-1-op-s-bm-010
-        - service-name: /v1/update-operation-client
+        - operation-name: /v1/update-operation-client
           uuid: eatl-2-0-1-op-s-bm-011
       individual:
-        - service-name: /v1/bequeath-your-data-and-die
+        - operation-name: /v1/bequeath-your-data-and-die
           uuid: eatl-2-0-1-op-s-im-000
     service:
       basic:
-        - service-name: /v1/start-application-in-generic-representation
+        - operation-name: /v1/start-application-in-generic-representation
           uuid: eatl-2-0-1-op-s-bs-000
-        - service-name: /v1/inform-about-application
+        - operation-name: /v1/inform-about-application
           uuid: eatl-2-0-1-op-s-bs-001
-        - service-name: /v1/inform-about-application-in-generic-representation
+        - operation-name: /v1/inform-about-application-in-generic-representation
           uuid: eatl-2-0-1-op-s-bs-002
-        - service-name: /v1/inform-about-release-history
+        - operation-name: /v1/inform-about-release-history
           uuid: eatl-2-0-1-op-s-bs-003
-        - service-name: /v1/inform-about-release-history-in-generic-representation
+        - operation-name: /v1/inform-about-release-history-in-generic-representation
           uuid: eatl-2-0-1-op-s-bs-004
-        - service-name: /docs
+        - operation-name: /docs
           uuid: eatl-2-0-1-op-s-bs-005
       individual:
-        - service-name: /v1/regard-application
+        - operation-name: /v1/regard-application
           uuid: eatl-2-0-1-op-s-is-001
-        - service-name: /v1/disregard-application
+        - operation-name: /v1/disregard-application
           uuid: eatl-2-0-1-op-s-is-002
-        - service-name: /v1/list-applications
+        - operation-name: /v1/list-applications
           uuid: eatl-2-0-1-op-s-is-003
-        - service-name: /v1/record-service-request
+        - operation-name: /v1/record-service-request
           uuid: eatl-2-0-1-op-s-is-004
-        - service-name: /v1/list-records
+        - operation-name: /v1/list-records
           uuid: eatl-2-0-1-op-s-is-005
-        - service-name: /v1/list-records-of-flow
+        - operation-name: /v1/list-records-of-flow
           uuid: eatl-2-0-1-op-s-is-006
-        - service-name: /v1/list-records-of-unsuccessful
+        - operation-name: /v1/list-records-of-unsuccessful
           uuid: eatl-2-0-1-op-s-is-007
   http-server:
     own-application-name: ExecutionAndTraceLog
@@ -96,7 +96,7 @@ clients:
     operation-clients:
       own-oam:
         basic:
-          - service-name: /v1/bequeath-your-data-and-die
+          - operation-name: /v1/bequeath-your-data-and-die
             uuid: eatl-2-0-1-op-c-bm-or-1-0-0-000
         individual:
       service:
@@ -116,7 +116,7 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/regard-application
+          - operation-name: /v1/regard-application
             uuid: eatl-2-0-1-op-c-im-nr-2-0-1-000
       service:
         basic:
@@ -134,22 +134,22 @@ clients:
     operation-clients:
       own-oam:
         basic:
-          - service-name: /v1/register-application
+          - operation-name: /v1/register-application
             uuid: eatl-2-0-1-op-c-bm-ro-2-0-1-000
-          - service-name: /v1/relay-server-replacement
+          - operation-name: /v1/relay-server-replacement
             uuid: eatl-2-0-1-op-c-bm-ro-2-0-1-001
-          - service-name: /v1/deregister-application
+          - operation-name: /v1/deregister-application
             uuid: eatl-2-0-1-op-c-bm-ro-2-0-1-002
-          - service-name: /v1/relay-operation-update
+          - operation-name: /v1/relay-operation-update
             uuid: eatl-2-0-1-op-c-bm-ro-2-0-1-003
         individual:
-          - service-name: /v1/notify-approvals
+          - operation-name: /v1/notify-approvals
             uuid: eatl-2-0-1-op-c-im-ro-2-0-1-000
-          - service-name: /v1/notify-withdrawn-approvals
+          - operation-name: /v1/notify-withdrawn-approvals
             uuid: eatl-2-0-1-op-c-im-ro-2-0-1-001
-          - service-name: /v1/end-subscription
+          - operation-name: /v1/end-subscription
             uuid: eatl-2-0-1-op-c-im-ro-2-0-1-002
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-ro-2-0-1-004
       service:
         basic:
@@ -168,7 +168,7 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-tar-1-0-0-004
       service:
         basic:
@@ -187,11 +187,11 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-eatl-2-0-1-004
       service:
         basic:
-          - service-name: /v1/record-service-request
+          - operation-name: /v1/record-service-request
             uuid: eatl-2-0-1-op-c-bs-eatl-2-0-1-000
         individual:
 
@@ -208,11 +208,11 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-ol-1-0-0-004
       service:
         basic:
-          - service-name: /v1/record-oam-request
+          - operation-name: /v1/record-oam-request
             uuid: eatl-2-0-1-op-c-bs-ol-1-0-0-000
         individual:
 
@@ -229,11 +229,11 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-aa-1-0-0-004
       service:
         basic:
-          - service-name: /v1/approve-oam-request
+          - operation-name: /v1/approve-oam-request
             uuid: eatl-2-0-1-op-c-bs-aa-1-0-0-000
         individual:
 
@@ -249,20 +249,20 @@ clients:
     operation-clients:
       own-oam:
         basic:
-          - service-name: /v1/update-all-ltps-and-fcs
+          - operation-name: /v1/update-all-ltps-and-fcs
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-000
-          - service-name: /v1/update-ltp
+          - operation-name: /v1/update-ltp
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-001
-          - service-name: /v1/delete-ltp-and-dependents
+          - operation-name: /v1/delete-ltp-and-dependents
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-002
-          - service-name: /v1/update-fc
+          - operation-name: /v1/update-fc
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-003
-          - service-name: /v1/update-fc-port
+          - operation-name: /v1/update-fc-port
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-004
-          - service-name: /v1/delete-fc-port
+          - operation-name: /v1/delete-fc-port
             uuid: eatl-2-0-1-op-c-bm-alt-1-0-0-005
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-alt-1-0-0-004
       service:
         basic:
@@ -281,7 +281,7 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-okm-1-0-0-004
       service:
         basic:
@@ -300,7 +300,7 @@ clients:
       own-oam:
         basic:
         individual:
-          - service-name: /v1/redirect-service-request-information
+          - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-0-1-op-c-im-cc-1-0-0-004
       service:
         basic:
