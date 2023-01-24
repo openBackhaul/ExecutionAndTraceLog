@@ -457,7 +457,8 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
  ****************************************************************************************/
 
 /**
- * @description This function returns list of registered application information application-name , release-number, application-address, application-port.
+ * @description This function returns list of registered application information application-name, release-number,
+ * address, protocol and port.
  * @return {Promise} return the list of application information
  * <b><u>Procedure :</u></b><br>
  * <b>step 1 :</b> Get forwarding-construct based on ForwardingName
@@ -465,59 +466,41 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
  * <b>step 3 :</b> Get fc-port list using forwarding-construct UUID
  * <b>step 4 :</b> Fetch http-client-list using logical-termination-point uuid from fc-port
  * <b>step 5 :</b> get the application name, release number and server-ltp<br>
- * <b>step 6 :</b> get the ipaddress and port name of each associated tcp-client <br>
+ * <b>step 6 :</b> get the ipaddress, port and protocol name of each associated tcp-client <br>
  **/
 function getAllApplicationList() {
   return new Promise(async function (resolve, reject) {
     let clientApplicationList = [];
     const forwardingName = "ApprovedApplicationCausesRequestForServiceRequestInformation";
     try {
-
-      /** 
-       * This class instantiate objects that holds the application name , release number, 
-       * IpAddress and port information of the registered client applications
-       */
-      let clientApplicationInformation = class ClientApplicationInformation {
-        applicationName;
-        applicationReleaseNumber;
-        applicationAddress;
-        applicationPort;
-
-        /**
-         * @constructor 
-         * @param {String} applicationName name of the client application.
-         * @param {String} applicationReleaseNumber release number of the application.
-         * @param {String} applicationAddress ip address of the application.
-         * @param {String} applicationPort port of the application.
-         **/
-        constructor(applicationName, applicationReleaseNumber, applicationAddress, applicationPort) {
-          this.applicationName = applicationName;
-          this.applicationReleaseNumber = applicationReleaseNumber;
-          this.applicationAddress = applicationAddress;
-          this.applicationPort = applicationPort;
-        }
-      };
       let forwardingConstructForTheForwardingName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName);
       let forwardingConstructUuid = forwardingConstructForTheForwardingName[onfAttributes.GLOBAL_CLASS.UUID];
       let fcPortList = await ForwardingConstruct.getFcPortListAsync(forwardingConstructUuid);
       let httpClientUuidList = []
 
-      for(let fcPortIndex = 0; fcPortIndex < fcPortList.length; fcPortIndex++){
-        if(fcPortList[fcPortIndex][onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT){
-            let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(fcPortList[fcPortIndex][onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT])
+      for (let fcPort of fcPortList) {
+        if (fcPort[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT){
+            let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT])
             httpClientUuidList = httpClientUuidList.concat(serverLtpList)
         }
       }
-      for (let i = 0; i < httpClientUuidList.length; i++) {
-        let httpClientUuid = httpClientUuidList[i];
+      for (let httpClientUuid of httpClientUuidList) {
         let applicationName = await httpClientInterface.getApplicationNameAsync(httpClientUuid);
         let applicationReleaseNumber = await httpClientInterface.getReleaseNumberAsync(httpClientUuid);
         let serverLtp = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid);
         let tcpClientUuid = serverLtp[0];
         let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(tcpClientUuid);
         let applicationPort = await tcpClientInterface.getRemotePortAsync(tcpClientUuid);
-        let clientApplication = new clientApplicationInformation(applicationName, applicationReleaseNumber, applicationAddress, applicationPort);
-        clientApplicationList.push(clientApplication);
+        let applicationProtocol = await tcpClientInterface.getRemoteProtocolAsync(tcpClientUuid)
+
+        let application = {};
+        application.applicationName = applicationName,
+        application.releaseNumber = applicationReleaseNumber,
+        application.protocol = applicationProtocol,
+        application.address = applicationAddress,
+        application.port = applicationPort,
+
+        clientApplicationList.push(application);
       }
       resolve(clientApplicationList);
     } catch (error) {
