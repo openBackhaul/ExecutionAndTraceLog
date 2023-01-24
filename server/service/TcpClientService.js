@@ -1,19 +1,22 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
+const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
+var tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 
 /**
- * Returns remote IPv4 address
+ * Returns remote address
  *
  * uuid String 
- * returns inline_response_200_28
+ * returns inline_response_200_49
  **/
-exports.getTcpClientRemoteIpv4Address = function (url) {
+exports.getTcpClientRemoteAddress = function (url) {
   return new Promise(async function (resolve, reject) {
     try {
       var value = await fileOperation.readFromDatabaseAsync(url);
       var response = {};
       response['application/json'] = {
-        "tcp-client-interface-1-0:ipv-4-address": value
+        "tcp-client-interface-1-0:remote-address": value
       };
       if (Object.keys(response).length > 0) {
         resolve(response[Object.keys(response)[0]]);
@@ -25,8 +28,6 @@ exports.getTcpClientRemoteIpv4Address = function (url) {
     }
   });
 }
-
-
 
 /**
  * Returns target TCP port at server
@@ -53,19 +54,50 @@ exports.getTcpClientRemotePort = function (url) {
   });
 }
 
+/**
+ * Returns protocol for addressing remote side
+ *
+ * uuid String
+ * returns inline_response_200_48
+ **/
+exports.getTcpClientRemoteProtocol = function(url) {
+  return new Promise(async function(resolve, reject) {
+    try {
+      var value = await fileOperation.readFromDatabaseAsync(url);
+      var response = {};
+      response['application/json'] = {
+        "tcp-client-interface-1-0:remote-protocol" : value
+      };
+      if (Object.keys(response).length > 0) {
+        resolve(response[Object.keys(response)[0]]);
+      } else {
+        resolve();
+      }
+    } catch (error) {
+      reject();
+    }
+  });
+}
 
 /**
- * Configures remote IPv4 address
+ * Configures remote address
  *
- * body Ipaddress_ipv4address_body 
- * uuid String 
+ * body Tcpclientinterfaceconfiguration_remoteaddress_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpClientRemoteIpv4Address = function (url, body) {
+exports.putTcpClientRemoteAddress = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      console.log(body);
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await tcpClientInterface.setRemoteAddressAsync(uuid, body["tcp-client-interface-1-0:remote-address"]);
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -73,18 +105,51 @@ exports.putTcpClientRemoteIpv4Address = function (url, body) {
   });
 }
 
-
 /**
  * Configures target TCP port at server
  *
- * body Tcpclientinterfaceconfiguration_remoteport_body 
- * uuid String 
+ * body Tcpclientinterfaceconfiguration_remoteport_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putTcpClientRemotePort = function (url, body) {
+exports.putTcpClientRemotePort = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await tcpClientInterface.setRemotePortAsync(uuid, body["tcp-client-interface-1-0:remote-port"])
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
+      resolve();
+    } catch (error) {
+      reject();
+    }
+  });
+}
+
+/**
+ * Configures protocol for addressing remote side
+ *
+ * body Tcpclientinterfaceconfiguration_remoteprotocol_body
+ * uuid String
+ * no response value expected for this operation
+ **/
+exports.putTcpClientRemoteProtocol = function(body, uuid) {
+  return new Promise(async function(resolve, reject) {
+    try {
+      let isUpdated = await tcpClientInterface.setRemoteProtocolAsync(uuid, body["tcp-client-interface-1-0:remote-protocol"]);
+      if(isUpdated){
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
