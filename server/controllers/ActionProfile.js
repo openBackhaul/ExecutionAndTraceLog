@@ -1,13 +1,13 @@
 'use strict';
 
-var TcpClient = require('../service/TcpClientService');
+var ActionProfile = require('../service/ActionProfileService');
 var responseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
 var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server/ResponseCode');
 var oamLogService = require('onf-core-model-ap/applicationPattern/services/OamLogService');
 
-module.exports.getTcpClientRemoteAddress = async function getTcpClientRemoteAddress(req, res, next, uuid) {
+module.exports.getActionProfileConsequentOperationReference = async function getActionProfileConsequentOperationReference (req, res, next, uuid) {
   let responseCode = responseCodeEnum.code.OK;
-  await TcpClient.getTcpClientRemoteAddress(req.url)
+  await ActionProfile.getActionProfileConsequentOperationReference(req.url)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -18,9 +18,9 @@ module.exports.getTcpClientRemoteAddress = async function getTcpClientRemoteAddr
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.getTcpClientRemotePort = async function getTcpClientRemotePort(req, res, next, uuid) {
+module.exports.getActionProfileDisplayInNewBrowserWindow = async function getActionProfileDisplayInNewBrowserWindow (req, res, next, uuid) {
   let responseCode = responseCodeEnum.code.OK;
-  await TcpClient.getTcpClientRemotePort(req.url)
+  await ActionProfile.getActionProfileDisplayInNewBrowserWindow(req.url)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -31,9 +31,9 @@ module.exports.getTcpClientRemotePort = async function getTcpClientRemotePort(re
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.getTcpClientRemoteProtocol = async function getTcpClientRemoteProtocol (req, res, next, uuid) {
+module.exports.getActionProfileInputValueListt = async function getActionProfileInputValueListt (req, res, next, uuid) {
   let responseCode = responseCodeEnum.code.OK;
-  await TcpClient.getTcpClientRemoteProtocol(req.url)
+  await ActionProfile.getActionProfileInputValueListt(req.url)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -44,9 +44,9 @@ module.exports.getTcpClientRemoteProtocol = async function getTcpClientRemotePro
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.putTcpClientRemoteAddress = async function putTcpClientRemoteAddress(req, res, next, body, uuid) {
-  let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpClient.putTcpClientRemoteAddress(body, uuid)
+module.exports.getActionProfileLabel = async function getActionProfileLabel (req, res, next, uuid) {
+  let responseCode = responseCodeEnum.code.OK;
+  await ActionProfile.getActionProfileLabel(req.url)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -57,9 +57,9 @@ module.exports.putTcpClientRemoteAddress = async function putTcpClientRemoteAddr
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.putTcpClientRemotePort = async function putTcpClientRemotePort(req, res, next, body, uuid) {
-  let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpClient.putTcpClientRemotePort(body, uuid)
+module.exports.getActionProfileOperationName = async function getActionProfileOperationName (req, res, next, uuid) {
+  let responseCode = responseCodeEnum.code.OK;
+  await ActionProfile.getActionProfileOperationName(req.url)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -70,9 +70,9 @@ module.exports.putTcpClientRemotePort = async function putTcpClientRemotePort(re
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.putTcpClientRemoteProtocol = async function putTcpClientRemoteProtocol (req, res, next, body, uuid) {
+module.exports.putActionProfileConsequentOperationReference = async function putActionProfileConsequentOperationReference (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await TcpClient.putTcpClientRemoteProtocol(body, uuid)
+  await ActionProfile.putActionProfileConsequentOperationReference(req.url, body)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
