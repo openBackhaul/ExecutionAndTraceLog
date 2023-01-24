@@ -7,6 +7,7 @@ const ForwardingConfigurationService = require('onf-core-model-ap/applicationPat
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
 
 const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
@@ -83,9 +84,11 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
           /****************************************************************************************
            * Prepare attributes to automate forwarding-construct
            ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-            logicalTerminationPointconfigurationStatus
+          let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+            logicalTerminationPointconfigurationStatus,
+            undefined
           );
+
           ForwardingAutomationService.automateForwardingConstructAsync(
             operationServerName,
             forwardingAutomationInputList,
@@ -159,10 +162,11 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.disregardApplication(
+      let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
         logicalTerminationPointconfigurationStatus,
         forwardingConstructConfigurationStatus
       );
+
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
         forwardingAutomationInputList,
@@ -435,10 +439,12 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
+      let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
         logicalTerminationPointconfigurationStatus,
-        forwardingConstructConfigurationStatus,
-        REDIRECT_SERVICE_REQUEST_OPERATION,
+        forwardingConstructConfigurationStatus
+      );
+      let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
+        applicationLayerTopologyForwardingInputList,
         applicationName,
         releaseNumber
       );
