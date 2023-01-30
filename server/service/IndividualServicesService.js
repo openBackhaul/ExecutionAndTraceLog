@@ -24,6 +24,10 @@ const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
+const OperationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
+
+const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 
 /**
  * Initiates process of embedding a new release
@@ -47,54 +51,64 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let releaseNumber = body["new-application-release"];
       let applicationAddress = body["new-application-address"];
       let applicationPort = body["new-application-port"];
+      const tcpInfo = [{
+        "address": applicationAddress,
+        "protocol": body['new-application-protocol'],
+        "port": applicationPort
+      }]
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
       let isdataTransferRequired = true;
-      let newReleaseUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-      let currentApplicationName = await httpServerInterface.getApplicationNameAsync();
-      if (currentApplicationName == applicationName) {
-        let isUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
-        let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
-        let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
-        if((applicationAddress == currentApplicationRemoteAddress) && 
-        (applicationPort == currentApplicationRemotePort)){
-          isdataTransferRequired = false;
-        }
-        if (isUpdated) {
-          applicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
-          let operationList = [];
-          let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
-            applicationName,
-            releaseNumber,
-            applicationAddress,
-            applicationPort,
-            operationList
-          );
-          let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-            logicalTerminatinPointConfigurationInput
-          );
 
-          /****************************************************************************************
-           * Prepare attributes to automate forwarding-construct
-           ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-            logicalTerminationPointconfigurationStatus
-          );
-          ForwardingAutomationService.automateForwardingConstructAsync(
-            operationServerName,
-            forwardingAutomationInputList,
-            user,
-            xCorrelator,
-            traceIndicator,
-            customerJourney
-          );
-        }        
-      } 
-      softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));  
+      let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync('PromptForBequeathingDataCausesTransferOfListOfApplications');
+      let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
+      let fcPort = fcPorts.find(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+      let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
+      let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
+      let newReleaseUuid = serverLtpList[0];
+
+      let isUpdatedAppName = await httpClientInterface.setApplicationNameAsync(newReleaseUuid, applicationName);
+      let isUpdatedReleaseNumber = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
+      let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
+      let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
+      if ((applicationAddress === currentApplicationRemoteAddress) &&
+      (applicationPort === currentApplicationRemotePort)) {
+        isdataTransferRequired = false;
+      }
+      if (isUpdatedAppName || isUpdatedReleaseNumber) {
+        let operationNamesByAttributes = new Map();
+        let logicalTerminatinPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
+          applicationName,
+          releaseNumber,
+          tcpInfo,
+          operationServerName,
+          operationNamesByAttributes,
+          individualServicesOperationsMapping.individualServicesOperationsMapping
+        );
+        let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findAndUpdateApplicationInformationAsync(
+          logicalTerminatinPointConfigurationInput
+        );
+
+        /****************************************************************************************
+         * Prepare attributes to automate forwarding-construct
+         ****************************************************************************************/
+        let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
+          logicalTerminationPointconfigurationStatus
+        );
+        ForwardingAutomationService.automateForwardingConstructAsync(
+          operationServerName,
+          forwardingAutomationInputList,
+          user,
+          xCorrelator,
+          traceIndicator,
+          customerJourney
+        );
+      }
+      softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney)
+        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       resolve();
     } catch (error) {
       reject(error);

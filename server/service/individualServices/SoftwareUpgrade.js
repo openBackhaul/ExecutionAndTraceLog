@@ -9,54 +9,34 @@ const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfMod
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
+const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
-const OperationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
-const OperationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
-const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
+
+const NOTIFY_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease';
+const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease';
+
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
  * of the application and bring the new release official
  * @param {boolean} isdataTransferRequired represents true if data transfer is required
+ * @param {String} newReleaseUuid UUID of new Release
  * @param {String} user User identifier from the system starting the service call
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  * **/
-exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney) {
+exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             if (isdataTransferRequired) {
-               await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+                await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
             }
-            await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-/**
- * This method performs the data transfer from the current instance to the new instance
- * @param {String} user User identifier from the system starting the service call
- * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
- * @param {String} traceIndicator Sequence of request numbers along the flow
- * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * The following are the list of forwarding-construct that will be automated to transfer the data from this current release to next release
- * 1. PromptForBequeathingDataCausesTransferOfListOfApplications
- * 2. PromptForBequeathingDataCausesTransferOfListOfRecords
- */
-async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesTransferOfListOfRecords(user, xCorrelator, traceIndicator, customerJourney);
+            await redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
+            await replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
             resolve();
         } catch (error) {
             reject(error);
@@ -76,11 +56,11 @@ async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, cu
  * 2. PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease
  * 3. PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease
  */
-async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
-            await PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+            await PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
+            await PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
             await PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
             resolve();
         } catch (error) {
@@ -99,11 +79,11 @@ async function redirectNotificationNewRelease(user, xCorrelator, traceIndicator,
  * 1. PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
  * 2. PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
  */
-async function replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
-            await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney);
-            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney);
+            await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
+            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
             resolve();
         } catch (error) {
             reject(error);
@@ -117,41 +97,27 @@ async function replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
 async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfApplications";
-
-            /***********************************************************************************
-             * Preparing requestBody and transfering the data one by one
-             ************************************************************************************/
-
             let inquiryForApplicationTypeApprovalFCName = "ApprovedApplicationCausesRequestForServiceRequestInformation";
             let forwardingConstructInstance = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(inquiryForApplicationTypeApprovalFCName);
             let operationClientUuidList = getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance);
 
-            for (let i = 0; i < operationClientUuidList.length; i++) {
+            for (let operationClientUuid of operationClientUuidList) {
                 try {
-                    let operationClientUuid = operationClientUuidList[i];
                     let httpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid))[0];
                     let tcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid))[0];
-
-                    let applicationName = await httpClientInterface.getApplicationNameAsync(httpClientUuid);
-                    let releaseNumber = await httpClientInterface.getReleaseNumberAsync(httpClientUuid);
-                    let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(tcpClientUuid);
-                    let applicationPort = await tcpClientInterface.getRemotePortAsync(tcpClientUuid);
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesTransferOfListOfApplications
-                     *   /v1/regard-application
-                     ************************************************************************************/
                     let requestBody = {};
-                    requestBody.applicationName = applicationName;
-                    requestBody.applicationReleaseNumber = releaseNumber;
-                    requestBody.applicationAddress = applicationAddress;
-                    requestBody.applicationPort = applicationPort;
+                    requestBody.applicationName = await httpClientInterface.getApplicationNameAsync(httpClientUuid);
+                    requestBody.releaseNumber = await httpClientInterface.getReleaseNumberAsync(httpClientUuid);
+                    requestBody.address = await tcpClientInterface.getRemoteAddressAsync(tcpClientUuid);
+                    requestBody.port = await tcpClientInterface.getRemotePortAsync(tcpClientUuid);
+                    requestBody.protocol = await tcpClientInterface.getRemoteProtocolAsync(tcpClientUuid);
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
@@ -178,101 +144,30 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
 }
 
 /**
- * Prepare attributes and automate PromptForBequeathingDataCausesTransferOfListOfRecords<br>
- * @param {String} user User identifier from the system starting the service call
- * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
- * @param {String} traceIndicator Sequence of request numbers along the flow
- * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
- */
-async function PromptForBequeathingDataCausesTransferOfListOfRecords(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            let result = true;
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfRecords";
-
-            /***********************************************************************************
-             * Preparing requestBody and transfering the data one by one
-             ************************************************************************************/
-
-            let serviceRecordProfileList = await ProfileCollection.getProfileListAsync();
-            for (let i = 0; i < serviceRecordProfileList.length; i++) {
-                try {
-                    let serviceRecordProfile = serviceRecordProfileList[i];
-                    let serviceRecordProfileName = serviceRecordProfile[onfAttributes.PROFILE.PROFILE_NAME];
-                    if (serviceRecordProfileName == profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-                        let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-                        let serviceRecordProfileCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-                        /***********************************************************************************
-                         * PromptForBequeathingDataCausesTransferOfListOfRecords
-                         *   /v1/record-service-request
-                         ************************************************************************************/
-                        let requestBody = serviceRecordProfileCapability;
-                        result = await forwardRequest(
-                            forwardingKindNameOfTheBequeathOperation,
-                            requestBody,
-                            user,
-                            xCorrelator,
-                            traceIndicator,
-                            customerJourney
-                        );
-                        if (!result) {
-                            throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
-                    throw "operation is not success";
-                }
-            }
-            resolve(result);
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-/**
  * Prepare attributes and automate PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease
  * @param {String} user User identifier from the system starting the service call
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease";
-
-            /***********************************************************************************
-             * Preparing requestBody 
-             ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
-
-                let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
-                let regardApplicationOperation = await OperationServerInterface.getOperationNameAsync("eatl-0-0-1-op-s-3001");
-                let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
-                let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
-
-                /***********************************************************************************
-                 * PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease
-                 *   /v1/inquire-application-type-approvals
-                 ************************************************************************************/
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
                 let requestBody = {};
-                requestBody.subscriberApplication = applicationName;
-                requestBody.subscriberReleaseNumber = releaseNumber;
-                requestBody.subscriberOperation = regardApplicationOperation;
-                requestBody.subscriberAddress = applicationAddress;
-                requestBody.subscriberPort = applicationPort;
+                requestBody.subscriberApplication = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
+                requestBody.subscriberReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
+                requestBody.subscriberOperation = "/v1/regard-application";
+                requestBody.subscriberProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+                requestBody.subscriberAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
+                requestBody.subscriberPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
+
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
-                    forwardingKindNameOfTheBequeathOperation,
+                    NOTIFY_APPROVALS_FD_NAME,
                     requestBody,
                     user,
                     xCorrelator,
@@ -280,9 +175,8 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
                 }
-
             } catch (error) {
                 console.log(error);
                 throw "operation is not success";
@@ -301,41 +195,24 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease";
-
-            /***********************************************************************************
-             * Preparing requestBody 
-             ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
-
-                let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let releaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
-                let disregardApplicationOperation = await OperationServerInterface.getOperationNameAsync("eatl-0-0-1-op-s-3002");
-                let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
-                let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
-
-                /***********************************************************************************
-                 * PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease
-                 *   /v1/withdrawn-approval-notification
-                 ************************************************************************************/
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
                 let requestBody = {};
-                requestBody.subscriberApplication = applicationName;
-                requestBody.subscriberReleaseNumber = releaseNumber;
-                requestBody.subscriberOperation = disregardApplicationOperation;
-                requestBody.subscriberAddress = applicationAddress;
-                requestBody.subscriberPort = applicationPort;
+                requestBody.subscriberApplication = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
+                requestBody.subscriberReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
+                requestBody.subscriberOperation =  "/v1/disregard-application";
+                requestBody.subscriberProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+                requestBody.subscriberAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
+                requestBody.subscriberPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
-                    forwardingKindNameOfTheBequeathOperation,
+                    NOTIFY_WITHDRAWN_APPROVALS_FD_NAME,
                     requestBody,
                     user,
                     xCorrelator,
@@ -343,9 +220,8 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_WITHDRAWN_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
                 }
-
             } catch (error) {
                 console.log(error);
                 throw "operation is not success";
@@ -364,7 +240,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
 async function PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
@@ -373,27 +249,13 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease";
 
             let listOfOperationToBeUnsubscribed = [];
-            let approvalOperationName = await operationClientInterface.getOperationNameAsync("eatl-0-0-1-op-c-3020");
-            let deregistrationOperationName = await operationClientInterface.getOperationNameAsync("eatl-0-0-1-op-c-3021");
-            listOfOperationToBeUnsubscribed.push(approvalOperationName);
-            listOfOperationToBeUnsubscribed.push(deregistrationOperationName);
-            /***********************************************************************************
-             * Preparing requestBody 
-             ************************************************************************************/
+            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_APPROVALS_FD_NAME));
+            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_WITHDRAWN_APPROVALS_FD_NAME));
             try {
-                for (let i = 0; i < listOfOperationToBeUnsubscribed.length; i++) {
-
-                    let applicationName = await httpServerInterface.getApplicationNameAsync();
-                    let releaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                    let subscriptionName = listOfOperationToBeUnsubscribed[i];
-
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease
-                     *   /v1/end-subscription
-                     ************************************************************************************/
+                for (let subscriptionName of listOfOperationToBeUnsubscribed) {
                     let requestBody = {};
-                    requestBody.subscriberApplication = applicationName;
-                    requestBody.subscriberReleaseNumber = releaseNumber;
+                    requestBody.subscriberApplication = await httpServerInterface.getApplicationNameAsync();
+                    requestBody.subscriberReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
                     requestBody.subscription = subscriptionName;
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
@@ -427,38 +289,23 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(user, xCorrelator, traceIndicator, customerJourney) {
+async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement";
-
-            /***********************************************************************************
-             * Preparing requestBody 
-             ************************************************************************************/
             try {
-
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpClientUuid))[0];
-
-                let applicationName = await httpServerInterface.getApplicationNameAsync();
-                let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
-                let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
-                let applicationPort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
-
-                /***********************************************************************************
-                 * PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
-                 *   /v1/relay-server-replacement
-                 ************************************************************************************/
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
                 let requestBody = {};
-                requestBody.applicationName = applicationName;
-                requestBody.oldApplicationReleaseNumber = oldReleaseNumber;
-                requestBody.newApplicationReleaseNumber = newReleaseNumber;
-                requestBody.newApplicationAddress = applicationAddress;
-                requestBody.newApplicationPort = applicationPort;
+                requestBody.currentApplicationName = await httpServerInterface.getApplicationNameAsync();
+                requestBody.currentReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
+                requestBody.futureApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
+                requestBody.futureReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
+                requestBody.futureProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpClientUuid);
+                requestBody.futureAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpClientUuid);
+                requestBody.futurePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpClientUuid);
                 requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                 result = await forwardRequest(
                     forwardingKindNameOfTheBequeathOperation,
@@ -490,30 +337,20 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
  * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
  * @param {String} traceIndicator Sequence of request numbers along the flow
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
+ * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease";
-
-            /***********************************************************************************
-             * Preparing requestBody 
-             ************************************************************************************/
             try {
-                let newReleaseHttpClientUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-                let oldApplicationName = await httpServerInterface.getApplicationNameAsync();
                 let oldReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpClientUuid);
+                let newReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
                 if (oldReleaseNumber != newReleaseNumber) {
-                    /***********************************************************************************
-                     * PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
-                     *   /v1/relay-server-replacement
-                     ************************************************************************************/
                     let requestBody = {};
-                    requestBody.applicationName = oldApplicationName;
-                    requestBody.applicationReleaseNumber = oldReleaseNumber;
+                    requestBody.applicationName = await httpServerInterface.getApplicationNameAsync();
+                    requestBody.releaseNumber = oldReleaseNumber;
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
@@ -539,10 +376,21 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
     });
 }
 
-
 /****************************************************************************************
- * Functions utilized by individual services
+ * Functions utilized by software upgrade
  ****************************************************************************************/
+async function getOperationNamesOutOfForwardingKindNameAsync(forwardingKindNameOfTheBequeathOperation) {
+    let operationNamesList = [];
+    let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingKindNameOfTheBequeathOperation);
+    let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
+    let filteredFcPorts = fcPorts.filter(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+    for (let fcOutputPort of filteredFcPorts) {
+        let operationName = await operationClientInterface.getOperationNameAsync(fcOutputPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT]);
+        operationNamesList.push(operationName);
+    }
+    return operationNamesList;
+}
+
 function getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance) {
     try {
         let fcPortOutputLogicalTerminationPointList = [];
@@ -564,7 +412,7 @@ function getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance)
 
 /**
  * @description This function automates the forwarding construct by calling the appropriate call back operations based on the fcPort input and output directions.
- * @param {String} operationServerUuid operation server uuid of the request url
+ * @param {String} forwardingKindName
  * @param {list}   attributeList list of attributes required during forwarding construct automation(to send in the request body)
  * @param {String} user user who initiates this request
  * @param {string} originator originator of the request
