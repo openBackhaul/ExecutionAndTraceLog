@@ -1,6 +1,6 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
-const elasticsearchService = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const { elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 
 /**
  * Returns API key
