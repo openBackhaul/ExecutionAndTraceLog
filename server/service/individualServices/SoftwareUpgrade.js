@@ -31,32 +31,10 @@ exports.upgradeSoftwareVersion = async function (isdataTransferRequired, user, x
     return new Promise(async function (resolve, reject) {
         try {
             if (isdataTransferRequired) {
-               await transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney);
+                await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
             }
             await redirectNotificationNewRelease(user, xCorrelator, traceIndicator, customerJourney);
             await replaceOldReleaseWithNewRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-/**
- * This method performs the data transfer from the current instance to the new instance
- * @param {String} user User identifier from the system starting the service call
- * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
- * @param {String} traceIndicator Sequence of request numbers along the flow
- * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * The following are the list of forwarding-construct that will be automated to transfer the data from this current release to next release
- * 1. PromptForBequeathingDataCausesTransferOfListOfApplications
- * 2. PromptForBequeathingDataCausesTransferOfListOfRecords
- */
-async function transferDataToTheNewRelease(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesTransferOfListOfRecords(user, xCorrelator, traceIndicator, customerJourney);
             resolve();
         } catch (error) {
             reject(error);
@@ -165,61 +143,6 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
                         throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
                     }
 
-                } catch (error) {
-                    console.log(error);
-                    throw "operation is not success";
-                }
-            }
-            resolve(result);
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-/**
- * Prepare attributes and automate PromptForBequeathingDataCausesTransferOfListOfRecords<br>
- * @param {String} user User identifier from the system starting the service call
- * @param {String} xCorrelator UUID for the service execution flow that allows to correlate requests and responses
- * @param {String} traceIndicator Sequence of request numbers along the flow
- * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
- * @returns {boolean} return true if the operation is success or else return false
- */
-async function PromptForBequeathingDataCausesTransferOfListOfRecords(user, xCorrelator, traceIndicator, customerJourney) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            let result = true;
-            let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfRecords";
-
-            /***********************************************************************************
-             * Preparing requestBody and transfering the data one by one
-             ************************************************************************************/
-
-            let serviceRecordProfileList = await ProfileCollection.getProfileListAsync();
-            for (let i = 0; i < serviceRecordProfileList.length; i++) {
-                try {
-                    let serviceRecordProfile = serviceRecordProfileList[i];
-                    let serviceRecordProfileName = serviceRecordProfile[onfAttributes.PROFILE.PROFILE_NAME];
-                    if (serviceRecordProfileName == profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-                        let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-                        let serviceRecordProfileCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-                        /***********************************************************************************
-                         * PromptForBequeathingDataCausesTransferOfListOfRecords
-                         *   /v1/record-service-request
-                         ************************************************************************************/
-                        let requestBody = serviceRecordProfileCapability;
-                        result = await forwardRequest(
-                            forwardingKindNameOfTheBequeathOperation,
-                            requestBody,
-                            user,
-                            xCorrelator,
-                            traceIndicator,
-                            customerJourney
-                        );
-                        if (!result) {
-                            throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
-                        }
-                    }
                 } catch (error) {
                     console.log(error);
                     throw "operation is not success";
