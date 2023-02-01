@@ -62,13 +62,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * configure logical-termination-point
        ****************************************************************************************/
       let isdataTransferRequired = true;
-
-      let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync('PromptForBequeathingDataCausesTransferOfListOfApplications');
-      let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
-      let fcPort = fcPorts.find(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
-      let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
-      let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
-      let newReleaseUuid = serverLtpList[0];
+      let newReleaseUuid = await trackNewRelease();
 
       let isUpdatedAppName = await httpClientInterface.setApplicationNameAsync(newReleaseUuid, applicationName);
       let isUpdatedReleaseNumber = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
@@ -475,6 +469,15 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
 /****************************************************************************************
  * Functions utilized by individual services
  ****************************************************************************************/
+
+async function trackNewRelease() {
+  let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync('PromptForBequeathingDataCausesTransferOfListOfApplications');
+  let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
+  let fcPort = fcPorts.find(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+  let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
+  let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
+  return serverLtpList[0];
+}
 
 /**
  * @description This function returns list of registered application information application-name, release-number,
