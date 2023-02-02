@@ -2,7 +2,9 @@
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
-var tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
+const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
+const prepareElasticsearch = require('./individualServices/ElasticsearchPreparation');
+const { isTcpClientElasticsearch } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 
 /**
  * Returns remote address
@@ -89,14 +91,21 @@ exports.getTcpClientRemoteProtocol = function(url) {
 exports.putTcpClientRemoteAddress = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      let isUpdated = await tcpClientInterface.setRemoteAddressAsync(uuid, body["tcp-client-interface-1-0:remote-address"]);
-      if(isUpdated){
-        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
-          uuid
-        );
-        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
-          forwardingAutomationInputList
-        );
+      let oldValue = await tcpClientInterface.getRemoteAddressAsync(uuid);
+      let newValue = body["tcp-client-interface-1-0:remote-address"];
+      if (oldValue !== newValue) {
+        let isUpdated = await tcpClientInterface.setRemoteAddressAsync(uuid, newValue);
+        if(isUpdated){
+          let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+            uuid
+          );
+          ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+            forwardingAutomationInputList
+          );
+          if (isTcpClientElasticsearch(uuid)) {
+            await prepareElasticsearch();
+          }
+        }
       }
       resolve();
     } catch (error) {
@@ -115,14 +124,21 @@ exports.putTcpClientRemoteAddress = function (body, uuid) {
 exports.putTcpClientRemotePort = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      let isUpdated = await tcpClientInterface.setRemotePortAsync(uuid, body["tcp-client-interface-1-0:remote-port"])
-      if(isUpdated){
-        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
-          uuid
-        );
-        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
-          forwardingAutomationInputList
-        );
+      let oldValue = await tcpClientInterface.getRemotePortAsync(uuid);
+      let newValue = body["tcp-client-interface-1-0:remote-port"];
+      if (oldValue !== newValue) {
+        let isUpdated = await tcpClientInterface.setRemotePortAsync(uuid, newValue);
+        if(isUpdated){
+          let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+            uuid
+          );
+          ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+            forwardingAutomationInputList
+          );
+          if (isTcpClientElasticsearch(uuid)) {
+            await prepareElasticsearch();
+          }
+        }
       }
       resolve();
     } catch (error) {
@@ -141,14 +157,21 @@ exports.putTcpClientRemotePort = function (body, uuid) {
 exports.putTcpClientRemoteProtocol = function(body, uuid) {
   return new Promise(async function(resolve, reject) {
     try {
-      let isUpdated = await tcpClientInterface.setRemoteProtocolAsync(uuid, body["tcp-client-interface-1-0:remote-protocol"]);
-      if(isUpdated){
-        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
-          uuid
-        );
-        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
-          forwardingAutomationInputList
-        );
+      let oldValue = await tcpClientInterface.getRemoteProtocolAsync(uuid);
+      let newValue = body["tcp-client-interface-1-0:remote-protocol"];
+      if (oldValue !== newValue) {
+        let isUpdated = await tcpClientInterface.setRemoteProtocolAsync(uuid, newValue);
+        if(isUpdated){
+          let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+            uuid
+          );
+          ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+            forwardingAutomationInputList
+          );
+          if (isTcpClientElasticsearch(uuid)) {
+            await prepareElasticsearch();
+          }
+        }
       }
       resolve();
     } catch (error) {

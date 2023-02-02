@@ -1,6 +1,7 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
-const { elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const { elasticsearchService, getApiKeyAsync, getIndexAliasAsync } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const prepareElasticsearch = require('./individualServices/ElasticsearchPreparation');
 
 /**
  * Returns API key
@@ -135,10 +136,14 @@ exports.getElasticsearchClientServiceRecordsPolicy = function(uuid) {
  * url String
  * no response value expected for this operation
  **/
-exports.putElasticsearchClientApiKey = function(url, body) {
+exports.putElasticsearchClientApiKey = function(url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let oldValue = await getApiKeyAsync(uuid);
+      if (oldValue !== body["elasticsearch-client-interface-1-0:api-key"]) {
+        await fileOperation.writeToDatabaseAsync(url, body, false);
+        await prepareElasticsearch();
+      }
       resolve();
     } catch (error) {
       reject();
@@ -153,10 +158,14 @@ exports.putElasticsearchClientApiKey = function(url, body) {
  * url String
  * no response value expected for this operation
  **/
-exports.putElasticsearchClientIndexAlias = function(url, body) {
+exports.putElasticsearchClientIndexAlias = function(url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let oldValue = await getIndexAliasAsync(uuid);
+      if (oldValue !== body["elasticsearch-client-interface-1-0:index-alias"]) {
+        await fileOperation.writeToDatabaseAsync(url, body, false);
+        await prepareElasticsearch();
+      }
       resolve();
     } catch (error) {
       reject();
