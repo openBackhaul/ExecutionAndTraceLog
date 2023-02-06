@@ -72,7 +72,7 @@ module.exports.getElasticsearchClientServiceRecordsPolicy = async function getEl
 
 module.exports.putElasticsearchClientApiKey = async function putElasticsearchClientApiKey (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await ElasticsearchClient.putElasticsearchClientApiKey(req.url, body)
+  await ElasticsearchClient.putElasticsearchClientApiKey(req.url, body, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
@@ -85,7 +85,7 @@ module.exports.putElasticsearchClientApiKey = async function putElasticsearchCli
 
 module.exports.putElasticsearchClientIndexAlias = async function putElasticsearchClientIndexAlias (req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
-  await ElasticsearchClient.putElasticsearchClientIndexAlias(req.url, body)
+  await ElasticsearchClient.putElasticsearchClientIndexAlias(req.url, body, uuid)
     .then(function (response) {
       responseBuilder.buildResponse(res, responseCode, response);
     })
