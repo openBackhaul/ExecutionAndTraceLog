@@ -9,7 +9,6 @@ const prepareForwardingConfiguration = require('./individualServices/PrepareForw
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
 const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
 
-const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
@@ -17,6 +16,8 @@ const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfM
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
+const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
+const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
@@ -43,64 +44,94 @@ const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-informa
 exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
+      let newApplicationName = body["new-application-name"];
+      let newReleaseNumber = body["new-application-release"];
+      let newAddress = body["new-application-address"];
+      let newPort = body["new-application-port"];
+      let newProtocol = body['new-application-protocol'];
+
+      let newReleaseHttpUuid = await trackNewRelease();
+      let newReleaseTcpUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpUuid))[0];
+
+      /**
+       * Current values in NewRelease client.
+       */
+      let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpUuid);
+      let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpUuid);
+      let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpUuid);
+      let currentRemoteProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpUuid);
+      let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpUuid);
+
+      /**
+       * Update only data that needs to be updated, comparing incoming values with values set in
+       * NewRelease client.
+       */
+      let isUpdated = {};
+      if (newApplicationName !== currentApplicationName) {
+        isUpdated.applicationName = await httpClientInterface.setApplicationNameAsync(newReleaseHttpUuid, newApplicationName)
+      }
+      if (newReleaseNumber !== currentReleaseNumber) {
+        isUpdated.releaseNumber = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpUuid, newReleaseNumber);
+      }
+      if (newAddress["ip-address"]["ipv-4-address"] !== currentRemoteAddress["ip-address"]["ipv-4-address"]) {
+        isUpdated.address = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpUuid, newAddress);
+      }
+      if (newPort !== currentRemotePort) {
+        isUpdated.port = await tcpClientInterface.setRemotePortAsync(newReleaseTcpUuid, newPort);
+      }
+      if (newProtocol !== currentRemoteProtocol){
+        isUpdated.protocol = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpUuid, newProtocol);
+      }
+
+      /**
+       * Data transfer is not required if the address and port didn't change (Comparing NewRelease
+       * with current application).
+       */
+      let isDataTransferRequired = true;
+      let address = await TcpServerInterface.getLocalAddress();
+      let port = await TcpServerInterface.getLocalPort();
+      if ((currentRemoteAddress["ip-address"]["ipv-4-address"] === address["ip-address"]["ipv-4-address"])
+        && (currentRemotePort === port)) {
+        isDataTransferRequired = false;
+      }
+
+      /**
+       * Updating the Configuration Status based on the application information updated
+       */
+      let tcpClientConfigurationStatus = new ConfigurationStatus(
+        newReleaseTcpUuid,
+        '',
+        (isUpdated.address || isUpdated.port || isUpdated.protocol)
+      );
+      let httpClientConfigurationStatus = new ConfigurationStatus(
+        newReleaseHttpUuid,
+        '',
+        (isUpdated.applicationName || isUpdated.releaseNumber)
+      );
+
+      let logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
+        false,
+        httpClientConfigurationStatus,
+        [tcpClientConfigurationStatus]
+      );
 
       /****************************************************************************************
-       * Setting up required local variables from the request body
+       * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let applicationName = body["new-application-name"];
-      let releaseNumber = body["new-application-release"];
-      let applicationAddress = body["new-application-address"];
-      let applicationPort = body["new-application-port"];
+      let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
+        logicalTerminationPointConfigurationStatus
+      );
+      ForwardingAutomationService.automateForwardingConstructAsync(
+        operationServerName,
+        forwardingAutomationInputList,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      );
 
-      /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
-       * configure logical-termination-point
-       ****************************************************************************************/
-      let isdataTransferRequired = true;
-      let newReleaseUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-      let currentApplicationName = await httpServerInterface.getApplicationNameAsync();
-      if (currentApplicationName == applicationName) {
-        let isUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
-        let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
-        let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
-        if((applicationAddress == currentApplicationRemoteAddress) && 
-        (applicationPort == currentApplicationRemotePort)){
-          isdataTransferRequired = false;
-        }
-        if (isUpdated) {
-          applicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
-          let operationList = [];
-          let logicalTerminatinPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
-            applicationName,
-            releaseNumber,
-            applicationAddress,
-            applicationPort,
-            operationList
-          );
-          let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-            logicalTerminatinPointConfigurationInput
-          );
-
-          /****************************************************************************************
-           * Prepare attributes to automate forwarding-construct
-           ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
-            logicalTerminationPointconfigurationStatus,
-            undefined
-          );
-
-          ForwardingAutomationService.automateForwardingConstructAsync(
-            operationServerName,
-            forwardingAutomationInputList,
-            user,
-            xCorrelator,
-            traceIndicator,
-            customerJourney
-          );
-        }        
-      } 
-      softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));  
+      softwareUpgrade.upgradeSoftwareVersion(isDataTransferRequired, newReleaseHttpUuid, user, xCorrelator, traceIndicator, customerJourney)
+        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       resolve();
     } catch (error) {
       reject(error);
@@ -467,6 +498,15 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
 /****************************************************************************************
  * Functions utilized by individual services
  ****************************************************************************************/
+
+async function trackNewRelease() {
+  let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync('PromptForBequeathingDataCausesTransferOfListOfApplications');
+  let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
+  let fcPort = fcPorts.find(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+  let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
+  let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
+  return serverLtpList[0];
+}
 
 /**
  * @description This function returns list of registered application information application-name, release-number,
