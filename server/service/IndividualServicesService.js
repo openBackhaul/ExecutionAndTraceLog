@@ -238,7 +238,7 @@ exports.listRecords = function (body, user, originator, xCorrelator, traceIndica
     let latest = body["latest-record"];
     let indexAlias = await getIndexAliasAsync();
     try {
-      let client = await elasticsearchService.getClient();
+      let client = await elasticsearchService.getClient(false);
       const result = await client.search({
         index: indexAlias,
         from: latest,
@@ -275,7 +275,7 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
     let desiredXCorrelator = body["x-correlator"];
     let indexAlias = await getIndexAliasAsync();
     try {
-      let client = await elasticsearchService.getClient();
+      let client = await elasticsearchService.getClient(false);
       const result = await client.search({
         index: indexAlias,
         from: latest,
@@ -313,7 +313,7 @@ exports.listRecordsOfUnsuccessful = function (body, user, originator, xCorrelato
     let latest = body["latest-unsuccessful"];
     let indexAlias = await getIndexAliasAsync();
     try {
-      let client = await elasticsearchService.getClient();
+      let client = await elasticsearchService.getClient(false);
       const result = await client.search({
         index: indexAlias,
         from: latest,
@@ -356,7 +356,7 @@ exports.recordServiceRequest = function (body, user, originator, xCorrelator, tr
   return new Promise(async function (resolve, reject) {
     try {
       let indexAlias = await getIndexAliasAsync();
-      let client = await elasticsearchService.getClient();
+      let client = await elasticsearchService.getClient(false);
       let response = await client.index({
         index: indexAlias,
         body: body
