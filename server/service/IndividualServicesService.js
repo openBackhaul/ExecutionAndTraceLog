@@ -117,8 +117,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-        logicalTerminationPointConfigurationStatus
+      let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+        logicalTerminationPointConfigurationStatus,
+        undefined
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
