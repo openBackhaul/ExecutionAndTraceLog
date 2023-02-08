@@ -142,6 +142,8 @@ exports.putElasticsearchClientApiKey = function(url, body, uuid) {
       let oldValue = await getApiKeyAsync(uuid);
       if (oldValue !== body["elasticsearch-client-interface-1-0:api-key"]) {
         await fileOperation.writeToDatabaseAsync(url, body, false);
+        // recreate the client with new connection data
+        await elasticsearchService.getClient(true, uuid);
         await prepareElasticsearch();
       }
       resolve();
@@ -162,9 +164,14 @@ exports.putElasticsearchClientIndexAlias = function(url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
       let oldValue = await getIndexAliasAsync(uuid);
+      let oldPolicy = await elasticsearchService.getElasticsearchClientServiceRecordsPolicyAsync(uuid);
       if (oldValue !== body["elasticsearch-client-interface-1-0:index-alias"]) {
         await fileOperation.writeToDatabaseAsync(url, body, false);
         await prepareElasticsearch();
+        // we need to reassign policy associated with the old alias to the new
+        if (oldPolicy) {
+          await elasticsearchService.assignPolicyToIndexTemplate(oldPolicy["service-records-policy-name"], uuid);
+        }
       }
       resolve();
     } catch (error) {
@@ -184,6 +191,8 @@ exports.putElasticsearchClientServiceRecordsPolicy = function(uuid, body) {
   return new Promise(async function(resolve, reject) {
     try {
       await elasticsearchService.putElasticsearchClientServiceRecordsPolicyAsync(uuid, body);
+      let policy = body["elasticsearch-client-interface-1-0:service-records-policy"];
+      await elasticsearchService.assignPolicyToIndexTemplate(policy["service-records-policy-name"], uuid);
       resolve();
     } catch (error) {
       reject();
