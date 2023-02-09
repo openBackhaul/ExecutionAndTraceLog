@@ -73,7 +73,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       if (newReleaseNumber !== currentReleaseNumber) {
         isUpdated.releaseNumber = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpUuid, newReleaseNumber);
       }
-      if (newAddress["ip-address"]["ipv-4-address"] !== currentRemoteAddress["ip-address"]["ipv-4-address"]) {
+      if (isAddressChanged(currentRemoteAddress, newAddress)) {
         isUpdated.address = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpUuid, newAddress);
       }
       if (newPort !== currentRemotePort) {
@@ -90,8 +90,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let isDataTransferRequired = true;
       let address = await TcpServerInterface.getLocalAddress();
       let port = await TcpServerInterface.getLocalPort();
-      if ((currentRemoteAddress["ip-address"]["ipv-4-address"] === address["ip-address"]["ipv-4-address"])
-        && (currentRemotePort === port)) {
+      if (!isAddressChanged(currentRemoteAddress, address) && (currentRemotePort === port)) {
         isDataTransferRequired = false;
       }
 
@@ -118,8 +117,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-        logicalTerminationPointConfigurationStatus
+      let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+        logicalTerminationPointConfigurationStatus,
+        undefined
       );
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
@@ -506,6 +506,22 @@ async function trackNewRelease() {
   let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
   let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
   return serverLtpList[0];
+}
+
+function isAddressChanged(currentAddress, newAddress) {
+  let currentIp = currentAddress[onfAttributes.TCP_CLIENT.IP_ADDRESS];
+  let currentIpv4;
+  if (currentIp) {
+    currentIpv4 = currentIp[onfAttributes.TCP_CLIENT.IPV_4_ADDRESS];
+  }
+  let currentDomain = currentAddress[onfAttributes.TCP_CLIENT.DOMAIN_NAME];
+  let newIp = newAddress[onfAttributes.TCP_CLIENT.IP_ADDRESS];
+  let newIpv4;
+  if (newIp) {
+    newIpv4 = newIp[onfAttributes.TCP_CLIENT.IPV_4_ADDRESS];
+  }
+  let newDomain = newAddress[onfAttributes.TCP_CLIENT.DOMAIN_NAME];
+  return (currentIpv4 !== newIpv4) || (currentDomain !== newDomain);
 }
 
 /**
