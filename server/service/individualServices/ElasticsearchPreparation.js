@@ -1,72 +1,59 @@
 const { elasticsearchService, getIndexAliasAsync, operationalStateEnum } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 
 /**
- * @description What needs to be configured on Elasticsearch to properly integrated with EATL
- * 1. Service policy. The name is relevant only for step 2. 
- * @example PUT _ilm/policy/eatl_service_records_policy
- * {
- *   "policy": {
- *     "phases": {
- *       "hot": {
- *         "actions": {
- *           "rollover" : {
- *             "max_age": "2m"
- *           }
- *         }
- *       },
- *       "delete": {
- *         "min_age": "2m",
- *         "actions": {
- *           "delete": {}
- *         }
- *       }
- *     }
- *   }
- * }
- * 2. Index template. Index_pattern MUST be '<index_alias>-*' in order to match all
- * the indexes under configured index alias. Rollover_alias MUST match configured 
- * index alias. You can use REST API to find configured index alias.
- * 
- * lifecycle.name MUST match service policy name from step 1.
+ * @description Elasticsearch preparation. Checks if ES instance is configured properly.
+ * As first step, tries pinging the ES instance. If this doesn't work, ES
+ * is considered not reachable or configured with wrong connection parameters.
  *
- * @example PUT _index_template/eatl_service_records
- * {
- *   "index_patterns": "eatl-2-0-0-*",
- *   "template": {
- *     "settings": {
- *       "index.lifecycle.name": "eatl_service_records_policy",
- *       "index.lifecycle.rollover_alias": "eatl-2-0-0"
- *     }
- *   }
- * }
+ * EATL application will still run and allow the operator to properly configure
+ * ES connection parameters through REST API.
+ *
+ * If the ES instance is reachable, as next steps it will try to find existing or
+ * configure index-pattern and index-alias, based on index-alias in CONFIG file.
+ *
+ * @returns {void}
  */
 module.exports = async function prepareElasticsearch() {
     console.log("Configuring Elasticsearch...");
-    let indexAlias = await getIndexAliasAsync();
-    let client = await elasticsearchService.getClient(true);
     let ping = await elasticsearchService.getElasticsearchClientOperationalStateAsync();
     if (ping === operationalStateEnum.UNAVAILABLE) {
         console.error(`Elasticsearch unavailable. Skipping Elasticsearch configuration.`);
         return;
     }
-    let response = await client.cat.templates({
-        format: 'json',
-        h: 'name,index_patterns'
-    });
-    let found = response.body.find(item => {
-        return item['index_patterns'].includes(indexAlias)
-    });
-    if (!found) {
-        console.error(`Cannot start EATL without configured index template. Could not find a template with index pattern matching ${indexAlias}.`);
-        return;
+    await createIndexTemplate();
+    await createAlias();
+    console.log('Elasticsearch is properly configured!');
+}
+
+/**
+ * @description Creates/updates index-template with EATL proprietary mapping.
+ *
+ * Proprietary mapping is needed for the field 'x-correlator' which is only
+ * searchable if it's field is 'keyword'. By default ES denotes string fields
+ * as 'text'.
+ *
+ * This template serves as binding between service policy and index.
+ * If index-alias is changed, this index-template will be rewritten to reflect
+ * the change, as we do not wish to continue applying service policy on an
+ * index-alias that does not exist.
+ *
+ * Service policy is not set at this point in the index-template.
+ */
+async function createIndexTemplate() {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    let found = await elasticsearchService.getExistingIndexTemplate();
+    let iTemplate = found ? found : {
+        name: 'eatl-index-template',
+        body: {
+            index_patterns: `${indexAlias}-*`,
+            template: {
+                settings: {
+                    'index.lifecycle.rollover_alias': indexAlias
+                }
+            }
+        }
     }
-    let templateName = found['name'];
-
-    let iTemplateResponse = await client.indices.getIndexTemplate({
-        name: templateName
-    });
-    let iTemplate = iTemplateResponse.body.index_templates[0].index_template;
-
     await client.cluster.putComponentTemplate({
         name: 'eatl-mappings',
         body: {
@@ -89,18 +76,25 @@ module.exports = async function prepareElasticsearch() {
             }
         }
     });
-    iTemplate.composed_of = ['eatl-mappings'];
-    await client.indices.putIndexTemplate({
-        name: templateName,
-        body: iTemplate
-    });
+    iTemplate.body.composed_of = ['eatl-mappings'];
+    await client.indices.putIndexTemplate(iTemplate);
+}
 
+/**
+ * @description Creates index-alias with first index serving
+ * as write_index (if such alias does not exist yet). Such
+ * index will always end with '-000001' to allow for automated
+ * rollover.
+ */
+async function createAlias() {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
     let alias = await client.indices.existsAlias({
         name: indexAlias
     });
     if (!alias.body) {
         await client.indices.create({
-            index: `${indexAlias}-0001`,
+            index: `${indexAlias}-000001`,
             body: {
                 aliases: {
                     [indexAlias]: {
@@ -110,5 +104,4 @@ module.exports = async function prepareElasticsearch() {
             }
         });
     }
-    console.log('Elasticsearch is properly configured!');
 }

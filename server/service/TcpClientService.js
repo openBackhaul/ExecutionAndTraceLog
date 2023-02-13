@@ -4,7 +4,7 @@ const prepareForwardingAutomation = require('./individualServices/PrepareForward
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const prepareElasticsearch = require('./individualServices/ElasticsearchPreparation');
-const { isTcpClientElasticsearch } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const { isTcpClientElasticsearch, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 
 /**
  * Returns remote address
@@ -103,6 +103,8 @@ exports.putTcpClientRemoteAddress = function (body, uuid) {
             forwardingAutomationInputList
           );
           if (isTcpClientElasticsearch(uuid)) {
+            // recreate the client with new connection data
+            await elasticsearchService.getClient(true);
             await prepareElasticsearch();
           }
         }
@@ -136,6 +138,8 @@ exports.putTcpClientRemotePort = function (body, uuid) {
             forwardingAutomationInputList
           );
           if (isTcpClientElasticsearch(uuid)) {
+            // recreate the client with new connection data
+            await elasticsearchService.getClient(true);
             await prepareElasticsearch();
           }
         }
@@ -169,6 +173,8 @@ exports.putTcpClientRemoteProtocol = function(body, uuid) {
             forwardingAutomationInputList
           );
           if (isTcpClientElasticsearch(uuid)) {
+            // recreate the client with new connection data
+            await elasticsearchService.getClient(true);
             await prepareElasticsearch();
           }
         }
