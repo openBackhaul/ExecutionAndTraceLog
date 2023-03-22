@@ -19,6 +19,7 @@ exports.regardApplication = function (applicationLayerTopologyForwardingInputLis
             redirectServiceRequestRequestBody.serviceLogOperation = "/v1/record-service-request";
             redirectServiceRequestRequestBody.serviceLogAddress = await TcpServerInterface.getLocalAddress();
             redirectServiceRequestRequestBody.serviceLogPort = await TcpServerInterface.getLocalPort();
+            redirectServiceRequestRequestBody.serviceLogProtocol = await TcpServerInterface.getLocalProtocol();
             redirectServiceRequestRequestBody = onfFormatter.modifyJsonObjectKeysToKebabCase(redirectServiceRequestRequestBody);
             let forwardingAutomation = new ForwardingConstructAutomationInput(
                 redirectServiceRequestForwardingName,
