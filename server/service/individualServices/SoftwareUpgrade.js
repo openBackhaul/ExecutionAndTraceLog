@@ -249,14 +249,14 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease";
 
             let listOfOperationToBeUnsubscribed = [];
-            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_APPROVALS_FD_NAME));
-            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_WITHDRAWN_APPROVALS_FD_NAME));
+            listOfOperationToBeUnsubscribed.push((await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_APPROVALS_FD_NAME))[0]);
+            listOfOperationToBeUnsubscribed.push((await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_WITHDRAWN_APPROVALS_FD_NAME))[0]);
             try {
                 for (let subscriptionName of listOfOperationToBeUnsubscribed) {
                     let requestBody = {};
                     requestBody.subscriberApplication = await httpServerInterface.getApplicationNameAsync();
                     requestBody.subscriberReleaseNumber = await httpServerInterface.getReleaseNumberAsync();
-                    requestBody.subscription = subscriptionName.toString();
+                    requestBody.subscription = subscriptionName;
                     requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
                     result = await forwardRequest(
                         forwardingKindNameOfTheBequeathOperation,
