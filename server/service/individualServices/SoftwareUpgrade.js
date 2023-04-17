@@ -249,8 +249,8 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease";
 
             let listOfOperationToBeUnsubscribed = [];
-            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_APPROVALS_FD_NAME));
-            listOfOperationToBeUnsubscribed.push(await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_WITHDRAWN_APPROVALS_FD_NAME));
+            listOfOperationToBeUnsubscribed.push((await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_APPROVALS_FD_NAME))[0]);
+            listOfOperationToBeUnsubscribed.push((await getOperationNamesOutOfForwardingKindNameAsync(NOTIFY_WITHDRAWN_APPROVALS_FD_NAME))[0]);
             try {
                 for (let subscriptionName of listOfOperationToBeUnsubscribed) {
                     let requestBody = {};

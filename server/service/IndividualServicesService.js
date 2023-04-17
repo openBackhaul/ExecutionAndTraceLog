@@ -90,7 +90,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let isDataTransferRequired = true;
       let address = await TcpServerInterface.getLocalAddress();
       let port = await TcpServerInterface.getLocalPort();
-      if (!isAddressChanged(currentRemoteAddress, address) && (currentRemotePort === port)) {
+      if (!isAddressChanged(newAddress, address) && (newPort === port)) {
         isDataTransferRequired = false;
       }
 
