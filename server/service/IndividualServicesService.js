@@ -254,35 +254,25 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * Provides list of recorded service requests
  *
  * body V1_listrecords_body
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listRecords = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let numberOfRecords = body["number-of-records"];
-    let latest = body["latest-record"];
-    let indexAlias = await getIndexAliasAsync();
-    try {
-      let client = await elasticsearchService.getClient(false);
-      const result = await client.search({
-        index: indexAlias,
-        from: latest,
-        size: numberOfRecords,
-        body: {
-          query: {
-              match_all: {}
-          }
-        }
-      });
-      resolve(createResultArray(result));
-    } catch (error) {
-      console.log(error);
+exports.listRecords = async function (body) {
+  let numberOfRecords = body["number-of-records"];
+  let latest = body["latest-record"];
+  let indexAlias = await getIndexAliasAsync();
+  let client = await elasticsearchService.getClient(false);
+  const result = await client.search({
+    index: indexAlias,
+    from: latest,
+    size: numberOfRecords,
+    body: {
+      query: {
+        match_all: {}
+      }
     }
   });
+  const resultArray = createResultArray(result);
+  return { "response": resultArray, "took": result.body.took };
 }
 
 
@@ -290,38 +280,28 @@ exports.listRecords = function (body, user, originator, xCorrelator, traceIndica
  * Provides list of service request records belonging to the same flow
  *
  * body V1_listrecordsofflow_body
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
+exports.listRecordsOfFlow = async function (body) {
     let numberOfRecords = body["number-of-records"];
     let latest = body["latest-match"];
     let desiredXCorrelator = body["x-correlator"];
     let indexAlias = await getIndexAliasAsync();
-    try {
-      let client = await elasticsearchService.getClient(false);
-      const result = await client.search({
-        index: indexAlias,
-        from: latest,
-        size: numberOfRecords,
-        body: {
-          query: {
-            term: {
-              "x-correlator": desiredXCorrelator
-            }
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: latest,
+      size: numberOfRecords,
+      body: {
+        query: {
+          term: {
+            "x-correlator": desiredXCorrelator
           }
         }
-      });
-      resolve(createResultArray(result));
-    } catch (error) {
-      console.log(error);
-    }
-  });
+      }
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
 }
 
 
@@ -329,44 +309,34 @@ exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, trace
  * Provides list of unsuccessful service requests
  *
  * body V1_listrecordsofunsuccessful_body
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listRecordsOfUnsuccessful = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let numberOfRecords = body["number-of-records"];
-    let latest = body["latest-unsuccessful"];
-    let indexAlias = await getIndexAliasAsync();
-    try {
-      let client = await elasticsearchService.getClient(false);
-      const result = await client.search({
-        index: indexAlias,
-        from: latest,
-        size: numberOfRecords,
-        body: {
-          query: {
-            bool: {
-              must_not: {
-                  range: {
-                    'response-code': {
-                        gte: 200,
-                        lt: 300
-                    }
-                  }
+exports.listRecordsOfUnsuccessful = async function (body) {
+  let numberOfRecords = body["number-of-records"];
+  let latest = body["latest-unsuccessful"];
+  let indexAlias = await getIndexAliasAsync();
+  let client = await elasticsearchService.getClient(false);
+  const result = await client.search({
+    index: indexAlias,
+    from: latest,
+    size: numberOfRecords,
+    body: {
+      query: {
+        bool: {
+          must_not: {
+              range: {
+                'response-code': {
+                    gte: 200,
+                    lt: 300
+                }
               }
-            }
           }
         }
-      });
-      resolve(createResultArray(result));
-    } catch (error) {
-      console.log(error);
+      }
     }
   });
+  const resultArray = createResultArray(result);
+  return { "response": resultArray, "took": result.body.took };
 }
 
 
@@ -374,30 +344,20 @@ exports.listRecordsOfUnsuccessful = function (body, user, originator, xCorrelato
  * Records a service request
  *
  * body ServiceRequestRecord 
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.recordServiceRequest = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      let indexAlias = await getIndexAliasAsync();
-      let client = await elasticsearchService.getClient(false);
-      let response = await client.index({
-        index: indexAlias,
-        body: body
-      });
-      if (response.body.result == 'created' || response.body.result == 'updated') {
-        resolve();
-      }
-      reject();
-    } catch (error) {
-      reject(error);
-    }
+exports.recordServiceRequest = async function (body) {
+  let indexAlias = await getIndexAliasAsync();
+  let client = await elasticsearchService.getClient(false);
+  let startTime = process.hrtime();
+  let result = await client.index({
+    index: indexAlias,
+    body: body
   });
+  let backendTime = process.hrtime(startTime);
+  if (result.body.result == 'created' || result.body.result == 'updated') {
+    return { "took": backendTime[0] * 1000 + backendTime[1] / 1000000 };
+  }
 }
 
 
