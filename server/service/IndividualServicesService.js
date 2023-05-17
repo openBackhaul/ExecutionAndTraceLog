@@ -50,6 +50,10 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
+      const oldReleaseLtpDetails = await resolveLtpDetails('PromptForEmbeddingCausesRequestForBequeathingData');
+      if(oldReleaseLtpDetails['application-name'] === "OldRelease"){
+        throw new Error(`/v1/bequeath-your-data-and-die could not be addressed as the client application name is still OldRelease`)
+      }
       let newReleaseHttpUuid = await trackNewRelease();
       let newReleaseTcpUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpUuid))[0];
 
@@ -139,6 +143,36 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
   });
 }
 
+/*
+  function to get LTP Details using forwarding name
+*/
+var resolveLtpDetails = exports.resolveLtpDetailsFromForwardingName = function (forwardingName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      let ForwardConstructName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName)
+      if (ForwardConstructName === undefined) {
+        return null;
+      }
+      let LogicalTerminationPointlist;
+      let httpClientUuidList = [];
+      let ForwardConstructUuid = ForwardConstructName[onfAttributes.GLOBAL_CLASS.UUID]
+      let ListofUuid = await ForwardingConstruct.getFcPortListAsync(ForwardConstructUuid)
+      for (let i = 0; i < ListofUuid.length; i++) {
+        let PortDirection = ListofUuid[i][[onfAttributes.FC_PORT.PORT_DIRECTION]]
+        if (PortDirection === FcPort.portDirectionEnum.OUTPUT) {
+          LogicalTerminationPointlist = ListofUuid[i][onfAttributes.CONTROL_CONSTRUCT.LOGICAL_TERMINATION_POINT]
+          let httpClientUuid = await logicalTerminationPoint.getServerLtpListAsync(LogicalTerminationPointlist)
+          let applicationName = await httpClientInterface.getApplicationNameAsync(httpClientUuid[0])
+          httpClientUuidList["http-client"] = httpClientUuid[0]
+          httpClientUuidList["application-name"] = applicationName
+        }
+      }
+      resolve(httpClientUuidList)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+}
 
 /**
  * Removes application from list of targets of subscriptions for service requests
