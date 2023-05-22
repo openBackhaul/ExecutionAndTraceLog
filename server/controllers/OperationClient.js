@@ -70,7 +70,7 @@ module.exports.getOperationClientOperationalState = async function getOperationC
   oamLogService.recordOamRequest(req.url, req.body, responseCode, req.headers.authorization, req.method);
 };
 
-module.exports.putOperationClientDetailedLoggingIsOn = async function putOperationClientDetailedLoggingIsOn(req, res, next, body) {
+module.exports.putOperationClientDetailedLoggingIsOn = async function putOperationClientDetailedLoggingIsOn(req, res, next, body, uuid) {
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   await OperationClient.putOperationClientDetailedLoggingIsOn(req.url, body, uuid)
     .then(function (response) {
