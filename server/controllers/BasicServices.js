@@ -253,20 +253,24 @@ module.exports.registerYourself = async function registerYourself(req, res, next
   try {
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.NO_CONTENT;
-    let responseBodyToDocument = {};
+    let responseBodyToDocument = undefined;
     await BasicServices.registerYourself(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
-        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
-        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+        let responseHeader = await restResponseHeader.createResponseHeader(responseBody.xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, undefined, responseHeader);
       })
       .catch(async function (response) {
         responseBodyToDocument = responseBody;
         responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
-        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+        restResponseBuilder.buildResponse(res, responseCode, undefined, responseHeader);
       });
-    executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+    executionAndTraceService.recordServiceRequest(
+      responseBodyToDocument.xCorrelator,
+      responseBodyToDocument.traceIndicator,
+      responseBodyToDocument.user,
+      originator, req.url, responseCode, req.body, responseBodyToDocument);
   } catch (error) {}
 
 };
