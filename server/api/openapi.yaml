@@ -20196,7 +20196,7 @@ components:
           type: string
           description: ApplicationName on the server side
         release-number:
-          pattern: "^([0-9]{1,2}).([0-9]{1,2}).([0-9]{1,2})$"
+          pattern: "^([0-9]{1,2})\\.([0-9]{1,2})\\.([0-9]{1,2})$"
           type: string
           description: ReleaseNumber on the server side
         operation-name:
