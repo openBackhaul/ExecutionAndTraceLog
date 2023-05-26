@@ -1,6 +1,7 @@
 const ForwardingConstructAutomationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/AutomationInput');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const onfFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
+const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 const HttpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
 const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
 
@@ -17,7 +18,7 @@ exports.regardApplication = function (applicationLayerTopologyForwardingInputLis
             redirectServiceRequestRequestBody.serviceLogApplication = await HttpServerInterface.getApplicationNameAsync();
             redirectServiceRequestRequestBody.serviceLogApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
             redirectServiceRequestRequestBody.serviceLogOperation = "/v1/record-service-request";
-            redirectServiceRequestRequestBody.serviceLogAddress = await TcpServerInterface.getLocalAddress();
+            redirectServiceRequestRequestBody.serviceLogAddress = await getLocalAddress();
             redirectServiceRequestRequestBody.serviceLogPort = await TcpServerInterface.getLocalPort();
             redirectServiceRequestRequestBody.serviceLogProtocol = await TcpServerInterface.getLocalProtocol();
             redirectServiceRequestRequestBody = onfFormatter.modifyJsonObjectKeysToKebabCase(redirectServiceRequestRequestBody);
@@ -47,4 +48,12 @@ exports.OAMLayerRequest = function (uuid) {
             reject(error);
         }
     });
+}
+
+async function getLocalAddress() {
+            let localAddress = await TcpServerInterface.getLocalAddress();
+            if(onfAttributes.TCP_SERVER.IPV_4_ADDRESS in localAddress){
+                localAddress = { "ip-address" : localAddress}
+            } 
+            return localAddress;
 }
