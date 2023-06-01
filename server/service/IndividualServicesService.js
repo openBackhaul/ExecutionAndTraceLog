@@ -249,7 +249,6 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
   });
 }
 
-
 /**
  * Provides list of recorded service requests
  *
@@ -257,24 +256,27 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
  * returns List
  **/
 exports.listRecords = async function (body) {
-  let numberOfRecords = body["number-of-records"];
-  let latest = body["latest-record"];
-  let indexAlias = await getIndexAliasAsync();
-  let client = await elasticsearchService.getClient(false);
-  const result = await client.search({
-    index: indexAlias,
-    from: latest,
-    size: numberOfRecords,
-    body: {
-      query: {
-        match_all: {}
+  let size = body["number-of-records"];
+  let from = body["latest-record"];
+  let query = { 
+    match_all: {} 
+  };
+  if (size + from <= 10000) {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: from,
+      size: size,
+      body: {
+        query: query
       }
-    }
-  });
-  const resultArray = createResultArray(result);
-  return { "response": resultArray, "took": result.body.took };
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
-
 
 /**
  * Provides list of service request records belonging to the same flow
@@ -283,25 +285,29 @@ exports.listRecords = async function (body) {
  * returns List
  **/
 exports.listRecordsOfFlow = async function (body) {
-    let numberOfRecords = body["number-of-records"];
-    let latest = body["latest-match"];
-    let desiredXCorrelator = body["x-correlator"];
+  let size = body["number-of-records"];
+  let from = body["latest-match"];
+  let desiredXCorrelator = body["x-correlator"];
+  let query = {
+    term: {
+      "x-correlator": desiredXCorrelator
+    }
+  };
+  if (size + from <= 10000) {
     let indexAlias = await getIndexAliasAsync();
     let client = await elasticsearchService.getClient(false);
     const result = await client.search({
       index: indexAlias,
-      from: latest,
-      size: numberOfRecords,
+      from: from,
+      size: size,
       body: {
-        query: {
-          term: {
-            "x-correlator": desiredXCorrelator
-          }
-        }
+        query: query
       }
     });
     const resultArray = createResultArray(result);
     return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
 
 
@@ -312,33 +318,36 @@ exports.listRecordsOfFlow = async function (body) {
  * returns List
  **/
 exports.listRecordsOfUnsuccessful = async function (body) {
-  let numberOfRecords = body["number-of-records"];
-  let latest = body["latest-unsuccessful"];
-  let indexAlias = await getIndexAliasAsync();
-  let client = await elasticsearchService.getClient(false);
-  const result = await client.search({
-    index: indexAlias,
-    from: latest,
-    size: numberOfRecords,
-    body: {
-      query: {
-        bool: {
-          must_not: {
-              range: {
-                'response-code': {
-                    gte: 200,
-                    lt: 300
-                }
-              }
+  let size = body["number-of-records"];
+  let from = body["latest-unsuccessful"];
+  let query = {
+    bool: {
+      must_not: {
+          range: {
+            'response-code': {
+                gte: 200,
+                lt: 300
+            }
           }
-        }
       }
     }
-  });
-  const resultArray = createResultArray(result);
-  return { "response": resultArray, "took": result.body.took };
+  };
+  if (size + from <= 10000) {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: from,
+      size: size,
+      body: {
+        query: query
+      }
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
-
 
 /**
  * Records a service request
