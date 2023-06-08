@@ -156,7 +156,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
         try {
             let result = true;
             try {
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid));
                 let requestBody = {};
                 requestBody.subscriberApplication = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
                 requestBody.subscriberReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
@@ -202,7 +202,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
         try {
             let result = true;
             try {
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid));
                 let requestBody = {};
                 requestBody.subscriberApplication = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
                 requestBody.subscriberReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseUuid);
@@ -297,7 +297,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement";
             try {
-                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid))[0];
+                let newReleaseTcpClientUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseUuid));
                 let requestBody = {};
                 requestBody.currentApplicationName = await httpServerInterface.getApplicationNameAsync();
                 requestBody.currentReleaseNumber = await httpServerInterface.getReleaseNumberAsync();

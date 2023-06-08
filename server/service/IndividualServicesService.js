@@ -50,9 +50,10 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
-      let newReleaseHttpUuid = await trackNewRelease();
-      let newReleaseTcpUuid = (await logicalTerminationPoint.getServerLtpListAsync(newReleaseHttpUuid))[0];
-
+    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointService.resolveHttpTcpAndOperationClientUuidFromForwardingName(forwardingName);
+    let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
+    let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
+    
       /**
        * Current values in NewRelease client.
        */
@@ -469,14 +470,6 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
  * Functions utilized by individual services
  ****************************************************************************************/
 
-async function trackNewRelease() {
-  let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync('PromptForBequeathingDataCausesTransferOfListOfApplications');
-  let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
-  let fcPort = fcPorts.find(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
-  let operationClientUuid = fcPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT];
-  let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(operationClientUuid);
-  return serverLtpList[0];
-}
 
 function isAddressChanged(currentAddress, newAddress) {
   let currentIp = currentAddress[onfAttributes.TCP_CLIENT.IP_ADDRESS];
