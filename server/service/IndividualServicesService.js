@@ -2,7 +2,7 @@
 
 const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
-
+const LogicalTerminationPointServiceOfUtility = require("onf-core-model-ap-bs/basicServices/basicServices/utility/LogicalTerminationPoint.js")
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
@@ -50,7 +50,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
-    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointService.resolveHttpTcpAndOperationClientUuidFromForwardingName(forwardingName);
+    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidFromForwardingName(forwardingName);
     let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
     let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
     
@@ -234,7 +234,7 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = await LogicalTerminationPointService.getAllApplicationList(forwardingName);
+      let applicationList = await LogicalTerminationPointServiceOfUtility.getAllApplicationList(forwardingName);
 
       /****************************************************************************************
        * Setting 'application/json' response body
