@@ -67,6 +67,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * NewRelease client.
        */
       let isUpdated = {};
+      let isDataTransferRequired = true;
       if (newApplicationName !== currentApplicationName) {
         isUpdated.applicationName = await httpClientInterface.setApplicationNameAsync(newReleaseHttpUuid, newApplicationName)
       }
