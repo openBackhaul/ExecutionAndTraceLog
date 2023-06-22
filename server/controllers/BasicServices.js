@@ -5,7 +5,7 @@ var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server
 var restResponseHeader = require('onf-core-model-ap/applicationPattern/rest/server/ResponseHeader');
 var restResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
 var executionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
-
+const BadRequestHttpException = require('onf-core-model-ap/applicationPattern/rest/server/HttpException');
 
 module.exports.embedYourself = async function embedYourself(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
@@ -25,7 +25,7 @@ module.exports.embedYourself = async function embedYourself(req, res, next, body
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -47,7 +47,7 @@ module.exports.endSubscription = async function endSubscription(req, res, next, 
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -69,7 +69,7 @@ module.exports.informAboutApplication = async function informAboutApplication(re
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -78,7 +78,7 @@ module.exports.informAboutApplicationInGenericRepresentation = async function in
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
     let responseBodyToDocument = {};
-    await BasicServices.informAboutApplicationInGenericRepresentation(user, originator, xCorrelator, traceIndicator, customerJourney,req.url)
+    await BasicServices.informAboutApplicationInGenericRepresentation(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -91,7 +91,7 @@ module.exports.informAboutApplicationInGenericRepresentation = async function in
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -113,7 +113,7 @@ module.exports.informAboutReleaseHistory = async function informAboutReleaseHist
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -122,7 +122,7 @@ module.exports.informAboutReleaseHistoryInGenericRepresentation = async function
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
     let responseBodyToDocument = {};
-    await BasicServices.informAboutReleaseHistoryInGenericRepresentation(user, originator, xCorrelator, traceIndicator, customerJourney,req.url)
+    await BasicServices.informAboutReleaseHistoryInGenericRepresentation(user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
       .then(async function (responseBody) {
         responseBodyToDocument = responseBody;
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
@@ -135,7 +135,7 @@ module.exports.informAboutReleaseHistoryInGenericRepresentation = async function
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -157,7 +157,7 @@ module.exports.inquireOamRequestApprovals = async function inquireOamRequestAppr
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -179,7 +179,7 @@ module.exports.listLtpsAndFcs = async function listLtpsAndFcs(req, res, next, us
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -201,7 +201,7 @@ module.exports.redirectOamRequestInformation = async function redirectOamRequest
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -223,7 +223,7 @@ module.exports.redirectServiceRequestInformation = async function redirectServic
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -245,7 +245,7 @@ module.exports.redirectTopologyChangeInformation = async function redirectTopolo
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -273,11 +273,11 @@ module.exports.registerYourself = async function registerYourself(req, res, next
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
-module.exports.startApplicationInGenericRepresentation = async function startApplicationInGenericRepresentation (req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
+module.exports.startApplicationInGenericRepresentation = async function startApplicationInGenericRepresentation(req, res, next, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
     let startTime = process.hrtime();
     let responseCode = responseCodeEnum.code.OK;
@@ -295,7 +295,7 @@ module.exports.startApplicationInGenericRepresentation = async function startApp
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 };
 
 module.exports.updateClient = async function updateClient(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
@@ -316,7 +316,7 @@ module.exports.updateClient = async function updateClient(req, res, next, body, 
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -338,7 +338,7 @@ module.exports.updateOperationClient = async function updateOperationClient(req,
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
 
@@ -355,11 +355,15 @@ module.exports.updateOperationKey = async function updateOperationKey(req, res, 
       })
       .catch(async function (responseBody) {
         responseBodyToDocument = responseBody;
-        responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
+        if (responseBody instanceof BadRequestHttpException) {
+          responseCode = responseCodeEnum.code.BAD_REQUEST;
+        } else {
+          responseCode = responseCodeEnum.code.INTERNAL_SERVER_ERROR;
+        }
         let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
         restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
       });
     executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
-  } catch (error) {}
+  } catch (error) { }
 
 };
