@@ -68,6 +68,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
        * NewRelease client.
        */
       let isUpdated = {};
+      let isDataTransferRequired = true;
       if (newApplicationName !== currentApplicationName) {
         isUpdated.applicationName = await httpClientInterface.setApplicationNameAsync(newReleaseHttpUuid, newApplicationName)
       }
@@ -84,16 +85,6 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         isUpdated.protocol = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpUuid, newProtocol);
       }
 
-      /**
-       * Data transfer is not required if the address and port didn't change (Comparing NewRelease
-       * with current application).
-       */
-      let isDataTransferRequired = true;
-      let address = await TcpServerInterface.getLocalAddress();
-      let port = await TcpServerInterface.getLocalPort();
-      if (!isAddressChanged(newAddress, address) && (newPort === port)) {
-        isDataTransferRequired = false;
-      }
 
       /**
        * Updating the Configuration Status based on the application information updated
