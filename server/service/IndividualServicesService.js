@@ -50,7 +50,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
-    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidFromForwardingName(forwardingName);
+    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidOfNewRelease();
     let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
     let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
     
