@@ -132,7 +132,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
 
                 } catch (error) {
@@ -179,7 +179,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
                     customerJourney
                 );
                 if (!result) {
-                    throw NOTIFY_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_APPROVALS_FD_NAME + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
             } catch (error) {
                 console.log(error);
@@ -224,7 +224,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
                     customerJourney
                 );
                 if (!result) {
-                    throw NOTIFY_WITHDRAWN_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_WITHDRAWN_APPROVALS_FD_NAME + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
             } catch (error) {
                 console.log(error);
@@ -271,7 +271,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
 
@@ -320,7 +320,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -365,7 +365,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
             } catch (error) {
@@ -386,8 +386,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
 async function getOperationNamesOutOfForwardingKindNameAsync(forwardingKindNameOfTheBequeathOperation) {
     let operationNamesList = [];
     let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingKindNameOfTheBequeathOperation);
-    let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
-    let filteredFcPorts = fcPorts.filter(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+    let filteredFcPorts = await ForwardingConstruct.getOutputFcPortsAsync(forwardingConstruct.uuid);
     for (let fcOutputPort of filteredFcPorts) {
         let operationName = await operationClientInterface.getOperationNameAsync(fcOutputPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT]);
         operationNamesList.push(operationName);
