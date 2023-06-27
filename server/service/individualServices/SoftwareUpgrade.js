@@ -17,6 +17,7 @@ const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/clien
 
 const NOTIFY_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease';
 const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease';
+var traceIndicatorIncrementer = 1;
 
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
@@ -29,9 +30,12 @@ const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObein
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  * **/
-exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, _traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
+            if (_traceIndicatorIncrementer !== 0) {
+                traceIndicatorIncrementer = _traceIndicatorIncrementer;
+            }
             if (isdataTransferRequired) {
                 await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
             }
@@ -124,11 +128,11 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
 
                 } catch (error) {
@@ -171,11 +175,11 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw NOTIFY_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_APPROVALS_FD_NAME + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
             } catch (error) {
                 console.log(error);
@@ -216,11 +220,11 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw NOTIFY_WITHDRAWN_APPROVALS_FD_NAME + "forwarding is not success for the input" + requestBody;
+                    throw NOTIFY_WITHDRAWN_APPROVALS_FD_NAME + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
             } catch (error) {
                 console.log(error);
@@ -263,11 +267,11 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
 
@@ -312,11 +316,11 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
-                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                    throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                 }
 
             } catch (error) {
@@ -357,11 +361,11 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
-                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + requestBody;
+                        throw forwardingKindNameOfTheBequeathOperation + "forwarding is not success for the input" + JSON.stringify(requestBody);
                     }
                 }
             } catch (error) {
@@ -382,8 +386,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
 async function getOperationNamesOutOfForwardingKindNameAsync(forwardingKindNameOfTheBequeathOperation) {
     let operationNamesList = [];
     let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingKindNameOfTheBequeathOperation);
-    let fcPorts = await ForwardingConstruct.getFcPortListAsync(forwardingConstruct.uuid);
-    let filteredFcPorts = fcPorts.filter(fcp => fcp[onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT);
+    let filteredFcPorts = await ForwardingConstruct.getOutputFcPortsAsync(forwardingConstruct.uuid);
     for (let fcOutputPort of filteredFcPorts) {
         let operationName = await operationClientInterface.getOperationNameAsync(fcOutputPort[onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT]);
         operationNamesList.push(operationName);
