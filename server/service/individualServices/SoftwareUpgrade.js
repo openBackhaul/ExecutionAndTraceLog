@@ -17,6 +17,7 @@ const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/clien
 
 const NOTIFY_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease';
 const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease';
+var traceIndicatorIncrementer = 1;
 
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
@@ -29,9 +30,12 @@ const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObein
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  * **/
-exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, _traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
+            if (_traceIndicatorIncrementer !== 0) {
+                traceIndicatorIncrementer = _traceIndicatorIncrementer;
+            }
             if (isdataTransferRequired) {
                 await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
             }
@@ -124,7 +128,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
@@ -171,7 +175,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
@@ -216,7 +220,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
@@ -263,7 +267,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
@@ -312,7 +316,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                     requestBody,
                     user,
                     xCorrelator,
-                    traceIndicator,
+                    traceIndicator + "." + traceIndicatorIncrementer++,
                     customerJourney
                 );
                 if (!result) {
@@ -357,7 +361,7 @@ async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
                         requestBody,
                         user,
                         xCorrelator,
-                        traceIndicator,
+                        traceIndicator + "." + traceIndicatorIncrementer++,
                         customerJourney
                     );
                     if (!result) {
