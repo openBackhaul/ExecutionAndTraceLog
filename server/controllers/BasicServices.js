@@ -275,7 +275,7 @@ module.exports.registerYourself = async function registerYourself(req, res, next
         responseCode = sentResp.code;
         responseBodyToDocument = sentResp.body;
       });
-   executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+    executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
   } catch (error) { }
 
 };
