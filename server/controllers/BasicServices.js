@@ -263,20 +263,19 @@ module.exports.registerYourself = async function registerYourself(req, res, next
       traceIndicator = req.headers["trace-indicator"];
       customerJourney = req.headers["customer-journey"]; 
     }
-    console.log(body, user, originator, xCorrelator, traceIndicator, customerJourney)
-  //   await BasicServices.registerYourself(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
-  //     .then(async function (responseBody) {
-  //       responseBodyToDocument = responseBody;
-  //       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
-  //       restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
-  //     })
-  //     .catch(async function (responseBody) {
-  //       let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
-  //       let sentResp = restResponseBuilder.buildResponse(res, undefined, responseBody, responseHeader);
-  //       responseCode = sentResp.code;
-  //       responseBodyToDocument = sentResp.body;
-  //     });
-  //  executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
+    await BasicServices.registerYourself(body, user, originator, xCorrelator, traceIndicator, customerJourney, req.url)
+      .then(async function (responseBody) {
+        responseBodyToDocument = responseBody;
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        restResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
+      })
+      .catch(async function (responseBody) {
+        let responseHeader = await restResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+        let sentResp = restResponseBuilder.buildResponse(res, undefined, responseBody, responseHeader);
+        responseCode = sentResp.code;
+        responseBodyToDocument = sentResp.body;
+      });
+   executionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument);
   } catch (error) { }
 
 };
