@@ -29,7 +29,7 @@ const { getIndexAliasAsync, createResultArray, elasticsearchService } = require(
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
-const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications'
+const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 
 /**
  * Initiates process of embedding a new release
