@@ -255,7 +255,6 @@ module.exports.registerYourself = async function registerYourself(req, res, next
     let responseBodyToDocument = {};
     
     if (Object.keys(req.body).length === 0) {
-      console.log("here")
       body = req.body;
       user = req.headers["user"];
       originator = req.headers["originator"];
