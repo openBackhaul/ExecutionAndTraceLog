@@ -27,6 +27,7 @@ const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfMode
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
+const createHttpError = require('http-errors');
 
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 
@@ -377,6 +378,9 @@ exports.recordServiceRequest = async function (body) {
 exports.regardApplication = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
+      if (body['protocol'] === "HTTPS") {
+        reject(new createHttpError.BadRequest("HTTPS protocol is not supported."));
+      }
 
       /****************************************************************************************
        * Setting up required local variables from the request body
