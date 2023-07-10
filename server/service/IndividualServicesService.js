@@ -30,6 +30,7 @@ const individualServicesOperationsMapping = require('./individualServices/Indivi
 const createHttpError = require('http-errors');
 
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
+const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 
 /**
  * Initiates process of embedding a new release
@@ -161,7 +162,8 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.deleteApplicationInformationAsync(
         applicationName,
-        applicationReleaseNumber
+        applicationReleaseNumber,
+        NEW_RELEASE_FORWARDING_NAME
       );
 
       /****************************************************************************************
@@ -409,7 +411,8 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
         individualServicesOperationsMapping.individualServicesOperationsMapping
       );
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findOrCreateApplicationInformationAsync(
-        logicalTerminationPointConfigurationInput
+        logicalTerminationPointConfigurationInput,
+        NEW_RELEASE_FORWARDING_NAME
       );
 
 
