@@ -1,5 +1,8 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
+const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
+const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
 
 /**
  * Returns the configured life cycle state of the operation
@@ -82,14 +85,23 @@ exports.getOperationServerOperationName = function (url) {
 /**
  * Configures life cycle state
  *
- * body Operationserverinterfaceconfiguration_lifecyclestate_body 
- * uuid String 
+ * url String
+ * body Operationserverinterfaceconfiguration_lifecyclestate_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putOperationServerLifeCycleState = function (url, body) {
+exports.putOperationServerLifeCycleState = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -101,14 +113,22 @@ exports.putOperationServerLifeCycleState = function (url, body) {
 /**
  * Changes key for connecting
  *
- * body Operationserverinterfaceconfiguration_operationkey_body 
- * uuid String 
+ * body Operationserverinterfaceconfiguration_operationkey_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putOperationServerOperationKey = function (url, body) {
+exports.putOperationServerOperationKey = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await operationServerInterface.setOperationKeyAsync(uuid, body["operation-server-interface-1-0:operation-key"]);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();

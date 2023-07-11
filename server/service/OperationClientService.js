@@ -1,5 +1,8 @@
 'use strict';
 var fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
+const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
+const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
+const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 
 /**
  * Returns detailed logging configuration.
@@ -132,13 +135,23 @@ exports.getOperationClientOperationalState = function (url) {
 /**
  * Configures detailed logging on/off.
  *
- * body Operationclientinterfaceconfiguration_detailedloggingison_body 
+ * url String
+ * body Operationclientinterfaceconfiguration_detailedloggingison_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putOperationClientDetailedLoggingIsOn = function (url, body) {
+exports.putOperationClientDetailedLoggingIsOn = function (url, body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await fileOperation.writeToDatabaseAsync(url, body, false);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -150,14 +163,22 @@ exports.putOperationClientDetailedLoggingIsOn = function (url, body) {
 /**
  * Configures key used for connecting to server.
  *
- * body Operationclientinterfaceconfiguration_operationkey_body 
- * uuid String 
+ * body Operationclientinterfaceconfiguration_operationkey_body
+ * uuid String
  * no response value expected for this operation
  **/
-exports.putOperationClientOperationKey = function (url, body) {
+exports.putOperationClientOperationKey = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await operationClientInterface.setOperationKeyAsync(uuid, body["operation-client-interface-1-0:operation-key"]);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();
@@ -173,10 +194,18 @@ exports.putOperationClientOperationKey = function (url, body) {
  * uuid String 
  * no response value expected for this operation
  **/
-exports.putOperationClientOperationName = function (url, body) {
+exports.putOperationClientOperationName = function (body, uuid) {
   return new Promise(async function (resolve, reject) {
     try {
-      await fileOperation.writeToDatabaseAsync(url, body, false);
+      let isUpdated = await operationClientInterface.setOperationNameAsync(uuid, body["operation-client-interface-1-0:operation-name"]);
+      if (isUpdated) {
+        let forwardingAutomationInputList = await prepareForwardingAutomation.OAMLayerRequest(
+          uuid
+        );
+        ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
+          forwardingAutomationInputList
+        );
+      }
       resolve();
     } catch (error) {
       reject();

@@ -1,43 +1,36 @@
 'use strict';
 
-const LogicalTerminatinPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
-const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
-const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
-const layerProtocol = require('onf-core-model-ap/applicationPattern/onfModel/models/LayerProtocol');
-
+const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInputWithMapping');
+const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointWithMappingServices');
+const LogicalTerminationPointServiceOfUtility = require("onf-core-model-ap-bs/basicServices/utility/LogicalTerminationPoint")
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
 const prepareForwardingAutomation = require('./individualServices/PrepareForwardingAutomation');
-const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
+const prepareALTForwardingAutomation = require('onf-core-model-ap-bs/basicServices/services/PrepareALTForwardingAutomation');
 
-const httpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpServerInterface');
-const tcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const operationServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationServerInterface');
-const operationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
 const httpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/HttpClientInterface');
 
 const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfModel/utility/OnfAttributeFormatter');
-const consequentAction = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ConsequentAction');
-const responseValue = require('onf-core-model-ap/applicationPattern/rest/server/responseBody/ResponseValue');
 
-const onfPaths = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfPaths');
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 
-
-const fileOperation = require('onf-core-model-ap/applicationPattern/databaseDriver/JSONDriver');
 const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
+const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
+const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 
-const serviceRecordProfile = require('onf-core-model-ap/applicationPattern/onfModel/models/profile/ServiceRecordProfile');
-const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
-const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
-
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
+const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
+const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
+
+const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
+const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
+
 /**
  * Initiates process of embedding a new release
  *
@@ -52,62 +45,86 @@ const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcP
 exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   return new Promise(async function (resolve, reject) {
     try {
+      let newApplicationName = body["new-application-name"];
+      let newReleaseNumber = body["new-application-release"];
+      let newAddress = body["new-application-address"];
+      let newPort = body["new-application-port"];
+      let newProtocol = body['new-application-protocol'];
+
+    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidOfNewRelease();
+    let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
+    let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
+    
+      /**
+       * Current values in NewRelease client.
+       */
+      let currentApplicationName = await httpClientInterface.getApplicationNameAsync(newReleaseHttpUuid);
+      let currentReleaseNumber = await httpClientInterface.getReleaseNumberAsync(newReleaseHttpUuid);
+      let currentRemoteAddress = await tcpClientInterface.getRemoteAddressAsync(newReleaseTcpUuid);
+      let currentRemoteProtocol = await tcpClientInterface.getRemoteProtocolAsync(newReleaseTcpUuid);
+      let currentRemotePort = await tcpClientInterface.getRemotePortAsync(newReleaseTcpUuid);
+
+      /**
+       * Update only data that needs to be updated, comparing incoming values with values set in
+       * NewRelease client.
+       */
+      let isUpdated = {};
+      let isDataTransferRequired = true;
+      if (newApplicationName !== currentApplicationName) {
+        isUpdated.applicationName = await httpClientInterface.setApplicationNameAsync(newReleaseHttpUuid, newApplicationName)
+      }
+      if (newReleaseNumber !== currentReleaseNumber) {
+        isUpdated.releaseNumber = await httpClientInterface.setReleaseNumberAsync(newReleaseHttpUuid, newReleaseNumber);
+      }
+      if (isAddressChanged(currentRemoteAddress, newAddress)) {
+        isUpdated.address = await tcpClientInterface.setRemoteAddressAsync(newReleaseTcpUuid, newAddress);
+      }
+      if (newPort !== currentRemotePort) {
+        isUpdated.port = await tcpClientInterface.setRemotePortAsync(newReleaseTcpUuid, newPort);
+      }
+      if (newProtocol !== currentRemoteProtocol){
+        isUpdated.protocol = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpUuid, newProtocol);
+      }
+
+
+      /**
+       * Updating the Configuration Status based on the application information updated
+       */
+      let tcpClientConfigurationStatus = new ConfigurationStatus(
+        newReleaseTcpUuid,
+        '',
+        (isUpdated.address || isUpdated.port || isUpdated.protocol)
+      );
+      let httpClientConfigurationStatus = new ConfigurationStatus(
+        newReleaseHttpUuid,
+        '',
+        (isUpdated.applicationName || isUpdated.releaseNumber)
+      );
+
+      let logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
+        false,
+        httpClientConfigurationStatus,
+        [tcpClientConfigurationStatus]
+      );
 
       /****************************************************************************************
-       * Setting up required local variables from the request body
+       * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let applicationName = body["new-application-name"];
-      let releaseNumber = body["new-application-release"];
-      let applicationAddress = body["new-application-address"];
-      let applicationPort = body["new-application-port"];
+      let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+        logicalTerminationPointConfigurationStatus,
+        undefined
+      );
+      ForwardingAutomationService.automateForwardingConstructAsync(
+        operationServerName,
+        forwardingAutomationInputList,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      );
 
-      /****************************************************************************************
-       * Prepare logicalTerminatinPointConfigurationInput object to 
-       * configure logical-termination-point
-       ****************************************************************************************/
-      let isdataTransferRequired = true;
-      let newReleaseUuid = await httpClientInterface.getHttpClientUuidAsync("NewRelease");
-      let currentApplicationName = await httpServerInterface.getApplicationNameAsync();
-      if (currentApplicationName == applicationName) {
-        let isUpdated = await httpClientInterface.setReleaseNumberAsync(newReleaseUuid, releaseNumber);
-        let currentApplicationRemoteAddress = await TcpServerInterface.getLocalAddress();
-        let currentApplicationRemotePort = await TcpServerInterface.getLocalPort();
-        if((applicationAddress == currentApplicationRemoteAddress) && 
-        (applicationPort == currentApplicationRemotePort)){
-          isdataTransferRequired = false;
-        }
-        if (isUpdated) {
-          applicationName = await httpClientInterface.getApplicationNameAsync(newReleaseUuid);
-          let operationList = [];
-          let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
-            applicationName,
-            releaseNumber,
-            applicationAddress,
-            applicationPort,
-            operationList
-          );
-          let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-            logicalTerminatinPointConfigurationInput
-          );
-
-          /****************************************************************************************
-           * Prepare attributes to automate forwarding-construct
-           ****************************************************************************************/
-          let forwardingAutomationInputList = await prepareForwardingAutomation.bequeathYourDataAndDie(
-            logicalTerminationPointconfigurationStatus
-          );
-          ForwardingAutomationService.automateForwardingConstructAsync(
-            operationServerName,
-            forwardingAutomationInputList,
-            user,
-            xCorrelator,
-            traceIndicator,
-            customerJourney
-          );
-        }        
-      } 
-      softwareUpgrade.upgradeSoftwareVersion(isdataTransferRequired, user, xCorrelator, traceIndicator, customerJourney)
-        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));  
+      softwareUpgrade.upgradeSoftwareVersion(isDataTransferRequired, newReleaseHttpUuid, user, xCorrelator, traceIndicator, customerJourney, forwardingAutomationInputList.length)
+        .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       resolve();
     } catch (error) {
       reject(error);
@@ -135,7 +152,7 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
        * Setting up required local variables from the request body
        ****************************************************************************************/
       let applicationName = body["application-name"];
-      let applicationReleaseNumber = body["application-release-number"];
+      let applicationReleaseNumber = body["release-number"];
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
@@ -144,7 +161,8 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.deleteApplicationInformationAsync(
         applicationName,
-        applicationReleaseNumber
+        applicationReleaseNumber,
+        NEW_RELEASE_FORWARDING_NAME
       );
 
       /****************************************************************************************
@@ -169,10 +187,11 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.disregardApplication(
+      let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
         logicalTerminationPointconfigurationStatus,
         forwardingConstructConfigurationStatus
       );
+
       ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
         forwardingAutomationInputList,
@@ -203,11 +222,12 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
 exports.listApplications = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(async function (resolve, reject) {
     let response = {};
+    let forwardingName = "ApprovedApplicationCausesRequestForServiceRequestInformation"
     try {
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = await getAllApplicationList();
+      let applicationList = await LogicalTerminationPointServiceOfUtility.getAllApplicationList(forwardingName);
 
       /****************************************************************************************
        * Setting 'application/json' response body
@@ -224,200 +244,124 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
   });
 }
 
-
 /**
  * Provides list of recorded service requests
  *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * body V1_listrecords_body
  * returns List
  **/
-exports.listRecords = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              serviceRecordProfileList.push(serviceRecordCapability);
-            }
-          }
-        }
+exports.listRecords = async function (body) {
+  let size = body["number-of-records"];
+  let from = body["latest-record"];
+  let query = { 
+    match_all: {} 
+  };
+  if (size + from <= 10000) {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: from,
+      size: size,
+      body: {
+        query: query
       }
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
-    } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
-  });
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
-
 
 /**
  * Provides list of service request records belonging to the same flow
  *
- * body V1_listrecordsofflow_body 
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * body V1_listrecordsofflow_body
  * returns List
  **/
-exports.listRecordsOfFlow = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let flowId = body["x-correlator"];
-
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let xCorrelatorOfTheRecord = serviceRecordCapability["x-correlator"];
-              if (flowId == xCorrelatorOfTheRecord) {
-                serviceRecordProfileList.push(serviceRecordCapability);
-              }
-            }
-          }
-        }
+exports.listRecordsOfFlow = async function (body) {
+  let size = body["number-of-records"];
+  let from = body["latest-match"];
+  let desiredXCorrelator = body["x-correlator"];
+  let query = {
+    term: {
+      "x-correlator": desiredXCorrelator
+    }
+  };
+  if (size + from <= 10000) {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: from,
+      size: size,
+      body: {
+        query: query
       }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
-    } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
-  });
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
 
 
 /**
  * Provides list of unsuccessful service requests
  *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
+ * body V1_listrecordsofunsuccessful_body
  * returns List
  **/
-exports.listRecordsOfUnsuccessful = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      
-      /****************************************************************************************
-       * Preparing response body
-       ****************************************************************************************/
-      let serviceRecordProfileList = [];
-      let profileList = await ProfileCollection.getProfileListAsync();
-      if (profileList != undefined) {
-        for (let i = 0; i < profileList.length; i++) {
-          let profileInstanceName = profileList[i][onfAttributes.PROFILE.PROFILE_NAME];
-          if (profileInstanceName != undefined) {
-            if (profileInstanceName == Profile.profileNameEnum.SERVICE_RECORD_PROFILE) {
-              let serviceRecordProfile = profileList[i];
-              let serviceRecordProfilePac = serviceRecordProfile[onfAttributes.SERVICE_RECORD_PROFILE.PAC];
-              let serviceRecordCapability = serviceRecordProfilePac[onfAttributes.SERVICE_RECORD_PROFILE.CAPABILITY];
-              let responseCode = (serviceRecordCapability["response-code"]).toString();
-              if (!responseCode.startsWith("2")) {
-                serviceRecordProfileList.push(serviceRecordCapability);
-              }
+exports.listRecordsOfUnsuccessful = async function (body) {
+  let size = body["number-of-records"];
+  let from = body["latest-unsuccessful"];
+  let query = {
+    bool: {
+      must_not: {
+          range: {
+            'response-code': {
+                gte: 200,
+                lt: 300
             }
           }
-        }
       }
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = serviceRecordProfileList;
-    } catch (error) {
-      console.log(error);
     }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
-  });
+  };
+  if (size + from <= 10000) {
+    let indexAlias = await getIndexAliasAsync();
+    let client = await elasticsearchService.getClient(false);
+    const result = await client.search({
+      index: indexAlias,
+      from: from,
+      size: size,
+      body: {
+        query: query
+      }
+    });
+    const resultArray = createResultArray(result);
+    return { "response": resultArray, "took": result.body.took };
+  }
+  return await elasticsearchService.scroll(from, size, query);
 }
-
 
 /**
  * Records a service request
  *
  * body ServiceRequestRecord 
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.recordServiceRequest = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    try {
-
-      /****************************************************************************************
-       * Setting up required local variables from the request body
-       ****************************************************************************************/
-      let serviceRecord = body;
-
-      /****************************************************************************************
-       * configure application profile with the new application if it is not already exist
-       ****************************************************************************************/
-      let serviceProfile = await serviceRecordProfile.createProfileAsync(
-        serviceRecord
-      );
-      if (serviceProfile) {
-        await ProfileCollection.addProfileAsync(serviceProfile);
-      }
-
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
+exports.recordServiceRequest = async function (body) {
+  let indexAlias = await getIndexAliasAsync();
+  let client = await elasticsearchService.getClient(false);
+  let startTime = process.hrtime();
+  let result = await client.index({
+    index: indexAlias,
+    body: body
   });
+  let backendTime = process.hrtime(startTime);
+  if (result.body.result == 'created' || result.body.result == 'updated') {
+    return { "took": backendTime[0] * 1000 + backendTime[1] / 1000000 };
+  }
 }
 
 
@@ -439,29 +383,32 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       /****************************************************************************************
        * Setting up required local variables from the request body
        ****************************************************************************************/
-      let applicationName = body["application-name"];
-      let releaseNumber = body["application-release-number"];
-      let applicationAddress = body["application-address"];
-      let applicationPort = body["application-port"];
-      let inquireOamRequestOperation = "/v1/redirect-service-request-information";
+      let applicationName = body['application-name'];
+      let releaseNumber = body['release-number'];
+      const tcpInfo = [{
+        "address": body['address'],
+        "protocol": body['protocol'],
+        "port": body['port']
+      }]
 
       /****************************************************************************************
        * Prepare logicalTerminatinPointConfigurationInput object to 
        * configure logical-termination-point
        ****************************************************************************************/
 
-      let operationList = [
-        inquireOamRequestOperation
-      ];
-      let logicalTerminatinPointConfigurationInput = new LogicalTerminatinPointConfigurationInput(
+      let operationNamesByAttributes = new Map();
+      operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
+      let logicalTerminationPointConfigurationInput = new LogicalTerminationPointConfigurationInput(
         applicationName,
         releaseNumber,
-        applicationAddress,
-        applicationPort,
-        operationList
+        tcpInfo,
+        operationServerName,
+        operationNamesByAttributes,
+        individualServicesOperationsMapping.individualServicesOperationsMapping
       );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationInformationAsync(
-        logicalTerminatinPointConfigurationInput
+      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.findOrCreateApplicationInformationAsync(
+        logicalTerminationPointConfigurationInput,
+        NEW_RELEASE_FORWARDING_NAME
       );
 
 
@@ -476,7 +423,7 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       if (operationClientConfigurationStatusList) {
         forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
           operationClientConfigurationStatusList,
-          inquireOamRequestOperation
+          REDIRECT_SERVICE_REQUEST_OPERATION
         );
         forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
         configureForwardingConstructAsync(
@@ -488,9 +435,12 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
       /****************************************************************************************
        * Prepare attributes to automate forwarding-construct
        ****************************************************************************************/
-      let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
+      let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
         logicalTerminationPointconfigurationStatus,
-        forwardingConstructConfigurationStatus,
+        forwardingConstructConfigurationStatus
+      );
+      let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
+        applicationLayerTopologyForwardingInputList,
         applicationName,
         releaseNumber
       );
@@ -510,140 +460,25 @@ exports.regardApplication = function (body, user, originator, xCorrelator, trace
   });
 }
 
-
-/**
- * Starts application in generic representation
- *
- * user String User identifier from the system starting the service call
- * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-capability/application-name]' 
- * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
- * traceIndicator String Sequence of request numbers along the flow
- * customerJourney String Holds information supporting customer’s journey to which the execution applies
- * returns inline_response_200
- **/
-exports.startApplicationInGenericRepresentation = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    let response = {};
-    try {
-      /****************************************************************************************
-       * Preparing consequent-action-list for response body
-       ****************************************************************************************/
-      let consequentActionList = [];
-
-      let protocol = "http";
-      let applicationAddress = await tcpServerInterface.getLocalAddress();
-      let applicationPort = await tcpServerInterface.getLocalPort();
-      let baseUrl = protocol + "://" + applicationAddress + ":" + applicationPort;
-
-      let LabelForInformAboutApplication = "Inform about Application";
-      let requestForInformAboutApplication = baseUrl + await operationServerInterface.getOperationNameAsync("eatl-0-0-1-op-s-2002");
-      let consequentActionForInformAboutApplication = new consequentAction(
-        LabelForInformAboutApplication,
-        requestForInformAboutApplication,
-        false
-      );
-      consequentActionList.push(consequentActionForInformAboutApplication);
-
-      /****************************************************************************************
-       * Preparing response-value-list for response body
-       ****************************************************************************************/
-      let responseValueList = [];
-      let applicationName = await httpServerInterface.getApplicationNameAsync();
-      let reponseValue = new responseValue(
-        "applicationName",
-        applicationName,
-        typeof applicationName
-      );
-      responseValueList.push(reponseValue);
-
-      /****************************************************************************************
-       * Setting 'application/json' response body
-       ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase({
-        consequentActionList,
-        responseValueList
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-
 /****************************************************************************************
  * Functions utilized by individual services
  ****************************************************************************************/
 
-/**
- * @description This function returns list of registered application information application-name , release-number, application-address, application-port.
- * @return {Promise} return the list of application information
- * <b><u>Procedure :</u></b><br>
- * <b>step 1 :</b> Get forwarding-construct based on ForwardingName
- * <b>step 2 :</b> Get forwarding-construct UUID
- * <b>step 3 :</b> Get fc-port list using forwarding-construct UUID
- * <b>step 4 :</b> Fetch http-client-list using logical-termination-point uuid from fc-port
- * <b>step 5 :</b> get the application name, release number and server-ltp<br>
- * <b>step 6 :</b> get the ipaddress and port name of each associated tcp-client <br>
- **/
-function getAllApplicationList() {
-  return new Promise(async function (resolve, reject) {
-    let clientApplicationList = [];
-    const forwardingName = "ApprovedApplicationCausesRequestForServiceRequestInformation";
-    try {
 
-      /** 
-       * This class instantiate objects that holds the application name , release number, 
-       * IpAddress and port information of the registered client applications
-       */
-      let clientApplicationInformation = class ClientApplicationInformation {
-        applicationName;
-        applicationReleaseNumber;
-        applicationAddress;
-        applicationPort;
-
-        /**
-         * @constructor 
-         * @param {String} applicationName name of the client application.
-         * @param {String} applicationReleaseNumber release number of the application.
-         * @param {String} applicationAddress ip address of the application.
-         * @param {String} applicationPort port of the application.
-         **/
-        constructor(applicationName, applicationReleaseNumber, applicationAddress, applicationPort) {
-          this.applicationName = applicationName;
-          this.applicationReleaseNumber = applicationReleaseNumber;
-          this.applicationAddress = applicationAddress;
-          this.applicationPort = applicationPort;
-        }
-      };
-      let forwardingConstructForTheForwardingName = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(forwardingName);
-      let forwardingConstructUuid = forwardingConstructForTheForwardingName[onfAttributes.GLOBAL_CLASS.UUID];
-      let fcPortList = await ForwardingConstruct.getFcPortListAsync(forwardingConstructUuid);
-      let httpClientUuidList = []
-
-      for(let fcPortIndex = 0; fcPortIndex < fcPortList.length; fcPortIndex++){
-        if(fcPortList[fcPortIndex][onfAttributes.FC_PORT.PORT_DIRECTION] === FcPort.portDirectionEnum.OUTPUT){
-            let serverLtpList = await logicalTerminationPoint.getServerLtpListAsync(fcPortList[fcPortIndex][onfAttributes.FC_PORT.LOGICAL_TERMINATION_POINT])
-            httpClientUuidList = httpClientUuidList.concat(serverLtpList)
-        }
-      }
-      for (let i = 0; i < httpClientUuidList.length; i++) {
-        let httpClientUuid = httpClientUuidList[i];
-        let applicationName = await httpClientInterface.getApplicationNameAsync(httpClientUuid);
-        let applicationReleaseNumber = await httpClientInterface.getReleaseNumberAsync(httpClientUuid);
-        let serverLtp = await logicalTerminationPoint.getServerLtpListAsync(httpClientUuid);
-        let tcpClientUuid = serverLtp[0];
-        let applicationAddress = await tcpClientInterface.getRemoteAddressAsync(tcpClientUuid);
-        let applicationPort = await tcpClientInterface.getRemotePortAsync(tcpClientUuid);
-        let clientApplication = new clientApplicationInformation(applicationName, applicationReleaseNumber, applicationAddress, applicationPort);
-        clientApplicationList.push(clientApplication);
-      }
-      resolve(clientApplicationList);
-    } catch (error) {
-      reject();
-    }
-  });
+function isAddressChanged(currentAddress, newAddress) {
+  let currentIp = currentAddress[onfAttributes.TCP_CLIENT.IP_ADDRESS];
+  let currentIpv4;
+  if (currentIp) {
+    currentIpv4 = currentIp[onfAttributes.TCP_CLIENT.IPV_4_ADDRESS];
+  }
+  let currentDomain = currentAddress[onfAttributes.TCP_CLIENT.DOMAIN_NAME];
+  let newIp = newAddress[onfAttributes.TCP_CLIENT.IP_ADDRESS];
+  let newIpv4;
+  if (newIp) {
+    newIpv4 = newIp[onfAttributes.TCP_CLIENT.IPV_4_ADDRESS];
+  }
+  let newDomain = newAddress[onfAttributes.TCP_CLIENT.DOMAIN_NAME];
+  return (currentIpv4 !== newIpv4) || (currentDomain !== newDomain);
 }
+
+
