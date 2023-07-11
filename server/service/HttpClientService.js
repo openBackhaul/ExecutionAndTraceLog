@@ -23,8 +23,9 @@ exports.getHttpClientApplicationName = function (url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -47,8 +48,9 @@ exports.getHttpClientReleaseNumber = function (url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -72,8 +74,9 @@ exports.putHttpClientApplicationName = function(body, uuid) {
         );
       }
       resolve();
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -97,7 +100,8 @@ exports.putHttpClientReleaseNumber = function (body, uuid) {
         );
       }
       resolve();
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }

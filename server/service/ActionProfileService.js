@@ -20,8 +20,9 @@ exports.getActionProfileConsequentOperationReference = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -44,8 +45,9 @@ exports.getActionProfileDisplayInNewBrowserWindow = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -68,8 +70,9 @@ exports.getActionProfileInputValueListt = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -92,8 +95,9 @@ exports.getActionProfileLabel = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -116,8 +120,9 @@ exports.getActionProfileOperationName = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -133,7 +138,8 @@ exports.putActionProfileConsequentOperationReference = function(url, body) {
     try {
       await fileOperation.writeToDatabaseAsync(url, body, false);
       resolve();
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
