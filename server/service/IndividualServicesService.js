@@ -15,16 +15,11 @@ const onfAttributeFormatter = require('onf-core-model-ap/applicationPattern/onfM
 
 const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes');
 
-const logicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 const ConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/ConfigurationStatus');
 const LogicalTerminationPointConfigurationStatus = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationStatus');
 const tcpClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface');
-const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
-const ForwardingConstruct = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingConstruct');
 
 const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
-const TcpServerInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpServerInterface');
-const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 
@@ -219,9 +214,8 @@ exports.disregardApplication = function (body, user, originator, xCorrelator, tr
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * returns List
  **/
-exports.listApplications = function (user, originator, xCorrelator, traceIndicator, customerJourney) {
+exports.listApplications = function () {
   return new Promise(async function (resolve, reject) {
-    let response = {};
     let forwardingName = "ApprovedApplicationCausesRequestForServiceRequestInformation"
     try {
       /****************************************************************************************
@@ -232,14 +226,10 @@ exports.listApplications = function (user, originator, xCorrelator, traceIndicat
       /****************************************************************************************
        * Setting 'application/json' response body
        ****************************************************************************************/
-      response['application/json'] = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(applicationList);
+      let response = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(applicationList);
+      resolve(response)
     } catch (error) {
-      console.log(error);
-    }
-    if (Object.keys(response).length > 0) {
-      resolve(response[Object.keys(response)[0]]);
-    } else {
-      resolve();
+      reject(error);
     }
   });
 }
