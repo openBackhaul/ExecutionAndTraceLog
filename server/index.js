@@ -36,3 +36,5 @@ global.databasePath = './database/load.json'
 prepareElasticsearch(false).then().catch(err => {
     console.error(`Error preparing Elasticsearch : ${err}`);
 });
+
+appCommons.performApplicationRegistration();
