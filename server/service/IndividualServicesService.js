@@ -1,8 +1,9 @@
+// @ts-check
 'use strict';
 
 const LogicalTerminationPointConfigurationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/logicalTerminationPoint/ConfigurationInput');
 const LogicalTerminationPointService = require('onf-core-model-ap/applicationPattern/onfModel/services/LogicalTerminationPointServices');
-const LogicalTerminationPointServiceOfUtility = require("onf-core-model-ap-bs/basicServices/utility/LogicalTerminationPoint")
+const ServiceUtils = require("onf-core-model-ap-bs/basicServices/utility/LogicalTerminationPoint")
 const ForwardingConfigurationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructConfigurationServices');
 const ForwardingAutomationService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructAutomationServices');
 const prepareForwardingConfiguration = require('./individualServices/PrepareForwardingConfiguration');
@@ -47,7 +48,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
-    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidOfNewRelease();
+    let newReleaseHttpClientLtpUuid = await ServiceUtils.resolveHttpTcpAndOperationClientUuidOfNewRelease();
     let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
     let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
     
@@ -98,7 +99,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       );
 
       let logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
-        false,
+        [],
         httpClientConfigurationStatus,
         [tcpClientConfigurationStatus]
       );
@@ -143,33 +144,29 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 exports.disregardApplication = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
   let applicationName = body["application-name"];
   let applicationReleaseNumber = body["release-number"];
+
   let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
     applicationName,
     applicationReleaseNumber,
     NEW_RELEASE_FORWARDING_NAME
-  )
+  );
   let ltpConfigurationStatus = await LogicalTerminationPointService.deleteApplicationLtpsAsync(
     httpClientUuid
   );
-
   let forwardingConfigurationInputList = [];
-  let forwardingConstructConfigurationStatus;
-  let operationClientConfigurationStatusList = ltpConfigurationStatus.operationClientConfigurationStatusList;
+  let operationClientConfigStatusList = ltpConfigurationStatus.operationClientConfigurationStatusList;
 
-  if (operationClientConfigurationStatusList) {
+  if (operationClientConfigStatusList) {
     forwardingConfigurationInputList = await prepareForwardingConfiguration.disregardApplication(
-      operationClientConfigurationStatusList
+      operationClientConfigStatusList
     );
-    forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-    unConfigureForwardingConstructAsync(
+    await ForwardingConfigurationService.unConfigureForwardingConstructAsync(
       operationServerName,
       forwardingConfigurationInputList
     );
   }
-
-  let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
-    ltpConfigurationStatus,
-    forwardingConstructConfigurationStatus
+  let forwardingAutomationInputList = prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
+    ltpConfigurationStatus
   );
 
   ForwardingAutomationService.automateForwardingConstructAsync(
@@ -200,7 +197,7 @@ exports.listApplications = function () {
       /****************************************************************************************
        * Preparing response body
        ****************************************************************************************/
-      let applicationList = await LogicalTerminationPointServiceOfUtility.getAllApplicationList(forwardingName);
+      let applicationList = await ServiceUtils.getAllApplicationList(forwardingName);
 
       /****************************************************************************************
        * Setting 'application/json' response body
@@ -365,28 +362,30 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
     operationNamesByAttributes,
     individualServicesOperationsMapping.individualServicesOperationsMapping
   );
-  let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
-    ltpConfigurationInput
+  const roApplicationName = await ServiceUtils.resolveRegistryOfficeApplicationNameFromForwardingAsync();
+
+  const ltpConfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
+    ltpConfigurationInput,
+    roApplicationName === applicationName
   );
 
   let forwardingConfigurationInputList = [];
   let forwardingConstructConfigurationStatus;
-  let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
+  let operationClientConfigurationStatusList = ltpConfigurationStatus.operationClientConfigurationStatusList;
 
   if (operationClientConfigurationStatusList) {
     forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
       operationClientConfigurationStatusList,
       REDIRECT_SERVICE_REQUEST_OPERATION
     );
-    forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-    configureForwardingConstructAsync(
+    forwardingConstructConfigurationStatus = await ForwardingConfigurationService.configureForwardingConstructAsync(
       operationServerName,
       forwardingConfigurationInputList
     );
   }
 
   let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
-    logicalTerminationPointconfigurationStatus,
+    ltpConfigurationStatus,
     forwardingConstructConfigurationStatus
   );
   let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
