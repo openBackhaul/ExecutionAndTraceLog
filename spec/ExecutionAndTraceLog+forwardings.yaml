@@ -81,17 +81,17 @@ forwardings:
         uuid: eatl-2-0-1-op-s-bs-003
       - server-name: /v1/inform-about-release-history-in-generic-representation
         uuid: eatl-2-0-1-op-s-bs-004
-      - service-name: /v1/regard-application
+      - server-name: /v1/regard-application
         uuid: eatl-2-0-1-op-s-is-001
-      - service-name: /v1/disregard-application
+      - server-name: /v1/disregard-application
         uuid: eatl-2-0-1-op-s-is-002
-      - service-name: /v1/list-applications
+      - server-name: /v1/list-applications
         uuid: eatl-2-0-1-op-s-is-003
-      - service-name: /v1/list-records
+      - server-name: /v1/list-records
         uuid: eatl-2-0-1-op-s-is-005
-      - service-name: /v1/list-records-of-flow
+      - server-name: /v1/list-records-of-flow
         uuid: eatl-2-0-1-op-s-is-006
-      - service-name: /v1/list-records-of-unsuccessful
+      - server-name: /v1/list-records-of-unsuccessful
         uuid: eatl-2-0-1-op-s-is-007
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
@@ -281,7 +281,7 @@ forwardings:
         uuid: eatl-2-0-1-op-s-bm-011
       - server-name: /v1/bequeath-your-data-and-die
         uuid: eatl-2-0-1-op-s-im-000
-      - service-name: /v1/regard-application
+      - server-name: /v1/regard-application
         uuid: eatl-2-0-1-op-s-is-001
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/update-ltp
@@ -300,7 +300,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
-      - service-name: /v1/disregard-application
+      - server-name: /v1/disregard-application
         uuid: eatl-2-0-1-op-s-is-002
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/delete-ltp-and-dependents
@@ -319,7 +319,7 @@ forwardings:
       fc-port-deletion:
       operation-client-deletion:
     initiating-requests:
-      - service-name: /v1/regard-application
+      - server-name: /v1/regard-application
         uuid: eatl-2-0-1-op-s-is-001
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/update-fc
