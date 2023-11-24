@@ -1037,7 +1037,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "OldRelease",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
@@ -1438,7 +1438,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "TypeApprovalRegister",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
@@ -1637,7 +1637,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "OamLog",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
@@ -1736,7 +1736,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "AdministratorAdministration",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
@@ -1965,7 +1965,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "ApplicationLayerTopology",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
@@ -2038,7 +2038,7 @@
                   "http-client-interface-1-0:http-client-interface-pac": {
                     "http-client-interface-configuration": {
                       "application-name": "OperationKeyManagement",
-                      "release-number": "1.0.0"
+                      "release-number": "2.0.1"
                     }
                   }
                 }
