@@ -2931,7 +2931,7 @@
                 ]
               },
               {
-                "uuid": "eeatl-2-0-1-op-fc-is-001",
+                "uuid": "eatl-2-0-1-op-fc-is-001",
                 "name": [
                   {
                     "value-name": "ForwardingKind",
@@ -2960,31 +2960,6 @@
                 "name": [
                   {
                     "value-name": "ForwardingKind",
-                    "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
-                  },
-                  {
-                    "value-name": "ForwardingName",
-                    "value": "RegardApplicationCausesSequenceForInquiringServiceRecords.CreateLinkForSendingServiceRecords"
-                  }
-                ],
-                "fc-port": [
-                  {
-                    "local-id": "100",
-                    "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                    "logical-termination-point": "eatl-2-0-1-op-s-is-001"
-                  },
-                  {
-                    "local-id": "200",
-                    "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                    "logical-termination-point": "eatl-2-0-1-op-c-is-alt-2-1-0-000"
-                  }
-                ]
-              },
-              {
-                "uuid": "eatl-2-0-1-op-fc-is-003",
-                "name": [
-                  {
-                    "value-name": "ForwardingKind",
                     "value": "core-model-1-4:FORWARDING_KIND_TYPE_PROCESS_SNIPPET"
                   },
                   {
@@ -3006,7 +2981,7 @@
                   {
                     "local-id": "100",
                     "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                    "logical-termination-point": "eatl-2-0-1-op-s-is-001"
+                    "logical-termination-point": "eatl-2-0-1-op-s-bm-010"
                   },
                   {
                     "local-id": "200",
@@ -3047,6 +3022,31 @@
                     "local-id": "207",
                     "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
                     "logical-termination-point": "eatl-2-0-1-op-c-im-cc-1-0-0-004"
+                  },
+                  {
+                    "uuid": "eatl-2-0-1-op-fc-is-003",
+                    "name": [
+                      {
+                        "value-name": "ForwardingKind",
+                        "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+                      },
+                      {
+                        "value-name": "ForwardingName",
+                        "value": "RegardApplicationCausesSequenceForInquiringServiceRecords.CreateLinkForSendingServiceRecords"
+                      }
+                    ],
+                    "fc-port": [
+                      {
+                        "local-id": "100",
+                        "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                        "logical-termination-point": "eatl-2-0-1-op-s-is-001"
+                      },
+                      {
+                        "local-id": "200",
+                        "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                        "logical-termination-point": "eatl-2-0-1-op-c-is-alt-2-1-0-000"
+                      }
+                    ]
                   }
                 ]
               }

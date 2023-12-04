@@ -31,6 +31,23 @@ ELSE
 end note
 
 note over eatl
+<u>RequestForInquiringServiceRecords</u>
+Request for sending
+service records in future
+end note
+eatl -> newApplicationFuture : {loggingApplication, releaseNumber, loggingService, protocol, address, port} (apiKey)
+eatl <-- newApplicationFuture : 204
+
+note left eatl
+IF (NOT 204)
+end note
+ro <-- eatl : { successfully-connected==false,  reason-of-failure}
+
+note over eatl
+ELSE
+end note
+
+note over eatl
 <u>CreateLinkForSendingServiceRecords</u>
 Request for automatically creating the Link:
 newApplication => EaTL://v1/record-service-request
@@ -43,27 +60,10 @@ IF (NOT 200) OR (client-successfully-added==false)
 end note
 ro <-- eatl : { successfully-connected==false,  reason-of-failure}
 
-note over eatl
+note left eatl
 ELSE
 end note
-
-note over eatl
-<u>RequestForInquiringServiceRecords</u>
-Request for sending
-service records in future
-end note
-eatl -> newApplicationFuture : {loggingApplication, releaseNumber, loggingService, protocol, address, port} (apiKey)
-eatl <-- newApplicationFuture : 204
-
-note left eatl
-IF 204
-end note
 ro <-- eatl : { successfully-connected==true }
-
-note left eatl
-IF (NOT 204)
-end note
-ro <-- eatl : { successfully-connected==false,  reason-of-failure}
 
 deactivate eatl
 
