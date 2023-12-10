@@ -20,8 +20,9 @@ exports.getGenericResponseProfileDatatype = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -45,8 +46,9 @@ exports.getGenericResponseProfileDescription = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -70,8 +72,9 @@ exports.getGenericResponseProfileFieldName = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -95,8 +98,9 @@ exports.getGenericResponseProfileOperationName = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -120,8 +124,9 @@ exports.getGenericResponseProfileValue = function(url) {
       } else {
         resolve();
       }
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -138,8 +143,9 @@ exports.putGenericResponseProfileValue = function(url, body) {
     try {
       await fileOperation.writeToDatabaseAsync(url, body, false);
       resolve();
-    } catch (error) {}
-    reject();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 

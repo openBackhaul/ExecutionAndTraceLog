@@ -102,7 +102,7 @@ exports.putTcpClientRemoteAddress = function (body, uuid) {
           ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
             forwardingAutomationInputList
           );
-          if (isTcpClientElasticsearch(uuid)) {
+          if (await isTcpClientElasticsearch(uuid)) {
             // recreate the client with new connection data
             await elasticsearchService.getClient(true);
             await prepareElasticsearch();
@@ -137,7 +137,7 @@ exports.putTcpClientRemotePort = function (body, uuid) {
           ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
             forwardingAutomationInputList
           );
-          if (isTcpClientElasticsearch(uuid)) {
+          if (await isTcpClientElasticsearch(uuid)) {
             // recreate the client with new connection data
             await elasticsearchService.getClient(true);
             await prepareElasticsearch();
@@ -172,7 +172,7 @@ exports.putTcpClientRemoteProtocol = function(body, uuid) {
           ForwardingAutomationService.automateForwardingConstructWithoutInputAsync(
             forwardingAutomationInputList
           );
-          if (isTcpClientElasticsearch(uuid)) {
+          if (await isTcpClientElasticsearch(uuid)) {
             // recreate the client with new connection data
             await elasticsearchService.getClient(true);
             await prepareElasticsearch();
