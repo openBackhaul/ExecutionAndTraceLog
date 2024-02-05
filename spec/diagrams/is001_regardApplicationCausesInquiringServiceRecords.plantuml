@@ -154,9 +154,9 @@ IF ( (client-successfully-added==false)
       ( (reason-of-failure==ALT_SERVING_APPLICATION_NAME_UNKNOWN)
         OR (reason-of-failure==ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN)
       )
+  Restart the entire Connecting Process
 )
 end note
-eatlRegardApplication <- eatlRegardApplication : restart by self call\n{newApplicationName,\n releaseNumber,\n protocol, address,\n port} (apiKey)
 
 note over eatlRegardApplication
 ELSE
