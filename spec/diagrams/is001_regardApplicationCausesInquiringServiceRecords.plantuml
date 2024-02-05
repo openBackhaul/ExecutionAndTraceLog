@@ -2,69 +2,201 @@
 skinparam responseMessageBelowArrow true
 
 title
-RegardApplicationCausesSequenceForInquiringServiceRecords
+is001_regardApplicationCausesInquiringServiceRecords
 end title
 
 participant "RO" as ro
-participant "EaTL://v1/regard-application" as eatl
-participant "ALT://v1/add-operation-client-to-link" as alt
-participant "newApplicationName://v1/redirect-service-request-information" as newApplicationFuture
+participant "EATL://v1/regard-application" as eatlRegardApplication
+participant "EATL://v1/update-operation-key" as eatlUpdateOperationKey
 
-ro -> eatl : {newApplicationName, releaseNumber, protocol, address, port} (apiKey)
-activate eatl
+participant "newApp://v1/redirect-service-request-information" as newAppRedirectSerReqInfo
+participant "newApp://v1/update-operation-key" as newAppUpdateOperationKey
+database "newApp:config.json" as newAppConfiguration
 
-note over eatl
+participant "ALT://v1/add-operation-client-to-link" as altAddOperClient2Link
+participant "ALT://v1/update-ltp" as altUpdateLtp
+database "ALT:ElasticSearch" as altApplicationDataES
+
+participant "OKM://v1/regard-updated-link" as okmRegardUpdatedLink
+
+group Initial data
+    note over newAppConfiguration #LightBlue
+        version of EATL is 2.0.1
+        {
+        "application-name" : "ExecutionAndTraceLog",
+        <b>"release-number" : "2.0.1"
+        }
+    end note
+    note over altApplicationDataES #LightBlue
+        In the control-construct of the newApplication,
+        version of EATL is 2.0.1
+        {
+        "application-name" : "ExecutionAndTraceLog",
+        <b>"release-number" : "2.0.1"
+        }
+    end note
+end
+
+ro -> eatlRegardApplication : {newApplicationName,\n releaseNumber,\n protocol, address,\n port} (apiKey)
+activate eatlRegardApplication
+
+note over eatlRegardApplication
 <u>CreateLinkForInquiringServiceRecords</u>
 Request for automatically creating the Link:
 EaTL => newApplicationName://v1/redirect-service-request-information
 end note
-eatl -> alt : { servingApplicationName == requestBody.newApplicationName,\n servingApplicationReleaseNumber == requestBody.releaseNumber,\n operationName == /v1/redirect-service-request-information,\n consumingApplicationName == ExecutionAndTraceLog,\n consumingApplicationReleaseNumber == 2.1.0 } (apiKey)
-eatl <-- alt : {client-successfully-added, reason-of-failure}
 
-note left eatl
+eatlRegardApplication -> altAddOperClient2Link : { servingApplicationName == requestBody.newApplicationName,\n servingApplicationReleaseNumber == requestBody.releaseNumber,\n operationName == /v1/redirect-service-request-information,\n consumingApplicationName == ExecutionAndTraceLog,\n consumingApplicationReleaseNumber == 2.1.0 } (apiKey)
+eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, reason-of-failure}
+
+note left eatlRegardApplication
 IF (NOT 200) OR (client-successfully-added==false)
 end note
-ro <-- eatl : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
 
-note over eatl
+note over eatlRegardApplication
 ELSE
 end note
 
-note over eatl
+note over altAddOperClient2Link
+Notifies new link creation to OKM
+end note
+
+altAddOperClient2Link -> okmRegardUpdatedLink
+
+note over okmRegardUpdatedLink
+OKM generates new operation-key and 
+it will try to set the new operation-key 
+to the client application (ExecutionAndTraceLog)
+and the serving application (NewApplication)
+end note
+
+okmRegardUpdatedLink -> newAppUpdateOperationKey
+okmRegardUpdatedLink -> eatlUpdateOperationKey
+eatlUpdateOperationKey -[#Grey]> eatlRegardApplication : Internally informs about the operation-key update
+
+note left eatlRegardApplication #Orange
+IF waiting > maximumWaitTimeToReceiveOperationKey
+end note
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+
+note over eatlRegardApplication
+After receiving an updated operation-key
+for the operation-client
+NewApp://v1/redirect-service-request-information
+
 <u>RequestForInquiringServiceRecords</u>
 Request for sending
 service records in future
 end note
-eatl -> newApplicationFuture : {loggingApplication, releaseNumber, loggingService, protocol, address, port} (apiKey)
-eatl <-- newApplicationFuture : 204
 
-note left eatl
+eatlRegardApplication -> newAppRedirectSerReqInfo : {loggingApplication, releaseNumber, loggingService, protocol, address, port} (apiKey)
+eatlRegardApplication <-- newAppRedirectSerReqInfo : responseCode : 204
+
+note left eatlRegardApplication
 IF (NOT 204)
 end note
-ro <-- eatl : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
 
-note over eatl
+note over eatlRegardApplication
 ELSE
 end note
 
-note over eatl
+group callback of "newApplicationname://v1/redirect-service-request-information"
+    note over newAppRedirectSerReqInfo
+    EATL client in NewApp will be updated
+    end note
+    newAppRedirectSerReqInfo --> newAppConfiguration
+    note over newAppConfiguration #LightBlue
+        version of EATL is 2.1.0
+        {
+        "application-name" : "ExecutionAndTraceLog",
+        <b>"release-number" : "2.1.0"
+        }
+    end note
+    note over newAppConfiguration
+    Updating EATL client in NewApp causes request
+    for updating EATL client at NewApp in ALT
+    end note
+    newAppConfiguration --> altUpdateLtp
+    altUpdateLtp --> altApplicationDataES
+    note over altApplicationDataES #LightBlue
+        In the control-construct of the newApplication,
+        version of EATL is 2.1.0
+        {
+        "application-name" : "ExecutionAndTraceLog",
+        <b>"release-number" : "2.1.0"
+        }
+    end note
+    note over altApplicationDataES #LightCoral
+    Process for correcting
+    EATL client at NewApp in ALT takes
+    three steps that are hidden to EATL
+    end note
+end
+
+note over eatlRegardApplication #LightCoral
+EATL does not know, whether ALT already 
+contains an updated EATL client at NewApp
+end note
+note over eatlRegardApplication
 <u>CreateLinkForSendingServiceRecords</u>
 Request for automatically creating the Link:
 newApplication => EaTL://v1/record-service-request
 end note
-eatl -> alt : { servingApplicationName == ExecutionAndTraceLog,\n servingApplicationReleaseNumber == 2.1.0,\n operationName == /v1/record-service-request,\n consumingApplicationName == requestBody.newApplicationName,\n consumingApplicationReleaseNumber == requestBody.releaseNumber } (apiKey)
-eatl <-- alt : {client-successfully-added, reason-of-failure}
 
-note left eatl
-IF (NOT 200) OR (client-successfully-added==false)
+eatlRegardApplication -> altAddOperClient2Link : { servingApplicationName == ExecutionAndTraceLog,\n servingApplicationReleaseNumber == 2.1.0,\n operationName == /v1/record-service-request,\n consumingApplicationName == requestBody.newApplicationName,\n consumingApplicationReleaseNumber == requestBody.releaseNumber } (apiKey)
+eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, reason-of-failure}
+
+note left eatlRegardApplication #Orange
+IF ( (client-successfully-added==false) 
+      AND 
+      ( (reason-of-failure==ALT_SERVING_APPLICATION_NAME_UNKNOWN)
+        OR (reason-of-failure==ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN)
+      )
+)
 end note
-ro <-- eatl : { successfully-connected==false,  reason-of-failure}
+eatlRegardApplication <- eatlRegardApplication : restart by self call\n{newApplicationName,\n releaseNumber,\n protocol, address,\n port} (apiKey)
 
-note left eatl
+note over eatlRegardApplication
 ELSE
 end note
-ro <-- eatl : { successfully-connected==true }
 
-deactivate eatl
+note left eatlRegardApplication
+IF (NOT 200) OR (client-successfully-added==false)
+end note
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
 
-@enduml
+note over eatlRegardApplication
+ELSE
+end note
+
+note over altAddOperClient2Link
+Notifies new link creation to OKM
+end note
+
+altAddOperClient2Link -> okmRegardUpdatedLink
+
+note over okmRegardUpdatedLink
+OKM generates new operation-key and it will 
+try to set the new operation-key to the 
+client application (NewApplication) and the 
+serving application (ExecutionAndTraceLog)
+end note
+
+okmRegardUpdatedLink -> newAppUpdateOperationKey
+okmRegardUpdatedLink -> eatlUpdateOperationKey
+eatlUpdateOperationKey -[#Grey]> eatlRegardApplication : Internally informs about the operation-key update
+
+note left eatlRegardApplication #Orange
+IF waiting > maximumWaitTimeToReceiveOperationKey
+end note
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+
+note over eatlRegardApplication
+After receiving an updated operation-key
+for the operation-server
+EaTL://v1/record-service-request
+end note
+
+ro <-- eatlRegardApplication : { successfully-connected==true }
