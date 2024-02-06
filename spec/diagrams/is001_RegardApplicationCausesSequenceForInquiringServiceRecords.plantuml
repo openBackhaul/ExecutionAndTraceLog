@@ -1,8 +1,8 @@
-@startuml is001_regardApplicationCausesInquiringServiceRecords
+@startuml is001_RegardApplicationCausesSequenceForInquiringServiceRecords
 skinparam responseMessageBelowArrow true
 
 title
-is001_regardApplicationCausesInquiringServiceRecords
+is001_RegardApplicationCausesSequenceForInquiringServiceRecords
 end title
 
 participant "RO" as ro
@@ -139,8 +139,21 @@ note over eatlRegardApplication #LightCoral
 EATL does not know, whether ALT already 
 contains an updated EATL client at NewApp
 end note
+
+note over eatlRegardApplication #Orange
+attempts = 0 
+end note
+
+note over eatlRegardApplication #Orange
+mark#1
+end note
+
+note over eatlRegardApplication #Orange
+attempts = attempts + 1 
+end note
+
 note over eatlRegardApplication
-<u>CreateLinkForSendingServiceRecords</u>
+<u>CreateLinkForReceivingServiceRecords</u>
 Request for automatically creating the Link:
 newApplication => EaTL://v1/record-service-request
 end note
@@ -149,12 +162,13 @@ eatlRegardApplication -> altAddOperClient2Link : { servingApplicationName == Exe
 eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, reason-of-failure}
 
 note left eatlRegardApplication #Orange
-IF ( (client-successfully-added==false) 
+IF ( (attempts<=maximumNumberOfAttemptsToCreateLink)
       AND 
+      (client-successfully-added==false)
+      AND
       ( (reason-of-failure==ALT_SERVING_APPLICATION_NAME_UNKNOWN)
         OR (reason-of-failure==ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN)
-      )
-  Restart the entire Connecting Process
+  Return to mark#1
 )
 end note
 
