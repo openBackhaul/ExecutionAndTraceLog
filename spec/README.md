@@ -1,5 +1,8 @@
 # ExecutionAndTraceLog Specification
 
+### Diagrams  
+- [Collection of Diagrams](./diagrams)
+
 ### ServiceList
 - [ExecutionAndTraceLog+services](./ExecutionAndTraceLog+services.yaml)
 

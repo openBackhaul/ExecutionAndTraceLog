@@ -665,6 +665,7 @@ paths:
                           - 'EATL_ALT_UNKNOWN'
                           - 'EATL_NOT_REACHABLE'
                           - 'EATL_UNKNOWN'
+                          - 'EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED'
                         description: 'Reasons provided by ALT to be pre-fixed with EATL_. If (NOT (200 OR 204)) respond EATL_NOT_REACHABLE'
               examples:
                 if-successful:
