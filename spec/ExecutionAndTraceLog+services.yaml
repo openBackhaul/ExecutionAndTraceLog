@@ -67,7 +67,7 @@ servers:
           uuid: eatl-2-1-0-op-s-is-007
   http-server:
     own-application-name: ExecutionAndTraceLog
-    own-release-number: 2.1.0
+    own-release-number: 2.1.1
     uuid: eatl-2-1-0-http-s-000
   tcp-server:
     - description: Without TLS layer
@@ -151,12 +151,6 @@ clients:
           - operation-name: /v1/relay-operation-update
             uuid: eatl-2-1-0-op-c-bm-ro-2-1-0-003
         individual:
-          - operation-name: /v1/notify-approvals
-            uuid: eatl-2-1-0-op-c-im-ro-2-1-0-000
-          - operation-name: /v1/notify-withdrawn-approvals
-            uuid: eatl-2-1-0-op-c-im-ro-2-1-0-001
-          - operation-name: /v1/end-subscription
-            uuid: eatl-2-1-0-op-c-im-ro-2-1-0-002
           - operation-name: /v1/redirect-service-request-information
             uuid: eatl-2-1-0-op-c-im-ro-2-1-0-004
       service:
