@@ -2,7 +2,7 @@
 skinparam responseMessageBelowArrow true
 
 title
-is001_RegardApplicationCausesSequenceForInquiringServiceRecords
+RegardApplicationCausesSequenceForInquiringServiceRecords
 end title
 
 participant "RO" as ro
@@ -52,7 +52,7 @@ eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, re
 note left eatlRegardApplication
 IF (NOT 200) OR (client-successfully-added==false)
 end note
-ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure }
 
 note over eatlRegardApplication
 ELSE
@@ -78,7 +78,11 @@ eatlUpdateOperationKey -[#Grey]> eatlRegardApplication : Internally informs abou
 note left eatlRegardApplication #Orange
 IF waiting > maximumWaitTimeToReceiveOperationKey
 end note
-ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure }
+
+note over eatlRegardApplication
+ELSE
+end note
 
 note over eatlRegardApplication
 After receiving an updated operation-key
@@ -96,7 +100,7 @@ eatlRegardApplication <-- newAppRedirectSerReqInfo : responseCode : 204
 note left eatlRegardApplication
 IF (NOT 204)
 end note
-ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure }
 
 note over eatlRegardApplication
 ELSE
@@ -159,7 +163,7 @@ newApplication => EaTL://v1/record-service-request
 end note
 
 eatlRegardApplication -> altAddOperClient2Link : { servingApplicationName == ExecutionAndTraceLog,\n servingApplicationReleaseNumber == 2.1.0,\n operationName == /v1/record-service-request,\n consumingApplicationName == requestBody.newApplicationName,\n consumingApplicationReleaseNumber == requestBody.releaseNumber } (apiKey)
-eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, reason-of-failure}
+eatlRegardApplication <-- altAddOperClient2Link : {client-successfully-added, reason-of-failure }
 
 note left eatlRegardApplication #Orange
 IF ( (attempts<=maximumNumberOfAttemptsToCreateLink)
@@ -179,7 +183,7 @@ end note
 note left eatlRegardApplication
 IF (NOT 200) OR (client-successfully-added==false)
 end note
-ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure }
 
 note over eatlRegardApplication
 ELSE
@@ -192,9 +196,9 @@ end note
 altAddOperClient2Link -> okmRegardUpdatedLink
 
 note over okmRegardUpdatedLink
-OKM generates new operation-key and it will 
-try to set the new operation-key to the 
-client application (NewApplication) and the 
+OKM generates new operation-key and it will
+try to set the new operation-key to the
+client application (NewApplication) and the
 serving application (ExecutionAndTraceLog)
 end note
 
@@ -205,7 +209,11 @@ eatlUpdateOperationKey -[#Grey]> eatlRegardApplication : Internally informs abou
 note left eatlRegardApplication #Orange
 IF waiting > maximumWaitTimeToReceiveOperationKey
 end note
-ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure}
+ro <-- eatlRegardApplication : { successfully-connected==false,  reason-of-failure }
+
+note over eatlRegardApplication
+ELSE
+end note
 
 note over eatlRegardApplication
 After receiving an updated operation-key
