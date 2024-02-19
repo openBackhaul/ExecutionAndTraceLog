@@ -15,8 +15,10 @@ exports.regardApplication = function (operationClientConfigurationStatusList, re
                 let forwardingConfigurationInput;
                 let forwardingName;
                 if (operationClientName == redirectServiceRequestOperation) {
+                    // forwardingName =
+                    //     "ApprovedApplicationCausesRequestForServiceRequestInformation";
                     forwardingName =
-                        "ApprovedApplicationCausesRequestForServiceRequestInformation";
+                        "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
                     forwardingConfigurationInput = new forwardingConstructConfigurationInput(
                         forwardingName,
                         operationClientUuid

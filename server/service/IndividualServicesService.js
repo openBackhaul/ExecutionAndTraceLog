@@ -346,62 +346,66 @@ exports.recordServiceRequest = async function (body) {
  * no response value expected for this operation
  **/
 exports.regardApplication = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney, operationServerName) {
-  let applicationName = body['application-name'];
-  let releaseNumber = body['release-number'];
-  const tcpInfo = [new TcpObject(body['protocol'], body['address'], body['port'])];
-  let operationNamesByAttributes = new Map();
-  operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
-  let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
-    applicationName,
-    releaseNumber,
-    NEW_RELEASE_FORWARDING_NAME
-  );
-  let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
-    httpClientUuid,
-    applicationName,
-    releaseNumber,
-    tcpInfo,
-    operationServerName,
-    operationNamesByAttributes,
-    individualServicesOperationsMapping.individualServicesOperationsMapping
-  );
-  let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
-    ltpConfigurationInput
-  );
+  return new Promise(async function (resolve, reject) {
+    try {
+      let applicationName = body['application-name'];
+      let releaseNumber = body['release-number'];
+      const tcpInfo = [new TcpObject(body['protocol'], body['address'], body['port'])];
+      let operationNamesByAttributes = new Map();
+      operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
+      let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
+        applicationName,
+        releaseNumber,
+        NEW_RELEASE_FORWARDING_NAME
+      );
+      let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
+        httpClientUuid,
+        applicationName,
+        releaseNumber,
+        tcpInfo,
+        operationServerName,
+        operationNamesByAttributes,
+        individualServicesOperationsMapping.individualServicesOperationsMapping
+      );
+      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
+        ltpConfigurationInput
+      );
 
-  let forwardingConfigurationInputList = [];
-  let forwardingConstructConfigurationStatus;
-  let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
+      let forwardingConfigurationInputList = [];
+      let forwardingConstructConfigurationStatus;
+      let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
 
-  if (operationClientConfigurationStatusList) {
-    forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
-      operationClientConfigurationStatusList,
-      REDIRECT_SERVICE_REQUEST_OPERATION
-    );
-    forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-    configureForwardingConstructAsync(
-      operationServerName,
-      forwardingConfigurationInputList
-    );
-  }
+      if (operationClientConfigurationStatusList) {
+        forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
+          operationClientConfigurationStatusList,
+          REDIRECT_SERVICE_REQUEST_OPERATION
+        );
+        forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
+        configureForwardingConstructAsync(
+          operationServerName,
+          forwardingConfigurationInputList
+        );
+      }
 
-  let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
-    logicalTerminationPointconfigurationStatus,
-    forwardingConstructConfigurationStatus
-  );
-  let forwardingAutomationInputList = await prepareForwardingAutomation.regardApplication(
-    applicationLayerTopologyForwardingInputList,
-    applicationName,
-    releaseNumber
-  );
-  ForwardingAutomationService.automateForwardingConstructAsync(
-    operationServerName,
-    forwardingAutomationInputList,
-    user,
-    xCorrelator,
-    traceIndicator,
-    customerJourney
-  );
+      let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+        logicalTerminationPointconfigurationStatus,
+        forwardingConstructConfigurationStatus
+      );
+      let result = await prepareForwardingAutomation.regardApplication(
+        applicationName,
+        releaseNumber,
+        operationServerName,
+        applicationLayerTopologyForwardingInputList,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney
+      );
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 /****************************************************************************************
