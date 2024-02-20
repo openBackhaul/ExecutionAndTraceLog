@@ -25,7 +25,7 @@ var app = expressAppConfig.getApp();
 appCommons.setupExpressApp(app);
 
 //setting the path to the database 
-global.databasePath = './database/load.json'
+global.databasePath = './database/config.json'
 
 prepareElasticsearch(false).catch(err => {
     console.error(`Error preparing Elasticsearch : ${err}`);
@@ -38,4 +38,3 @@ prepareElasticsearch(false).catch(err => {
     appCommons.performApplicationRegistration();
 }
 );
-
