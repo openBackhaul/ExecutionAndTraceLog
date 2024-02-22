@@ -32,7 +32,7 @@ const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObein
 exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, _traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
-            var traceIndicatorIncrementer = 1;
+            let traceIndicatorIncrementer = 1;
             if (_traceIndicatorIncrementer !== 0) {
                 traceIndicatorIncrementer = _traceIndicatorIncrementer;
             }
