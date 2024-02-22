@@ -17,7 +17,6 @@ const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/clien
 
 const NOTIFY_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease';
 const NOTIFY_WITHDRAWN_APPROVALS_FD_NAME = 'PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease';
-var traceIndicatorIncrementer = 1;
 
 /**
  * This method performs the set of procedure to transfer the data from this version to next version 
@@ -33,14 +32,15 @@ var traceIndicatorIncrementer = 1;
 exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, _traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
+            let traceIndicatorIncrementer = 1;
             if (_traceIndicatorIncrementer !== 0) {
                 traceIndicatorIncrementer = _traceIndicatorIncrementer;
             }
             if (isdataTransferRequired) {
-                await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney);
+                traceIndicatorIncrementer = await PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
             }
-            await redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
-            await replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
+            traceIndicatorIncrementer = await redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
+            await replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
             resolve();
         } catch (error) {
             reject(error);
@@ -60,13 +60,13 @@ exports.upgradeSoftwareVersion = async function (isdataTransferRequired, newRele
  * 2. PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease
  * 3. PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease
  */
-async function redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
-            await PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
-            await PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney);
-            resolve();
+            traceIndicatorIncrementer = await PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
+            traceIndicatorIncrementer = await PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
+            traceIndicatorIncrementer = await PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -83,11 +83,11 @@ async function redirectNotificationNewRelease(newReleaseUuid, user, xCorrelator,
  * 1. PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement
  * 2. PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease
  */
-async function replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
-            await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
-            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney);
+            traceIndicatorIncrementer = await promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
+            await promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer);
             resolve();
         } catch (error) {
             reject(error);
@@ -103,7 +103,7 @@ async function replaceOldReleaseWithNewRelease(newReleaseUuid, user, xCorrelator
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
@@ -140,7 +140,8 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
                     throw "operation is not success";
                 }
             }
-            resolve(result);
+
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -155,7 +156,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOfNewApplicationsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
@@ -186,7 +187,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
                 throw "operation is not success";
             }
 
-            resolve(result);
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -201,7 +202,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyApprovalsOf
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnApprovalsToNewRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
@@ -231,7 +232,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
                 throw "operation is not success";
             }
 
-            resolve(result);
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -246,7 +247,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToNotifyWithdrawnAp
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney) {
+async function PromptForBequeathingDataCausesRObeingRequestedToStopNotificationsToOldRelease(user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
@@ -280,7 +281,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
                 throw "operation is not success";
             }
 
-            resolve(result);
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -295,7 +296,7 @@ async function PromptForBequeathingDataCausesRObeingRequestedToStopNotifications
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
@@ -328,7 +329,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
                 throw "operation is not success";
             }
 
-            resolve(result);
+            resolve(traceIndicatorIncrementer);
         } catch (error) {
             reject(error);
         }
@@ -343,7 +344,7 @@ async function promptForBequeathingDataCausesRequestForBroadcastingInfoAboutServ
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise<boolean>} return true if the operation is success or else return false
  */
-async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney) {
+async function promptForBequeathingDataCausesRequestForDeregisteringOfOldRelease(newReleaseUuid, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
     return new Promise(async function (resolve, reject) {
         try {
             let result = true;
