@@ -78,7 +78,7 @@ async function PromptForBequeathingDataCausesTransferOfListOfApplications(user, 
         try {
             let result = true;
             let forwardingKindNameOfTheBequeathOperation = "PromptForBequeathingDataCausesTransferOfListOfApplications";
-            let inquiryForApplicationTypeApprovalFCName = "ApprovedApplicationCausesRequestForServiceRequestInformation";
+            let inquiryForApplicationTypeApprovalFCName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
             let forwardingConstructInstance = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(inquiryForApplicationTypeApprovalFCName);
             let operationClientUuidList = getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance);
 
