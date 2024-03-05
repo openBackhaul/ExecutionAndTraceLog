@@ -8,6 +8,9 @@ const onfAttributes = require('onf-core-model-ap/applicationPattern/onfModel/con
 const FcPort = require('onf-core-model-ap/applicationPattern/onfModel/models/FcPort');
 const ForwardingDomain = require('onf-core-model-ap/applicationPattern/onfModel/models/ForwardingDomain');
 const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
+const OperationClientInterface = require('onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/OperationClientInterface');
+const ProfileCollection = require('onf-core-model-ap/applicationPattern/onfModel/models/ProfileCollection');
+const Profile = require('onf-core-model-ap/applicationPattern/onfModel/models/Profile');
 
 /**
  * This method performs the set of callback to RegardApplicationCausesSequenceForInquiringServiceRecords
@@ -26,33 +29,67 @@ const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/clien
  * 3. CreateLinkForSendingServiceRecords
  */
 exports.regardApplication = function (applicationName, releaseNumber, 
-    operationServerName, applicationLayerTopologyForwardingInputList, user, xCorrelator, traceIndicator, customerJourney) {
+    operationServerName, httpClientUuid, applicationLayerTopologyForwardingInputList, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             const result = await CreateLinkForInquiringServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
-            if(!result['client-successfully-added']){
+            if(!result['client-successfully-added'] || result.code != 200){
                 resolve(result);
             }
             else{
-                const result = await RequestForInquiringServiceRecords(applicationLayerTopologyForwardingInputList, applicationName, releaseNumber, 
-                    operationServerName, user, xCorrelator, traceIndicator, customerJourney)
-                
-                if(result.code != 204){
-                    resolve(result);
+
+                // Get the operationClientUuid for which the operation-key updated is expected
+                const serverName = '/v1/redirect-service-request-information';
+                let operationClientUuid = await OperationClientInterface.getOperationClientUuidAsync(httpClientUuid, serverName);
+                // maxmimum time to wait (from integer)
+                let waitTime = await getWaitTimeValue();
+                let maximumNumberOfAttemptsToCreateLink = await getMaximumNumberOfAttemptsToCreateLink();
+                //let maximumWaitTimeToRecieveOperationKey = await waitUntilOperationKeyIsUpdated(operationClientUuid, timestampOfCurrentRequest, waitTime);
+                if(waitTime > maximumWaitTimeToRecieveOperationKey){
+                    resolve(
+                        { 'successfully-connected': false }
+                    );
                 }
                 else{
-                    const result = await CreateLinkForReceivingServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
-                    if(!result['client-successfully-added']){
+                    const result = await RequestForInquiringServiceRecords(applicationLayerTopologyForwardingInputList, applicationName, releaseNumber, 
+                        operationServerName, user, xCorrelator, traceIndicator, customerJourney)
+                    
+                    if(result.code != 204){
                         resolve(result);
-                    }else{
-                        resolve(
-                            { 'successfully-connected': true }
-                        );
+                    }
+                    else{
+                        let attempts = 1;
+                        maximumNumberOfAttemptsToCreateLink = await getMaximumNumberOfAttemptsToCreateLink();
+                        for(let i=0; i < maximumNumberOfAttemptsToCreateLink; i++){
+                            const result = await CreateLinkForReceivingServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
+                            if((attempts<=maximumNumberOfAttemptsToCreateLink) 
+                                && (result['client-successfully-added'] == false) 
+                                && ((result['reason-of-failure'] == 'ALT_SERVING_APPLICATION_NAME_UNKNOWN') 
+                                || (result['reason-of-failure'] == 'ALT_SERVING_APPLICATION_RELEASE_NUMBER_UNKNOWN')))
+                            {
+                                attempts = attempts+1;
+                            }else{
+                                if(!result['client-successfully-added'] || result.code != 200){
+                                    resolve(result);
+                                }else{
+                                    if(waitTime > maximumWaitTimeToRecieveOperationKey){
+                                        resolve(
+                                            { 'successfully-connected': false }
+                                        );
+                                    }
+                                    else{
+                                        resolve(
+                                            { 'successfully-connected': true }
+                                        );
+                                    }
+                                }
+                                //exit();
+                            }  
+                        }
+                        
                     }
                 }
-            }
-                     
-            //resolve({'successfully-connected': true});
+            }          
         } catch (error) {
             reject(error);
         }
@@ -267,3 +304,15 @@ function getFcPortOutputLogicalTerminationPointList(forwardingConstructInstance)
     }
     return fcPortOutputLogicalTerminationPointList;
 }
+
+async function getWaitTimeValue() {
+    let integerProfiles = await ProfileCollection.getProfileListForProfileNameAsync(Profile.profileNameEnum.INTEGER_PROFILE);
+    let config = integerProfiles[0][onfAttributes.INTEGER_PROFILE.PAC][onfAttributes.INTEGER_PROFILE.CONFIGURATION];
+    return config[onfAttributes.INTEGER_PROFILE.INTEGER_VALUE];
+ }
+
+ async function getMaximumNumberOfAttemptsToCreateLink() {
+    let integerProfiles = await ProfileCollection.getProfileListForProfileNameAsync(Profile.profileNameEnum.INTEGER_PROFILE);
+    let config = integerProfiles[1][onfAttributes.INTEGER_PROFILE.PAC][onfAttributes.INTEGER_PROFILE.CONFIGURATION];
+    return config[onfAttributes.INTEGER_PROFILE.INTEGER_VALUE];
+ }
