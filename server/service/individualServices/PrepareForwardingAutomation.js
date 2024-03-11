@@ -53,7 +53,7 @@ exports.regardApplication = function (applicationName, releaseNumber,
                     const result = await RequestForInquiringServiceRecords(applicationLayerTopologyForwardingInputList, applicationName, releaseNumber, 
                         operationServerName, user, xCorrelator, traceIndicator, customerJourney)
                     
-                    if(result.code != 204){
+                    if(!result['client-successfully-added'] || result.code != 200){
                         resolve(result);
                     }
                     else{
