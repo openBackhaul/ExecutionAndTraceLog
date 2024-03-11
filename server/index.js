@@ -10,7 +10,7 @@ var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommon
 const prepareElasticsearch = require('./service/individualServices/ElasticsearchPreparation');
 
 // uncomment if you do not want to validate security e.g. operation-key, basic auth, etc
-appCommons.openApiValidatorOptions.validateSecurity = false;
+// appCommons.openApiValidatorOptions.validateSecurity = false;
 
 // swaggerRouter configuration
 var options = {
