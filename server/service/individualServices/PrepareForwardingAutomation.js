@@ -33,13 +33,13 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                 traceIndicatorIncrementer = _traceIndicatorIncrementer;
             }
             const result = await CreateLinkForInquiringServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
-            if(!result.data['client-successfully-added'] || result.status != 200){
+            if(!result['data']['client-successfully-added'] || result.status != 200){
                 resolve(result);
             }
             else{
                 let forwardingKindName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
                 let clientUuid = await getOperationClientUuuid(forwardingKindName);
-                let operationName = OperationClientInterface.getOperationNameAsync(clientUuid);
+                let operationName = await OperationClientInterface.getOperationNameAsync(clientUuid);
                 let httpClientUuid = await HttpClientInterface.getHttpClientUuidAsync(applicationName, releaseNumber);
                 let operationClientUuid = await OperationClientInterface.getOperationClientUuidAsync(httpClientUuid, operationName);
                 let isOperationKeyUpdated = await isOperationKeyUpdatedOrNot(operationClientUuid);
@@ -54,7 +54,7 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                 else{
                     const result = await RequestForInquiringServiceRecords(user, xCorrelator, traceIndicator, customerJourney)
                     
-                    if(!result.data['client-successfully-added'] || result.status != 200){
+                    if(result.status != 204){
                         resolve(result);
                     }
                     else{
@@ -73,10 +73,7 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                                     resolve(result);
                                     break;
                                 }else{
-                                    forwardingKindName = "ServiceRequestCausesLoggingRequest";
-                                    operationClientUuid = await getOperationClientUuuid(forwardingKindName);
-                                    let newOperationKeyUpdated = await isOperationKeyUpdatedOrNot(operationClientUuid);
-                                    if(!newOperationKeyUpdated){
+                                    if(!isOperationKeyUpdated){
                                         resolve(
                                             { 
                                                 'successfully-connected': false,
@@ -123,7 +120,7 @@ async function CreateLinkForInquiringServiceRecords(applicationName, releaseNumb
                     let requestBody = {};
                     let forwardingKindName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
                     let operationClientUuid = await getOperationClientUuuid(forwardingKindName);
-                    let operationName = OperationClientInterface.getOperationNameAsync(operationClientUuid);
+                    let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
                     requestBody['serving-application-name'] = applicationName;
                     requestBody['serving-application-release-number'] = releaseNumber;
                     requestBody['operation-name'] = operationName;
@@ -173,7 +170,7 @@ async function RequestForInquiringServiceRecords(user, xCorrelator, traceIndicat
             try {
                 let forwardingKindName = "ServiceRequestCausesLoggingRequest";
                 let operationClientUuid = await getOperationClientUuuid(forwardingKindName);
-                let operationName = OperationClientInterface.getOperationNameAsync(operationClientUuid);
+                let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
                 redirectServiceRequestRequestBody.serviceLogApplication = await HttpServerInterface.getApplicationNameAsync();
                 redirectServiceRequestRequestBody.serviceLogApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
                 redirectServiceRequestRequestBody.serviceLogOperation = operationName;
@@ -224,7 +221,7 @@ async function CreateLinkForReceivingServiceRecords(applicationName, releaseNumb
                 let requestBody = {};
                 let forwardingKindName = "ServiceRequestCausesLoggingRequest";
                 let operationClientUuid = await getOperationClientUuuid(forwardingKindName);
-                let operationName = OperationClientInterface.getOperationNameAsync(operationClientUuid);
+                let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
                 requestBody['serving-application-name'] = await HttpServerInterface.getApplicationNameAsync();
                 requestBody['serving-application-release-number'] = await HttpServerInterface.getReleaseNumberAsync();
                 requestBody['operation-name'] = operationName;
