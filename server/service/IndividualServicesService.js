@@ -391,15 +391,24 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
         logicalTerminationPointconfigurationStatus,
         forwardingConstructConfigurationStatus
       );
-      let result = await prepareForwardingAutomation.regardApplication(
-        applicationName,
-        releaseNumber,
+
+      await ForwardingAutomationService.automateForwardingConstructAsync(
         operationServerName,
         applicationLayerTopologyForwardingInputList,
         user,
         xCorrelator,
         traceIndicator,
         customerJourney
+      );
+      
+      let result = await prepareForwardingAutomation.regardApplication(
+        applicationName,
+        releaseNumber,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney,
+        applicationLayerTopologyForwardingInputList.length
       );
       resolve(result);
     } catch (error) {
