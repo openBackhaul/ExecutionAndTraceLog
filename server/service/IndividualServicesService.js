@@ -195,7 +195,7 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
  **/
 exports.listApplications = function () {
   return new Promise(async function (resolve, reject) {
-    let forwardingName = "ApprovedApplicationCausesRequestForServiceRequestInformation"
+    let forwardingName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords"
     try {
       /****************************************************************************************
        * Preparing response body
