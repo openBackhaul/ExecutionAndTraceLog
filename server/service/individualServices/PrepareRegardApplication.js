@@ -10,7 +10,7 @@ const ForwardingProcessingInput = require('onf-core-model-ap/applicationPattern/
 const ForwardingConstructProcessingService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructProcessingServices');
 const LogicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
 
-var traceIndicatorIncrementer = 1;
+var traceIndicatorIncrementer;
 /**
  * This method performs the set of callback to RegardApplicationCausesSequenceForInquiringServiceRecords
  * @param {String} applicationName from {$request.body#application-name}
@@ -33,7 +33,12 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
             }
             const result = await CreateLinkForInquiringServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
             if(!result['data']['client-successfully-added'] || result['status'] != 200){
-                resolve(result['data']);
+                resolve(
+                    { 
+                        "successfully-connected": false,
+                        "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
+                    }
+                );
             }
             else{
                 let forwardingKindName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
@@ -42,8 +47,8 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                 if(!isOperationKeyUpdated){
                     resolve(
                         { 
-                            'successfully-connected': false,
-                            'reason-of-failure': "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
+                            "successfully-connected": false,
+                            "reason-of-failure": "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
                         }
                     );
                 }
@@ -51,7 +56,12 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                     const result = await RequestForInquiringServiceRecords(user, xCorrelator, traceIndicator, customerJourney)
                     
                     if(result['status'] != 204){
-                        resolve(result['data']);
+                        resolve(
+                            { 
+                                "successfully-connected": false,
+                                "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
+                            }
+                        );
                     }
                     else{
                         let attempts = 1;
@@ -66,7 +76,12 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                                 attempts = attempts+1;
                             }else{
                                 if(!result['data']['client-successfully-added'] || result['status'] != 200){
-                                    resolve(result['data']);
+                                    resolve(
+                                        { 
+                                            "successfully-connected": false,
+                                            "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
+                                        }
+                                    );
                                     break;
                                 }else{
                                     // forwardingKindName = "ServiceRequestCausesLoggingRequest";
@@ -77,15 +92,17 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                                     if(!isOperationKeyUpdated){
                                         resolve(
                                             { 
-                                                'successfully-connected': false,
-                                                'reason-of-failure': "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
+                                                "successfully-connected": false,
+                                                "reason-of-failure": "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
                                             }
                                         );
                                         break;
                                     }
                                     else{
                                         resolve(
-                                            { 'successfully-connected': true }
+                                            { 
+                                                'successfully-connected': true 
+                                            }
                                         );
                                         break;
                                     }
