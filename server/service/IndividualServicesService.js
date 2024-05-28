@@ -22,7 +22,7 @@ const softwareUpgrade = require('./individualServices/SoftwareUpgrade');
 const { getIndexAliasAsync, createResultArray, elasticsearchService } = require('onf-core-model-ap/applicationPattern/services/ElasticsearchService');
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
-const PrepareRegardApplication = require('./individualServices/PrepareRegardApplication');
+const RegardApplication = require('./individualServices/RegardApplication');
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 
@@ -400,7 +400,7 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
         customerJourney
       );
       
-      let result = await PrepareRegardApplication.regardApplication(
+      let result = await RegardApplication.regardApplication(
         applicationName,
         releaseNumber,
         user,
