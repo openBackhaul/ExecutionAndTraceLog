@@ -186,11 +186,9 @@ async function RequestForInquiringServiceRecords(user, xCorrelator, traceIndicat
             let redirectServiceRequestRequestBody = {};
             let result;
             try {
-                let forwardingKindName = "ServiceRequestCausesLoggingRequest";
                 let servingLogApplication = await HttpServerInterface.getApplicationNameAsync();
                 let servingLogApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
-                let operationClientUuid = await getConsequentOperationClientUuid(forwardingKindName, servingLogApplication, servingLogApplicationReleaseNumber);
-                let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
+                let operationName = '/v1/record-service-request';
                 redirectServiceRequestRequestBody.serviceLogApplication = servingLogApplication;
                 redirectServiceRequestRequestBody.serviceLogApplicationReleaseNumber = servingLogApplicationReleaseNumber;
                 redirectServiceRequestRequestBody.serviceLogOperation = operationName;
@@ -239,11 +237,9 @@ async function CreateLinkForReceivingServiceRecords(applicationName, releaseNumb
             let forwardingKindNameOfInquiringServiceRecords = "RegardApplicationCausesSequenceForInquiringServiceRecords.CreateLinkForReceivingServiceRecords";
             try {
                 let requestBody = {};
-                let forwardingKindName = "ServiceRequestCausesLoggingRequest";
                 let servingApplication = await HttpServerInterface.getApplicationNameAsync();
                 let servingApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
-                let operationClientUuid = await getConsequentOperationClientUuid(forwardingKindName, servingApplication, servingApplicationReleaseNumber);
-                let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
+                let operationName = '/v1/record-service-request';
                 requestBody['serving-application-name'] = servingApplication;
                 requestBody['serving-application-release-number'] = servingApplicationReleaseNumber;
                 requestBody['operation-name'] = operationName;
