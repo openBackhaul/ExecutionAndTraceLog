@@ -25,6 +25,8 @@ const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/service
 const RegardApplication = require('./individualServices/RegardApplication');
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
+const AsyncLock = require('async-lock');
+const lock = new AsyncLock();
 
 /**
  * Initiates process of embedding a new release
@@ -46,10 +48,10 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       let newPort = body["new-application-port"];
       let newProtocol = body['new-application-protocol'];
 
-    let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidOfNewRelease();
-    let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
-    let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
-    
+      let newReleaseHttpClientLtpUuid = await LogicalTerminationPointServiceOfUtility.resolveHttpTcpAndOperationClientUuidOfNewRelease();
+      let newReleaseHttpUuid = newReleaseHttpClientLtpUuid.httpClientUuid;
+      let newReleaseTcpUuid = newReleaseHttpClientLtpUuid.tcpClientUuid;
+
       /**
        * Current values in NewRelease client.
        */
@@ -77,7 +79,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       if (newPort !== currentRemotePort) {
         isUpdated.port = await tcpClientInterface.setRemotePortAsync(newReleaseTcpUuid, newPort);
       }
-      if (newProtocol !== currentRemoteProtocol){
+      if (newProtocol !== currentRemoteProtocol) {
         isUpdated.protocol = await tcpClientInterface.setRemoteProtocolAsync(newReleaseTcpUuid, newProtocol);
       }
 
@@ -160,10 +162,10 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
       operationClientConfigurationStatusList
     );
     forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-    unConfigureForwardingConstructAsync(
-      operationServerName,
-      forwardingConfigurationInputList
-    );
+      unConfigureForwardingConstructAsync(
+        operationServerName,
+        forwardingConfigurationInputList
+      );
   }
 
   let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
@@ -221,8 +223,8 @@ exports.listApplications = function () {
 exports.listRecords = async function (body) {
   let size = body["number-of-records"];
   let from = body["latest-record"];
-  let query = { 
-    match_all: {} 
+  let query = {
+    match_all: {}
   };
   if (size + from <= 10000) {
     let indexAlias = await getIndexAliasAsync();
@@ -286,12 +288,12 @@ exports.listRecordsOfUnsuccessful = async function (body) {
   let query = {
     bool: {
       must_not: {
-          range: {
-            'response-code': {
-                gte: 200,
-                lt: 300
-            }
+        range: {
+          'response-code': {
+            gte: 200,
+            lt: 300
           }
+        }
       }
     }
   };
@@ -352,54 +354,56 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
       const tcpInfo = [new TcpObject(body['protocol'], body['address'], body['port'])];
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
-      let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
-        applicationName,
-        releaseNumber,
-        NEW_RELEASE_FORWARDING_NAME
-      );
-      let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
-        httpClientUuid,
-        applicationName,
-        releaseNumber,
-        tcpInfo,
-        operationServerName,
-        operationNamesByAttributes,
-        individualServicesOperationsMapping.individualServicesOperationsMapping
-      );
-      let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
-        ltpConfigurationInput
-      );
-
-      let forwardingConfigurationInputList = [];
-      let forwardingConstructConfigurationStatus;
-      let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
-
-      if (operationClientConfigurationStatusList) {
-        forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
-          operationClientConfigurationStatusList,
-          REDIRECT_SERVICE_REQUEST_OPERATION
+      await lock.acquire("Regard application", async () => {
+        let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
+          applicationName,
+          releaseNumber,
+          NEW_RELEASE_FORWARDING_NAME
         );
-        forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
-        configureForwardingConstructAsync(
+        let ltpConfigurationInput = new LogicalTerminationPointConfigurationInput(
+          httpClientUuid,
+          applicationName,
+          releaseNumber,
+          tcpInfo,
           operationServerName,
-          forwardingConfigurationInputList
+          operationNamesByAttributes,
+          individualServicesOperationsMapping.individualServicesOperationsMapping
         );
-      }
+        let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
+          ltpConfigurationInput
+        );
 
-      let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
-        logicalTerminationPointconfigurationStatus,
-        forwardingConstructConfigurationStatus
-      );
+        let forwardingConfigurationInputList = [];
+        let forwardingConstructConfigurationStatus;
+        let operationClientConfigurationStatusList = logicalTerminationPointconfigurationStatus.operationClientConfigurationStatusList;
 
-      await ForwardingAutomationService.automateForwardingConstructAsync(
-        operationServerName,
-        applicationLayerTopologyForwardingInputList,
-        user,
-        xCorrelator,
-        traceIndicator,
-        customerJourney
-      );
-      
+        if (operationClientConfigurationStatusList) {
+          forwardingConfigurationInputList = await prepareForwardingConfiguration.regardApplication(
+            operationClientConfigurationStatusList,
+            REDIRECT_SERVICE_REQUEST_OPERATION
+          );
+          forwardingConstructConfigurationStatus = await ForwardingConfigurationService.
+            configureForwardingConstructAsync(
+              operationServerName,
+              forwardingConfigurationInputList
+            );
+        }
+
+        let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+          logicalTerminationPointconfigurationStatus,
+          forwardingConstructConfigurationStatus
+        );
+
+        await ForwardingAutomationService.automateForwardingConstructAsync(
+          operationServerName,
+          applicationLayerTopologyForwardingInputList,
+          user,
+          xCorrelator,
+          traceIndicator,
+          customerJourney
+        );
+      });
+
       let result = await RegardApplication.regardApplication(
         applicationName,
         releaseNumber,
