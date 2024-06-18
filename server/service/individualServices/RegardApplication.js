@@ -208,7 +208,7 @@ async function RequestForInquiringServiceRecords(applicationName, releaseNumber,
                 );
                 forwardingConstructAutomationList.push(forwardingAutomation);
 
-                let operationClientUuid = await operationuuid(forwardingConstructAutomationList, redirectServiceRequestContext);
+                let operationClientUuid = await getOperationClientUuid(forwardingConstructAutomationList, redirectServiceRequestContext);
                 result = await eventDispatcher.dispatchEvent(
                     operationClientUuid,
                     redirectServiceRequestRequestBody,
@@ -316,7 +316,7 @@ async function getConsequentOperationClientUuid(forwardingName, applicationName,
     return undefined;
 }
 
-async function operationuuid(forwardingConstructAutomationList, redirectServiceRequestContext) {
+async function getOperationClientUuid(forwardingConstructAutomationList, redirectServiceRequestContext) {
     let forwardingName = forwardingConstructAutomationList[0].forwardingName;
     let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(
         forwardingName);

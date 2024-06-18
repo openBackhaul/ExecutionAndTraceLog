@@ -97,7 +97,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       );
 
       let logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
-        false,
+        [],
         httpClientConfigurationStatus,
         [tcpClientConfigurationStatus]
       );
@@ -146,7 +146,7 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
     applicationName,
     applicationReleaseNumber,
     NEW_RELEASE_FORWARDING_NAME
-  )
+  );
   let ltpConfigurationStatus = await LogicalTerminationPointService.deleteApplicationLtpsAsync(
     httpClientUuid
   );
@@ -167,8 +167,7 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
   }
 
   let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
-    ltpConfigurationStatus,
-    forwardingConstructConfigurationStatus
+    ltpConfigurationStatus
   );
 
   ForwardingAutomationService.automateForwardingConstructAsync(
@@ -366,8 +365,10 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
         operationNamesByAttributes,
         individualServicesOperationsMapping.individualServicesOperationsMapping
       );
+      const roApplicationName = await LogicalTerminationPointServiceOfUtility.resolveRegistryOfficeApplicationNameFromForwardingAsync();
       let logicalTerminationPointconfigurationStatus = await LogicalTerminationPointService.createOrUpdateApplicationLtpsAsync(
-        ltpConfigurationInput
+        ltpConfigurationInput,
+        roApplicationName === applicationName
       );
 
       let forwardingConfigurationInputList = [];
