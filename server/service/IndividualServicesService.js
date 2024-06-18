@@ -99,7 +99,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
       );
 
       let logicalTerminationPointConfigurationStatus = new LogicalTerminationPointConfigurationStatus(
-        false,
+        [],
         httpClientConfigurationStatus,
         [tcpClientConfigurationStatus]
       );
@@ -120,7 +120,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
         customerJourney
       );
 
-      softwareUpgrade.upgradeSoftwareVersion(isDataTransferRequired, newReleaseHttpUuid, user, xCorrelator, traceIndicator, customerJourney, forwardingAutomationInputList.length)
+      softwareUpgrade.upgradeSoftwareVersion(isDataTransferRequired, newReleaseHttpUuid, user, xCorrelator, traceIndicator, customerJourney, forwardingAutomationInputList.length + 1)
         .catch(err => console.log(`upgradeSoftwareVersion failed with error: ${err}`));
       resolve();
     } catch (error) {
@@ -148,7 +148,7 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
     applicationName,
     applicationReleaseNumber,
     NEW_RELEASE_FORWARDING_NAME
-  )
+  );
   let ltpConfigurationStatus = await LogicalTerminationPointService.deleteApplicationLtpsAsync(
     httpClientUuid
   );
@@ -169,8 +169,7 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
   }
 
   let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
-    ltpConfigurationStatus,
-    forwardingConstructConfigurationStatus
+    ltpConfigurationStatus
   );
 
   ForwardingAutomationService.automateForwardingConstructAsync(
@@ -354,6 +353,7 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
       const tcpInfo = [new TcpObject(body['protocol'], body['address'], body['port'])];
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
+
       await lock.acquire("Regard application", async () => {
         let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
           applicationName,

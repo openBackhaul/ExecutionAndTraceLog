@@ -9,6 +9,8 @@ const HttpClientInterface = require('onf-core-model-ap/applicationPattern/onfMod
 const ForwardingProcessingInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/ForwardingProcessingInput');
 const ForwardingConstructProcessingService = require('onf-core-model-ap/applicationPattern/onfModel/services/ForwardingConstructProcessingServices');
 const LogicalTerminationPoint = require('onf-core-model-ap/applicationPattern/onfModel/models/LogicalTerminationPoint');
+const forwardingConstructAutomationInput = require('onf-core-model-ap/applicationPattern/onfModel/services/models/forwardingConstruct/AutomationInput');
+const eventDispatcher = require('onf-core-model-ap/applicationPattern/rest/client/eventDispatcher');
 
 var traceIndicatorIncrementer;
 /**
@@ -53,7 +55,7 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                     );
                 }
                 else{
-                    const result = await RequestForInquiringServiceRecords(user, xCorrelator, traceIndicator, customerJourney)
+                    const result = await RequestForInquiringServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney)
                     
                     if(result['status'] != 204){
                         resolve(
@@ -176,7 +178,7 @@ async function CreateLinkForInquiringServiceRecords(applicationName, releaseNumb
  * @param {String} customerJourney Holds information supporting customer’s journey to which the execution applies
  * @returns {Promise} Promise is resolved if the operation succeeded else the Promise is rejected
  */
-async function RequestForInquiringServiceRecords(user, xCorrelator, traceIndicator, customerJourney) {
+async function RequestForInquiringServiceRecords(applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney) {
     return new Promise(async function (resolve, reject) {
         try {
             /********************************************************************************************************
@@ -185,7 +187,9 @@ async function RequestForInquiringServiceRecords(user, xCorrelator, traceIndicat
             let redirectServiceRequestForwardingName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
             let redirectServiceRequestRequestBody = {};
             let result;
+            let forwardingConstructAutomationList = [];
             try {
+                let redirectServiceRequestContext = applicationName + releaseNumber;
                 let servingLogApplication = await HttpServerInterface.getApplicationNameAsync();
                 let servingLogApplicationReleaseNumber = await HttpServerInterface.getReleaseNumberAsync();
                 let operationName = '/v1/record-service-request';
@@ -197,16 +201,24 @@ async function RequestForInquiringServiceRecords(user, xCorrelator, traceIndicat
                 redirectServiceRequestRequestBody.serviceLogProtocol = await TcpServerInterface.getLocalProtocol();
                 redirectServiceRequestRequestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(redirectServiceRequestRequestBody);
                 
-                let forwardingAutomation = new ForwardingProcessingInput(
+                let forwardingAutomation = new forwardingConstructAutomationInput(
                     redirectServiceRequestForwardingName,
-                    redirectServiceRequestRequestBody
-                 );
-                result = await ForwardingConstructProcessingService.processForwardingConstructAsync(
-                    forwardingAutomation,
+                    redirectServiceRequestRequestBody,
+                    redirectServiceRequestContext
+                );
+                forwardingConstructAutomationList.push(forwardingAutomation);
+
+                let operationClientUuid = await getOperationClientUuid(forwardingConstructAutomationList, redirectServiceRequestContext);
+                result = await eventDispatcher.dispatchEvent(
+                    operationClientUuid,
+                    redirectServiceRequestRequestBody,
                     user,
                     xCorrelator,
                     traceIndicator + "." + traceIndicatorIncrementer++,
-                    customerJourney
+                    customerJourney,
+                    undefined,
+                    undefined,
+                    true
                 );
 
             } catch (error) {
@@ -302,4 +314,32 @@ async function getConsequentOperationClientUuid(forwardingName, applicationName,
         }
     }
     return undefined;
+}
+
+async function getOperationClientUuid(forwardingConstructAutomationList, redirectServiceRequestContext) {
+    let forwardingName = forwardingConstructAutomationList[0].forwardingName;
+    let forwardingConstruct = await ForwardingDomain.getForwardingConstructForTheForwardingNameAsync(
+        forwardingName);
+    let operationClientUuid;
+    let fcPortList = forwardingConstruct["fc-port"];
+    for (let fcPort of fcPortList) {
+        let fcPortDirection = fcPort["port-direction"];
+        if (fcPortDirection == FcPort.portDirectionEnum.OUTPUT) {
+            let isOutputMatchesContext = await isOutputMatchesContextAsync(fcPort, redirectServiceRequestContext);
+            if (isOutputMatchesContext) {
+                operationClientUuid = fcPort["logical-termination-point"];
+                break;
+            }
+
+        }
+    }
+    return operationClientUuid;
+}
+async function isOutputMatchesContextAsync(fcPort, context) {
+    let fcLogicalTerminationPoint = fcPort["logical-termination-point"];
+    let serverLtpList = await LogicalTerminationPoint.getServerLtpListAsync(fcLogicalTerminationPoint);
+    let httpClientUuid = serverLtpList[0];
+    let applicationName = await HttpClientInterface.getApplicationNameAsync(httpClientUuid);
+    let releaseNumber = await HttpClientInterface.getReleaseNumberAsync(httpClientUuid);
+    return (context == (applicationName + releaseNumber));
 }
