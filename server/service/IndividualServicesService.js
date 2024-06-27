@@ -402,18 +402,18 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
           traceIndicator,
           customerJourney
         );
-      });
 
-      let result = await RegardApplication.regardApplication(
-        applicationName,
-        releaseNumber,
-        user,
-        xCorrelator,
-        traceIndicator,
-        customerJourney,
-        applicationLayerTopologyForwardingInputList.length + 1
-      );
+        let result = await RegardApplication.regardApplication(
+          applicationName,
+          releaseNumber,
+          user,
+          xCorrelator,
+          traceIndicator,
+          customerJourney,
+          applicationLayerTopologyForwardingInputList.length + 1
+        );
       resolve(result);
+      });
     } catch (error) {
       reject(error);
     }
