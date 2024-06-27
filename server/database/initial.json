@@ -231,7 +231,7 @@
                             "maximum": 5000
                         },
                         "integer-profile-configuration": {
-                            "integer-value": 5000
+                            "integer-value": 500
                         }
                     }
                 },
@@ -1035,7 +1035,7 @@
                                 "auth": {
                                     "api-key": "API key not yet defined."
                                 },
-                                "index-alias": "eatl-2-0-1"
+                                "index-alias": "alpha1-eatl-2-1-1"
                             },
                             "elasticsearch-client-interface-status": {
                                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -1083,10 +1083,10 @@
                                 "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
                                 "remote-address": {
                                     "ip-address": {
-                                        "ipv-4-address": "127.0.0.1"
+                                        "ipv-4-address": "10.118.127.92"
                                     }
                                 },
-                                "remote-port": 3015
+                                "remote-port": 9200
                             }
                         }
                     }
@@ -1157,7 +1157,7 @@
                                         "ipv-4-address": "127.0.0.1"
                                     }
                                 },
-                                "remote-port": 3010
+                                "remote-port": 3026
                             }
                         }
                     }
@@ -1410,7 +1410,7 @@
                 "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
                 "client-ltp": [],
                 "server-ltp": [
-                    "eatl-2-1-0-http-c-tar-2-1-0-000"
+                    "eatl-2-1-0-http-c-eatl-2-0-1-000"
                 ],
                 "layer-protocol": [
                     {
@@ -1515,7 +1515,7 @@
                             "operation-client-interface-configuration": {
                                 "operation-name": "/v1/record-service-request",
                                 "operation-key": "Operation key not yet provided.",
-                                "detailed-logging-is-on": false
+                                "detailed-logging-is-on": true
                             },
                             "operation-client-interface-status": {
                                 "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -1542,7 +1542,7 @@
                         "http-client-interface-1-0:http-client-interface-pac": {
                             "http-client-interface-configuration": {
                                 "application-name": "ExecutionAndTraceLog",
-                                "release-number": "2.0.1"
+                                "release-number": "2.1.1"
                             }
                         }
                     }
@@ -1638,7 +1638,7 @@
                         "http-client-interface-1-0:http-client-interface-pac": {
                             "http-client-interface-configuration": {
                                 "application-name": "OamLog",
-                                "release-number": "2.0.1"
+                                "release-number": "2.1.1"
                             }
                         }
                     }
@@ -1663,7 +1663,7 @@
                                         "ipv-4-address": "127.0.0.1"
                                     }
                                 },
-                                "remote-port": 3011
+                                "remote-port": 3027
                             }
                         }
                     }
@@ -1734,7 +1734,7 @@
                         "http-client-interface-1-0:http-client-interface-pac": {
                             "http-client-interface-configuration": {
                                 "application-name": "AdministratorAdministration",
-                                "release-number": "2.0.1"
+                                "release-number": "2.1.1"
                             }
                         }
                     }
@@ -1759,7 +1759,7 @@
                                         "ipv-4-address": "127.0.0.1"
                                     }
                                 },
-                                "remote-port": 3012
+                                "remote-port": 3028
                             }
                         }
                     }
