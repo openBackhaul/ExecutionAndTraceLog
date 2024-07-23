@@ -353,6 +353,7 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
       const tcpInfo = [new TcpObject(body['protocol'], body['address'], body['port'])];
       let operationNamesByAttributes = new Map();
       operationNamesByAttributes.set("redirect-service-request-operation", REDIRECT_SERVICE_REQUEST_OPERATION);
+      let applicationLayerTopologyForwardingInputList;
 
       await lock.acquire("Regard application", async () => {
         let httpClientUuid = await httpClientInterface.getHttpClientUuidExcludingOldReleaseAndNewRelease(
@@ -389,7 +390,7 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
             );
         }
 
-        let applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
+        applicationLayerTopologyForwardingInputList = await prepareALTForwardingAutomation.getALTForwardingAutomationInputAsync(
           logicalTerminationPointconfigurationStatus,
           forwardingConstructConfigurationStatus
         );
@@ -401,19 +402,18 @@ exports.regardApplication = async function (body, user, originator, xCorrelator,
           xCorrelator,
           traceIndicator,
           customerJourney
-        );
-
-        let result = await RegardApplication.regardApplication(
-          applicationName,
-          releaseNumber,
-          user,
-          xCorrelator,
-          traceIndicator,
-          customerJourney,
-          applicationLayerTopologyForwardingInputList.length + 1
-        );
-      resolve(result);
+        );        
       });
+      let result = await RegardApplication.regardApplication(
+        applicationName,
+        releaseNumber,
+        user,
+        xCorrelator,
+        traceIndicator,
+        customerJourney,
+        applicationLayerTopologyForwardingInputList.length + 1
+      );
+    resolve(result);
     } catch (error) {
       reject(error);
     }

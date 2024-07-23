@@ -79,10 +79,9 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                             "reason-of-failure": "EATL_UNKNOWN"
                         });
                     } else {
-                        let attempts = 1;
                         let maximumNumberOfAttemptsToCreateLink = await IntegerProfile.getIntegerValueForTheIntegerProfileNameAsync(
                             "maximumNumberOfAttemptsToCreateLink");
-                        for (let i = 0; i < maximumNumberOfAttemptsToCreateLink; i++) {
+                        for (let attempts = 1; attempts <= maximumNumberOfAttemptsToCreateLink; attempts++) {
                             const result = await CreateLinkForReceivingServiceRecords(applicationName, 
                                 releaseNumber, 
                                 user, 
@@ -91,10 +90,17 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                                 customerJourney,
                                 traceIndicatorIncrementer++);
 
-                            if ((attempts <= maximumNumberOfAttemptsToCreateLink) &&                            
-                                ((result['status'] == 200 && result['data']['client-successfully-added'] == false) 
-                                || (result['status'] != 200))) {
-                                attempts = attempts + 1;
+                            if (attempts == maximumNumberOfAttemptsToCreateLink &&
+                                (result['status'] == 200 && result['data']['client-successfully-added'] == false)) {
+                                resolve({
+                                    "successfully-connected": false,
+                                    "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
+                                });
+                            } else if(attempts == maximumNumberOfAttemptsToCreateLink && result['status'] != 200){
+                                resolve({
+                                    "successfully-connected": false,
+                                    "reason-of-failure": "EATL_UNKNOWN"
+                                });
                             } else {
                                 if(result['status'] != 200){
                                     resolve({
