@@ -169,7 +169,8 @@ exports.disregardApplication = async function (body, user, originator, xCorrelat
   }
 
   let forwardingAutomationInputList = await prepareALTForwardingAutomation.getALTUnConfigureForwardingAutomationInputAsync(
-    ltpConfigurationStatus
+    ltpConfigurationStatus,
+    forwardingConstructConfigurationStatus
   );
 
   ForwardingAutomationService.automateForwardingConstructAsync(
