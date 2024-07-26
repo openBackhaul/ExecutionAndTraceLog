@@ -38,3 +38,4 @@ prepareElasticsearch(false).catch(err => {
     appCommons.performApplicationRegistration();
 }
 );
+
