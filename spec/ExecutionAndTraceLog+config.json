@@ -1500,7 +1500,7 @@
         "client-ltp": [
         ],
         "server-ltp": [
-          "eatl-2-1-0-http-c-eatl-2-0-1-000"
+          "eatl-2-1-0-http-c-tar-2-1-0-000"
         ],
         "layer-protocol": [
           {
