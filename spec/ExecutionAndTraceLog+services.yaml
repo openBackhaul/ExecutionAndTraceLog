@@ -90,7 +90,7 @@ clients:
       uuid: eatl-2-1-2-tcp-c-es-1-0-0-000
     elasticsearch-client:
       uuid: eatl-2-1-2-es-c-es-1-0-0-000
-      index-alias: eatl-2-1-2
+      index-alias: eatl-2-0-1
 
   - http-client:
       application-name: ExecutionAndTraceLog
@@ -274,7 +274,7 @@ clients:
 
   - http-client:
       application-name: OperationKeyManagement
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: eatl-2-1-2-http-c-okm-2-1-2-000
     tcp-client:
       remote-protocol: http
