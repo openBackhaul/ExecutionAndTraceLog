@@ -124,9 +124,9 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                                         statusForCreateLinkForInquiringServiceRecords = {
                                             'successfully-connected': true
                                         }
+                                        break;
                                     }
                                 }
-                                break;
                             }
                         }
 
