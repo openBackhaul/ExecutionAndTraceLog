@@ -27,9 +27,9 @@ const operationKeyUpdateNotificationService = require('onf-core-model-ap/applica
  * 3. CreateLinkForSendingServiceRecords
  */
 exports.regardApplication = function (applicationName, releaseNumber, user, xCorrelator, traceIndicator, customerJourney, traceIndicatorIncrementer) {
-    return new Promise(async function (resolve, reject) {     
+    return new Promise(async function (resolve, reject) {
         let timestampOfCurrentRequest = new Date();
-        try {       
+        try {
             operationKeyUpdateNotificationService.turnONNotificationChannel(timestampOfCurrentRequest);
             const result = await CreateLinkForInquiringServiceRecords(applicationName,
                 releaseNumber,
@@ -39,30 +39,29 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                 customerJourney,
                 traceIndicatorIncrementer++);
 
+            let statusForCreateLinkForInquiringServiceRecords = {}
             if (result['status'] != 200) {
-                resolve({
+                statusForCreateLinkForInquiringServiceRecords = {
                     "successfully-connected": false,
                     "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
-                });
+                }
             } else if (result['status'] == 200 && !result['data']['client-successfully-added']) {
-                resolve({
+                statusForCreateLinkForInquiringServiceRecords = {
                     "successfully-connected": false,
                     "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
-                });
+                }
             } else {
                 let forwardingKindName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
                 let operationClientUuid = await getConsequentOperationClientUuid(forwardingKindName, applicationName, releaseNumber);
                 let waitTime = await IntegerProfile.getIntegerValueForTheIntegerProfileNameAsync("maximumWaitTimeToReceiveOperationKey");
 
-                let isOperationKeyUpdated = await operationKeyUpdateNotificationService.waitUntilOperationKeyIsUpdated(operationClientUuid,
-                    timestampOfCurrentRequest,
-                    waitTime);
-                
+                let isOperationKeyUpdated = await operationKeyUpdateNotificationService.waitUntilOperationKeyIsUpdated(operationClientUuid, timestampOfCurrentRequest, waitTime);
+
                 if (!isOperationKeyUpdated) {
-                    resolve({
+                    statusForCreateLinkForInquiringServiceRecords = {
                         "successfully-connected": false,
                         "reason-of-failure": "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
-                    });
+                    }
                 } else {
                     const result = await RequestForInquiringServiceRecords(applicationName,
                         releaseNumber,
@@ -74,63 +73,57 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                     );
 
                     if (result['status'] != 204) {
-                        resolve({
+                        statusForCreateLinkForInquiringServiceRecords = {
                             "successfully-connected": false,
                             "reason-of-failure": "EATL_DID_NOT_REACH_NEW_APPLICATION"
-                        });
+                        }
                     } else {
                         let maximumNumberOfAttemptsToCreateLink = await IntegerProfile.getIntegerValueForTheIntegerProfileNameAsync(
                             "maximumNumberOfAttemptsToCreateLink");
                         for (let attempts = 1; attempts <= maximumNumberOfAttemptsToCreateLink; attempts++) {
-                            const result = await CreateLinkForReceivingServiceRecords(applicationName, 
-                                releaseNumber, 
-                                user, 
-                                xCorrelator, 
-                                traceIndicator, 
+                            const result = await CreateLinkForReceivingServiceRecords(applicationName,
+                                releaseNumber,
+                                user,
+                                xCorrelator,
+                                traceIndicator,
                                 customerJourney,
                                 traceIndicatorIncrementer++);
 
                             if (attempts == maximumNumberOfAttemptsToCreateLink &&
                                 (result['status'] == 200 && result['data']['client-successfully-added'] == false)) {
-                                resolve({
+                                statusForCreateLinkForInquiringServiceRecords = {
                                     "successfully-connected": false,
                                     "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
-                                });
+                                }
                             } else if(attempts == maximumNumberOfAttemptsToCreateLink && result['status'] != 200){
-                                resolve({
+                                statusForCreateLinkForInquiringServiceRecords = {
                                     "successfully-connected": false,
                                     "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
-                                });
+                                }
                             } else {
                                 if(result['status'] != 200){
-                                    resolve({
+                                    statusForCreateLinkForInquiringServiceRecords = {
                                         "successfully-connected": false,
                                         "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
-                                    });
-                                    break;
+                                    }
                                 }
                                 else if ( result['status'] == 200 && !result['data']['client-successfully-added']) {
-                                    resolve({
+                                    statusForCreateLinkForInquiringServiceRecords = {
                                         "successfully-connected": false,
                                         "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
-                                    });
-                                    break;
+                                    }
                                 } else {
                                     let operationServerUuidOfRecordServiceRequest = "eatl-2-1-0-op-s-is-004";
-                                    let isOperationServerKeyUpdated = await operationKeyUpdateNotificationService.waitUntilOperationKeyIsUpdated(
-                                        operationServerUuidOfRecordServiceRequest,
-                                        timestampOfCurrentRequest,
-                                        waitTime);
+                                    let isOperationServerKeyUpdated = await operationKeyUpdateNotificationService.waitUntilOperationKeyIsUpdated( operationServerUuidOfRecordServiceRequest, timestampOfCurrentRequest, waitTime);
                                     if (!isOperationServerKeyUpdated) {
-                                        resolve({
+                                        statusForCreateLinkForInquiringServiceRecords = {
                                             "successfully-connected": false,
                                             "reason-of-failure": "EATL_MAXIMUM_WAIT_TIME_TO_RECEIVE_OPERATION_KEY_EXCEEDED"
-                                        });
-                                        break;
+                                        }
                                     } else {
-                                        resolve({
+                                        statusForCreateLinkForInquiringServiceRecords = {
                                             'successfully-connected': true
-                                        });
+                                        }
                                         break;
                                     }
                                 }
@@ -139,6 +132,12 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
 
                     }
                 }
+            }
+
+            if (Object.keys(statusForCreateLinkForInquiringServiceRecords).length > 0) {
+                resolve(statusForCreateLinkForInquiringServiceRecords)
+            } else {
+                throw "Operation is not success";
             }
         } catch (error) {
             reject(error);
