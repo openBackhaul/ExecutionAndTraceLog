@@ -42,7 +42,7 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
             if (result['status'] != 200) {
                 resolve({
                     "successfully-connected": false,
-                    "reason-of-failure": "EATL_UNKNOWN"
+                    "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                 });
             } else if (result['status'] == 200 && !result['data']['client-successfully-added']) {
                 resolve({
@@ -76,7 +76,7 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                     if (result['status'] != 204) {
                         resolve({
                             "successfully-connected": false,
-                            "reason-of-failure": "EATL_UNKNOWN"
+                            "reason-of-failure": "EATL_DID_NOT_REACH_NEW_APPLICATION"
                         });
                     } else {
                         let maximumNumberOfAttemptsToCreateLink = await IntegerProfile.getIntegerValueForTheIntegerProfileNameAsync(
@@ -99,13 +99,13 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                             } else if(attempts == maximumNumberOfAttemptsToCreateLink && result['status'] != 200){
                                 resolve({
                                     "successfully-connected": false,
-                                    "reason-of-failure": "EATL_UNKNOWN"
+                                    "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                                 });
                             } else {
                                 if(result['status'] != 200){
                                     resolve({
                                         "successfully-connected": false,
-                                        "reason-of-failure": "EATL_UNKNOWN"
+                                        "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                                     });
                                     break;
                                 }
