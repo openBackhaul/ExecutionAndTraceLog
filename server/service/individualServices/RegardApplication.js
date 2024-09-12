@@ -40,12 +40,17 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                 traceIndicatorIncrementer++);
 
             let statusForCreateLinkForInquiringServiceRecords = {}
-            if (result['status'] != 200) {
+            if (result['status'].toString() == "408" || result['status'].toString() == "404") {
                 statusForCreateLinkForInquiringServiceRecords = {
                     "successfully-connected": false,
-                    "reason-of-failure": "EATL_UNKNOWN"
+                    "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                 }
-            } else if (result['status'] == 200 && !result['data']['client-successfully-added']) {
+            }else if(result['status'].toString().startsWith("5")){ 
+                statusForCreateLinkForInquiringServiceRecords = {
+                    "successfully-connected": false,
+                    "reason-of-failure": "EATL_ALT_UNKNOWN"
+                }
+            }else if (result['status'] == 200 && !result['data']['client-successfully-added']) {
                 statusForCreateLinkForInquiringServiceRecords = {
                     "successfully-connected": false,
                     "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
@@ -72,12 +77,17 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                         traceIndicatorIncrementer++
                     );
 
-                    if (result['status'] != 204) {
+                    if(result['status'].toString() == "408" || result['status'].toString() == "404"){
+                        statusForCreateLinkForInquiringServiceRecords = {
+                            "successfully-connected": false,
+                            "reason-of-failure": "EATL_DID_NOT_REACH_NEW_APPLICATION"
+                        }
+                    }else if(result['status'].toString().startsWith("5")){
                         statusForCreateLinkForInquiringServiceRecords = {
                             "successfully-connected": false,
                             "reason-of-failure": "EATL_UNKNOWN"
                         }
-                    } else {
+                    }else {
                         let maximumNumberOfAttemptsToCreateLink = await IntegerProfile.getIntegerValueForTheIntegerProfileNameAsync(
                             "maximumNumberOfAttemptsToCreateLink");
                         for (let attempts = 1; attempts <= maximumNumberOfAttemptsToCreateLink; attempts++) {
@@ -98,16 +108,20 @@ exports.regardApplication = function (applicationName, releaseNumber, user, xCor
                             } else if(attempts == maximumNumberOfAttemptsToCreateLink && result['status'] != 200){
                                 statusForCreateLinkForInquiringServiceRecords = {
                                     "successfully-connected": false,
-                                    "reason-of-failure": "EATL_UNKNOWN"
+                                    "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                                 }
                             } else {
-                                if(result['status'] != 200){
+                                if(result['status'].toString() == "408" || result['status'].toString() == "404"){
                                     statusForCreateLinkForInquiringServiceRecords = {
                                         "successfully-connected": false,
-                                        "reason-of-failure": "EATL_UNKNOWN"
+                                        "reason-of-failure": "EATL_DID_NOT_REACH_ALT"
                                     }
-                                }
-                                else if ( result['status'] == 200 && !result['data']['client-successfully-added']) {
+                                } else if(result['status'].toString().startsWith("5")){
+                                    statusForCreateLinkForInquiringServiceRecords = {
+                                        "successfully-connected": false,
+                                        "reason-of-failure": "EATL_ALT_UNKNOWN"
+                                    }
+                                }else if ( result['status'] == 200 && !result['data']['client-successfully-added']) {
                                     statusForCreateLinkForInquiringServiceRecords = {
                                         "successfully-connected": false,
                                         "reason-of-failure": `EATL_${result['data']['reason-of-failure']}`
