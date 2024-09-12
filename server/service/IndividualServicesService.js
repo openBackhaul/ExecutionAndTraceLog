@@ -23,6 +23,7 @@ const { getIndexAliasAsync, createResultArray, elasticsearchService } = require(
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
 const RegardApplication = require('./individualServices/RegardApplication');
+const createHttpError = require('http-errors');
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 const AsyncLock = require('async-lock');
@@ -225,6 +226,9 @@ exports.listRecords = async function (body) {
   let size = body["number-of-records"];
   let from = body["latest-record"];
 
+  if(body["searched-release-number"] && body["searched-application-name"] == undefined){
+    throw new createHttpError.BadRequest(`Filter could not be applied`);
+  }
   const resultQuery = requestBodyAttributeFilter(body);
 
   if (resultQuery.length > 0) {
@@ -503,7 +507,7 @@ function requestBodyAttributeFilter(body){
     attribute = {"range": {"timestamp":{"gte": body["start-of-searched-period"]}}};
     mustQuery.push(attribute);
   }else if(body["end-of-searched-period"]){
-    attribute = {"range": {"timestamp":{"lte": body["start-of-searched-period"]}}};
+    attribute = {"range": {"timestamp":{"lte": body["end-of-searched-period"]}}};
     mustQuery.push(attribute);
   }
 
