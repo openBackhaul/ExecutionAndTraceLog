@@ -489,7 +489,7 @@ function requestBodyAttributeFilter(body){
 
   // if request body contains searched-user as an attribute then this query filter will implement
   if(body["searched-user"]){
-    attribute = {"match": { "user": body["searched-user"]}};
+    attribute = {"match_phrase": { "user": body["searched-user"]}};
     mustQuery.push(attribute);
   }
 
@@ -515,11 +515,11 @@ function requestBodyAttributeFilter(body){
   if(body["searched-application-name"]){
     if(body["searched-release-number"]){
       mustQuery.push(
-        {"match": { "application-name": body["searched-application-name"]}}, 
-        {"match": { "release-number": body["searched-release-number"]}}
+        {"match_phrase": { "application-name": body["searched-application-name"]}}, 
+        {"match_phrase": { "release-number": body["searched-release-number"]}}
       );
     }else{
-      attribute = {"match": { "application-name": body["searched-application-name"]}};
+      attribute = {"match_phrase": { "application-name": body["searched-application-name"]}};
       mustQuery.push(attribute);
     }
   }
