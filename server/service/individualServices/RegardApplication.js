@@ -138,24 +138,34 @@ async function CreateLinkForInquiringServiceRecords(applicationName, releaseNumb
                 let forwardingKindName = "RegardApplicationCausesSequenceForInquiringServiceRecords.RequestForInquiringServiceRecords";
                 let operationClientUuid = await getConsequentOperationClientUuid(forwardingKindName, applicationName, releaseNumber);
                 let operationName = await OperationClientInterface.getOperationNameAsync(operationClientUuid);
-                requestBody['serving-application-name'] = applicationName;
-                requestBody['serving-application-release-number'] = releaseNumber;
-                requestBody['operation-name'] = operationName;
-                requestBody['consuming-application-name'] = await HttpServerInterface.getApplicationNameAsync();
-                requestBody['consuming-application-release-number'] = await HttpServerInterface.getReleaseNumberAsync();
-                requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
+                if (operationName == '' || operationName == undefined) {
+                    result = {
+                        "data": {
+                            "successfully-connected": false,
+                            "reason-of-failure": "EATL_UNKNOWN"
+                        },
+                        "status": 400
+                    }
+                } else {
+                    requestBody['serving-application-name'] = applicationName;
+                    requestBody['serving-application-release-number'] = releaseNumber;
+                    requestBody['operation-name'] = operationName;
+                    requestBody['consuming-application-name'] = await HttpServerInterface.getApplicationNameAsync();
+                    requestBody['consuming-application-release-number'] = await HttpServerInterface.getReleaseNumberAsync();
+                    requestBody = onfAttributeFormatter.modifyJsonObjectKeysToKebabCase(requestBody);
 
-                let forwardingAutomation = new ForwardingProcessingInput(
-                    forwardingKindNameOfInquiringServiceRecords,
-                    requestBody
-                );
-                result = await ForwardingConstructProcessingService.processForwardingConstructAsync(
-                    forwardingAutomation,
-                    user,
-                    xCorrelator,
-                    traceIndicator + "." + traceIndicatorIncrementer,
-                    customerJourney
-                );
+                    let forwardingAutomation = new ForwardingProcessingInput(
+                        forwardingKindNameOfInquiringServiceRecords,
+                        requestBody
+                    );
+                    result = await ForwardingConstructProcessingService.processForwardingConstructAsync(
+                        forwardingAutomation,
+                        user,
+                        xCorrelator,
+                        traceIndicator + "." + traceIndicatorIncrementer,
+                        customerJourney
+                    );
+                }
             } catch (error) {
                 console.log(error);
                 throw "operation is not success";
