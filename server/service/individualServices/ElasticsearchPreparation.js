@@ -103,7 +103,9 @@ async function createIndexTemplate() {
                         'response-code': { type: 'integer' },
                         'timestamp': { type: 'date' },
                         'stringified-body': { type: 'text' },
-                        'stringified-response': { type: 'text' }
+                        'stringified-response': { type: 'text' },
+                        'url': { type: 'text'},
+                        'exec-time': { type: 'integer' }
                     }
                 }
             }
