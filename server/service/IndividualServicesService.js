@@ -23,6 +23,7 @@ const { getIndexAliasAsync, createResultArray, elasticsearchService } = require(
 const individualServicesOperationsMapping = require('./individualServices/IndividualServicesOperationsMapping');
 const TcpObject = require('onf-core-model-ap/applicationPattern/onfModel/services/models/TcpObject');
 const RegardApplication = require('./individualServices/RegardApplication');
+const createHttpError = require('http-errors');
 const REDIRECT_SERVICE_REQUEST_OPERATION = '/v1/redirect-service-request-information';
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 const AsyncLock = require('async-lock');
@@ -221,11 +222,27 @@ exports.listApplications = function () {
  * returns List
  **/
 exports.listRecords = async function (body) {
+  let query;
   let size = body["number-of-records"];
   let from = body["latest-record"];
-  let query = {
-    match_all: {}
-  };
+
+  if(body["searched-release-number"] && body["searched-application-name"] == undefined){
+    throw new createHttpError.BadRequest(`Filter could not be applied`);
+  }
+  const resultQuery = requestBodyAttributeFilter(body);
+
+  if (resultQuery.length > 0) {
+    query = {
+      "bool": {
+        "must": resultQuery,
+      }
+    }
+  } else {
+    query = {
+      match_all: {}
+    };
+  }
+  
   if (size + from <= 10000) {
     let indexAlias = await getIndexAliasAsync();
     let client = await elasticsearchService.getClient(false);
@@ -238,6 +255,14 @@ exports.listRecords = async function (body) {
       }
     });
     const resultArray = createResultArray(result);
+
+    //Adding this default invalid timestamp to make this work
+    // As timestamp is mandatory in 2.1.2 spec now, and previous data don't have it
+    resultArray.forEach((element)=>{
+      if(!element['timestamp']){
+        element['timestamp'] = "0000-00-0000";
+      }
+    })
     return { "response": resultArray, "took": result.body.took };
   }
   return await elasticsearchService.scroll(from, size, query);
@@ -270,6 +295,14 @@ exports.listRecordsOfFlow = async function (body) {
       }
     });
     const resultArray = createResultArray(result);
+
+    //Adding this default invalid timestamp to make this work
+    // As timestamp is mandatory in 2.1.2 spec now, and previous data don't have it
+    resultArray.forEach((element)=>{
+      if(!element['timestamp']){
+        element['timestamp'] = "0000-00-0000";
+      }
+    })
     return { "response": resultArray, "took": result.body.took };
   }
   return await elasticsearchService.scroll(from, size, query);
@@ -309,6 +342,14 @@ exports.listRecordsOfUnsuccessful = async function (body) {
       }
     });
     const resultArray = createResultArray(result);
+
+    //Adding this default invalid timestamp to make this work
+    // As timestamp is mandatory in 2.1.2 spec now, and previous data don't have it
+    resultArray.forEach((element)=>{
+      if(!element['timestamp']){
+        element['timestamp'] = "0000-00-0000";
+      }
+    })
     return { "response": resultArray, "took": result.body.took };
   }
   return await elasticsearchService.scroll(from, size, query);
@@ -442,4 +483,46 @@ function isAddressChanged(currentAddress, newAddress) {
   return (currentIpv4 !== newIpv4) || (currentDomain !== newDomain);
 }
 
+function requestBodyAttributeFilter(body){
+  let mustQuery = [];
+  let attribute;
 
+  // if request body contains searched-user as an attribute then this query filter will implement
+  if(body["searched-user"]){
+    attribute = {"match_phrase": { "user": body["searched-user"]}};
+    mustQuery.push(attribute);
+  }
+
+  // if request body contains searched-operation-name as an attribute then this query filter will implement
+  if(body["searched-operation-name"]){
+    attribute = {"match_phrase": { "operation-name": body["searched-operation-name"]}};
+    mustQuery.push(attribute);
+  }
+
+  // if request body contains one of them or both start-of-searched-period and end-of-searched-period as an attribute then this query filter will implement
+  if(body["start-of-searched-period"] && body["end-of-searched-period"]){
+    attribute = {"range": {"timestamp":{"gte": body["start-of-searched-period"], "lte": body["end-of-searched-period"]}}};
+    mustQuery.push(attribute);
+  }else if(body["start-of-searched-period"]){
+    attribute = {"range": {"timestamp":{"gte": body["start-of-searched-period"]}}};
+    mustQuery.push(attribute);
+  }else if(body["end-of-searched-period"]){
+    attribute = {"range": {"timestamp":{"lte": body["end-of-searched-period"]}}};
+    mustQuery.push(attribute);
+  }
+
+  // if request body contains searched-application-name as an attribute then this query filter will implement
+  if(body["searched-application-name"]){
+    if(body["searched-release-number"]){
+      mustQuery.push(
+        {"match_phrase": { "application-name": body["searched-application-name"]}}, 
+        {"match_phrase": { "release-number": body["searched-release-number"]}}
+      );
+    }else{
+      attribute = {"match_phrase": { "application-name": body["searched-application-name"]}};
+      mustQuery.push(attribute);
+    }
+  }
+
+  return mustQuery;
+}
