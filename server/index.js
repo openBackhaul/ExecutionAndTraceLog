@@ -4,7 +4,7 @@ var path = require('path');
 var http = require('http');
 
 var oas3Tools = require('openbackhaul-oas3-tools');
-var serverPort = 3026;
+var serverPort = 3033;
 var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommons');
 
 const prepareElasticsearch = require('./service/individualServices/ElasticsearchPreparation');
